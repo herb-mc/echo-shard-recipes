@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "echo_shard_recipes",
+  "version": "${version}",
+
+  "name": "Echo Shard Recipes",
+  "description": "Additional uses for echo shards outside of vanilla.",
+  "authors": [
+    "herb-mc"
+  ],
+  "contact": {
+    "sources": "https://github.com/herb-mc/echo_shard_recipes"
+  },
+
+  "license": "MIT",
+  "icon": "assets/echo_shard_recipes/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": []
+  },
+  "mixins": [
+    "echo_shard_recipes.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.8",
+    "minecraft": "=1.19.X",
+    "java": ">=17"
+  }
+}
