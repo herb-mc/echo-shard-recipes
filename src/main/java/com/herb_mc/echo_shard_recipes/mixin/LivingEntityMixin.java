@@ -1,11 +1,13 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import com.herb_mc.echo_shard_recipes.helper.StatusEffectInstanceInterface;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
@@ -82,13 +84,17 @@ public class LivingEntityMixin {
     )
     public void applyAttributes(CallbackInfo ci) {
         LivingEntity e = (LivingEntity) (Object) this;
+        for (Map.Entry<StatusEffect, StatusEffectInstance> entry : e.getActiveStatusEffects().entrySet()) {
+            StatusEffectInstance i = entry.getValue();
+            if (((StatusEffectInstanceInterface) i).isBoosted()) entry.setValue(new StatusEffectInstance(entry.getKey(), i.getDuration(), i.getAmplifier() - 1, i.isAmbient(), i.shouldShowParticles(), i.shouldShowIcon()));
+        }
         Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
         for (EchoShardRecipesMod.AttributeItem i : items.values())
             if (i.attribute != null) removeAttribute(e, i.attribute, i.uuid);
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"));
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
         switch (getAttribute(e.getMainHandStack())) {
-            case "light", "sharpened" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
+            case "light", "sharpened", "stonebreaker" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
             case "hasty" -> boostStatusEffect(e, StatusEffects.HASTE, 0);
             case "rip_current" -> {
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "echo_shard_recipes:fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
@@ -111,6 +117,7 @@ public class LivingEntityMixin {
         double knockbackRes = 0.0;
         for (ItemStack i : e.getArmorItems())
             switch (getAttribute(i)) {
+                case "snipe_shot" -> addAttribute(e, items.get("snipe_shot"));
                 case "reinforced" -> armor += items.get("reinforced").base;
                 case "swift" -> moveSpeed += items.get("swift").base;
                 case "levitator" -> { if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 4, 3, false, false, false), null); }

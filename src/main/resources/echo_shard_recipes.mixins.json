@@ -8,9 +8,13 @@
     "BowItemMixin",
     "CrossbowItemMixin",
     "LivingEntityMixin",
+    "ProjectileEntityAccessor",
     "PersistentProjectileEntityMixin",
     "PlayerEntityMixin",
+    "ShulkerEntityAccessor",
+    "SnowballEntityMixin",
     "StatusEffectInstanceMixin",
+    "ThrownItemEntityMixin",
     "TridentEntityAccessor",
     "TridentEntityMixin",
     "TridentItemMixin"

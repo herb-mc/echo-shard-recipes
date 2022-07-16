@@ -11,7 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.isInorganic;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
@@ -50,6 +52,8 @@ public class PlayerEntityMixin {
                         ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 50, 2));
                     }
                 }
+                case "firebrand" -> f *= target.isOnFire() ? 1.25f : 1;
+                case "stonebreaker" -> f *= isInorganic((LivingEntity) target) ? 4 : 1;
                 default -> {}
             }
         return f;

@@ -5,9 +5,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.*;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.world.World;
 
 import java.util.UUID;
 
@@ -25,10 +31,9 @@ public class HelperMethods {
     }
 
     public static void addAttribute(LivingEntity e, EchoShardRecipesMod.AttributeItem i) {
-        EntityAttributeInstance instance = e.getAttributeInstance(i.attribute);
-        if (instance != null && i.uuid != null) {
-            EchoShardRecipesMod.LOGGER.info("{}", getAttribute(e.getMainHandStack()));
-            instance.addTemporaryModifier(new EntityAttributeModifier(i.uuid, i.tag, i.base, i.op));
+        if (i != null) {
+            EntityAttributeInstance instance = e.getAttributeInstance(i.attribute);
+            if (instance != null && i.uuid != null) instance.addTemporaryModifier(new EntityAttributeModifier(i.uuid, i.tag, i.base, i.op));
         }
     }
 
@@ -64,8 +69,18 @@ public class HelperMethods {
         }
     }
 
-    public static String id(String s) {
-        return EchoShardRecipesMod.MOD_ID + ":" + s;
+    public static void spawnFrag(World world, LivingEntity user, float bonus, float speed,  float divergence) {
+        SnowballEntity frag = new SnowballEntity(world, user);
+        ((ThrownItemEntityInterface) frag).setAttribute("buckshot");
+        ((ThrownItemEntityInterface) frag).setBonusDamage(bonus);
+        frag.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, speed, divergence);
+        frag.setVelocity(user.getVelocity().multiply(0.1).add(frag.getVelocity()));
+        frag.setItem(new ItemStack(Items.IRON_NUGGET));
+        world.spawnEntity(frag);
+    }
+
+    public static boolean isInorganic(LivingEntity e) {
+        return e instanceof ShulkerEntity || e instanceof IronGolemEntity || e instanceof SkeletonEntity || e instanceof WitherSkeletonEntity || e instanceof WitherEntity || e instanceof BlazeEntity || e instanceof SkeletonHorseEntity || e instanceof StrayEntity || e instanceof EndermanEntity;
     }
 
 }

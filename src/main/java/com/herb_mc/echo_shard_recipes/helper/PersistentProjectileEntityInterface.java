@@ -5,6 +5,8 @@ public interface PersistentProjectileEntityInterface {
     int getParticle();
     String getAttribute();
     void setParticle(int i);
-    void setAttribute(String s);
+    void setAttribute(String s);;
+    void addFlatDamage(int i);
+    void addDamageMultiplier(float f);
 
 }

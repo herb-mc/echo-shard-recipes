@@ -1,17 +1,22 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Random;
 
@@ -22,7 +27,11 @@ import static com.herb_mc.echo_shard_recipes.helper.ParticleMethods.spawnParticl
 public class PersistentProjectileEntityMixin implements PersistentProjectileEntityInterface {
 
     @Shadow private double damage;
+    @Shadow protected boolean inGround;
     private int particle = -1;
+    private int flatDamageBoost = 0;
+    private float damageMultiplier = 1.0f;
+    private int ticksActive = 0;
     private String attribute = null;
     private static final Random random = new Random();
 
@@ -46,6 +55,16 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
         attribute = s;
     }
 
+    @Override
+    public void addFlatDamage(int i) {
+        flatDamageBoost += i;
+    }
+
+    @Override
+    public void addDamageMultiplier(float f) {
+        damageMultiplier += f;
+    }
+
     @Inject(
             method = "tick",
             at = @At(
@@ -53,7 +72,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
                     value = "INVOKE"
             )
     )
-    private void createParticles(CallbackInfo ci) {
+    private void processTick(CallbackInfo ci) {
         PersistentProjectileEntity ref = (PersistentProjectileEntity) (Object) this;
         if (particle >= 0 && (ref.isCritical() || (ref instanceof TridentEntity && !((TridentEntityAccessor) ref).getDealtDamage()))) {
             ParticleItem i = PARTICLE_ITEMS[particle];
@@ -65,6 +84,49 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
                     spawnParticles((ServerWorld) ref.world, i.particle, ref.getX() + xOffset, ref.getY() + yOffset, ref.getZ() + zOffset, 1, 0, 0, 0, 0.03);
             }
         }
+        if (ticksActive > 40 && attribute != null)
+            switch (attribute) {
+                case "metaphysical" -> ref.setNoClip(false);
+                case "superphysical" -> {
+                    spawnParticles((ServerWorld) ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1);
+                    ref.discard();
+                }
+                default -> {}
+            }
+    }
+
+    @ModifyArg(
+            method = "tick",
+            at = @At(
+                    target = "Lnet/minecraft/util/math/Vec3d;multiply(D)Lnet/minecraft/util/math/Vec3d;",
+                    value = "INVOKE"
+            )
+    )
+    private double processAttributes(double d) {
+        if (attribute != null)
+            switch (attribute) {
+                case "metaphysical" -> ticksActive++;
+                case "superphysical" -> {if (!((PersistentProjectileEntity) (Object) this).isTouchingWater()) d = 1.0; ticksActive += 2;}
+                case "aquadynamic" -> d = ((PersistentProjectileEntity) (Object) this).isTouchingWater() ? 1.0 : d;
+                default -> {}
+            }
+        return d;
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At(
+                    target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;getPierceLevel()B",
+                    value = "INVOKE",
+                    shift = At.Shift.BEFORE
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT
+    )
+    public void getEntityHitResult(CallbackInfo ci, boolean bl, Vec3d vec3d, BlockPos blockPos, BlockState blockState, Vec3d vec3d3, Vec3d vec3d2, HitResult hitResult) {
+        if (hitResult != null && bl && "metaphysical".equals(attribute)) {
+            ((ProjectileEntityAccessor) this).collision(hitResult);
+            ((PersistentProjectileEntity) (Object) this).velocityDirty = true;
+        }
     }
 
     @Inject(
@@ -74,6 +136,9 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     private void writeNbt(NbtCompound nbt, CallbackInfo ci) {
         if (particle != -1) nbt.putInt(PARTICLE, particle);
         if (attribute != null) nbt.putString(ATTRIBUTE, attribute);
+        nbt.putInt("flatDamageBoost", flatDamageBoost);
+        nbt.putInt("ticksActive", ticksActive);
+        nbt.putFloat("damageMultiplier", damageMultiplier);
     }
 
     @Inject(
@@ -83,18 +148,38 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     private void readNbt(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains(PARTICLE)) particle = nbt.getInt(PARTICLE);
         if (nbt.contains(ATTRIBUTE)) attribute = nbt.getString(ATTRIBUTE);
+        if (nbt.contains("flatDamageBoost")) flatDamageBoost = nbt.getInt("flatDamageBoost");
+        if (nbt.contains("ticksActive")) ticksActive = nbt.getInt("ticksActive");
+        if (nbt.contains("damageMultiplier")) damageMultiplier = nbt.getFloat("damageMultiplier");
     }
 
     @ModifyArg(
             method = "onEntityHit",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
+                    target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z",
+                    value = "INVOKE"
             )
     )
     protected float increaseDamage(float f) {
-        if ("razor_tip".equals(attribute) && ((PersistentProjectileEntity) (Object) this).isCritical()) f += damage - 1;
-        return f;
+        if (attribute != null)
+            switch (attribute) {
+                case "razor_tip" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? damage - 1 : 0;
+                case "super_luck" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? random.nextInt((int) (f / 2)) : 0;
+                default -> {}
+            }
+        return (f + flatDamageBoost) * damageMultiplier;
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At("TAIL")
+    )
+    private void superphysicalDeletion(CallbackInfo ci) {
+        PersistentProjectileEntity ref = (PersistentProjectileEntity) (Object) this;
+        if ("superphysical".equals(attribute) && inGround) {
+            spawnParticles((ServerWorld) ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1);
+            ref.discard();
+        }
     }
 
 }

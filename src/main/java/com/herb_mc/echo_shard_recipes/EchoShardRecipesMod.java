@@ -117,8 +117,11 @@ public class EchoShardRecipesMod {
 
     public static final ItemChecker TRUE_MELEE = (i) -> (i instanceof AxeItem || i instanceof SwordItem);
     public static final ItemChecker MELEE = (i) -> (TRUE_MELEE.isValidItem(i) || i instanceof TridentItem);
-    public static final ItemChecker RANGED = (i) -> (i instanceof BowItem || i instanceof CrossbowItem || i instanceof TridentItem);
+    public static final ItemChecker TRUE_RANGED = (i) -> (i instanceof BowItem || i instanceof CrossbowItem);
+    public static final ItemChecker BOW = (i) -> (i instanceof BowItem);
+    public static final ItemChecker RANGED = (i) -> (TRUE_RANGED.isValidItem(i) || i instanceof TridentItem);
     public static final ItemChecker WEAPON = (i) -> (MELEE.isValidItem(i) || RANGED.isValidItem(i));
+    public static final ItemChecker TRUE_TOOL = (i) -> (i instanceof HoeItem || i instanceof PickaxeItem || i instanceof ShovelItem);
     public static final ItemChecker TOOL = (i) -> (i instanceof AxeItem || i instanceof HoeItem || i instanceof PickaxeItem || i instanceof ShovelItem);
     public static final ItemChecker ARMOR = (i) -> (i instanceof ArmorItem || i instanceof ElytraItem);
     public static final ItemChecker MISC = (i) -> (i instanceof ShearsItem || i instanceof FishingRodItem || i instanceof ShieldItem || i instanceof FlintAndSteelItem || i instanceof OnAStickItem<?>);
@@ -142,9 +145,19 @@ public class EchoShardRecipesMod {
     public static HashMap<String, AttributeItem> ATTRIBUTE_ITEMS = new HashMap<>();
 
     static {
+        ATTRIBUTE_ITEMS.put("aquadynamic", new AttributeItem(Items.CONDUIT, "Aquadynamic", BOW, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("buckshot", new AttributeItem(Items.IRON_NUGGET, "Buckshot", TRUE_RANGED, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("firebrand", new AttributeItem(Items.FIRE_CHARGE, "Firebrand", MELEE, Formatting.RED, NONE));
         ATTRIBUTE_ITEMS.put("light", new AttributeItem(Items.DIAMOND, "Light", TRUE_MELEE, Formatting.RED, NONE, "ac18a4c5-c926-4777-8827-b62582306fe3", EntityAttributes.GENERIC_ATTACK_SPEED, "light", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0.2));
-        ATTRIBUTE_ITEMS.put("sharpened", new AttributeItem(Items.FLINT, "Sharpened", MELEE, Formatting.RED, NONE, "61930a5a-af4e-46dd-8ca0-22bcabbee462", EntityAttributes.GENERIC_ATTACK_DAMAGE, "sharpened", EntityAttributeModifier.Operation.ADDITION, 2.0));
         ATTRIBUTE_ITEMS.put("razor_tip", new AttributeItem(Items.PRISMARINE_SHARD, "Razor Tip", RANGED, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("metaphysical", new AttributeItem(Items.ENDER_EYE, "Metaphysical", BOW, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("sharpened", new AttributeItem(Items.FLINT, "Sharpened", MELEE, Formatting.RED, NONE, "61930a5a-af4e-46dd-8ca0-22bcabbee462", EntityAttributes.GENERIC_ATTACK_DAMAGE, "sharpened", EntityAttributeModifier.Operation.ADDITION, 2.0));
+        ATTRIBUTE_ITEMS.put("sharpshooter", new AttributeItem(Items.SPYGLASS, "Sharp Shot", HEAD, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("snipe_shot", new AttributeItem(Items.ARROW, "Snipe Shot", HEAD, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5316", EntityAttributes.GENERIC_ATTACK_DAMAGE, "snipe_shot", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
+        ATTRIBUTE_ITEMS.put("super_luck", new AttributeItem(Items.EMERALD, "Super Luck", BOW, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("superphysical", new AttributeItem(Items.DRAGON_HEAD, "Superphysical", BOW, Formatting.RED, NONE));
+        ATTRIBUTE_ITEMS.put("stonebreaker", new AttributeItem(Items.GRINDSTONE, "Stonebreaker", TRUE_TOOL, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5416", EntityAttributes.GENERIC_ATTACK_SPEED, "stonebreaker", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
+        ATTRIBUTE_ITEMS.put("hasty", new AttributeItem(Items.SUGAR, "Hasty", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("reinforced", new AttributeItem(Items.ANVIL, "Reinforced", ARMOR, Formatting.GRAY, NONE, "8b2ce124-8c71-4949-bca6-ba1779662fa7", EntityAttributes.GENERIC_ARMOR, "reinforced", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("rejuvenating", new AttributeItem(Items.GOLDEN_APPLE, "Rejuvenating", ARMOR, Formatting.GRAY, NONE, "06790794-1df4-4ee9-b4c8-0f9842f6ac54", EntityAttributes.GENERIC_MAX_HEALTH, "rejuvenating", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("resilient", new AttributeItem(Items.LEATHER, "Resilient", ARMOR, Formatting.GRAY, NONE, "b76e3bac-e417-4a8c-8ed3-1d843adf311e", EntityAttributes.GENERIC_ARMOR_TOUGHNESS, "resilient", EntityAttributeModifier.Operation.ADDITION, 2.0));
@@ -153,7 +166,7 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("levitator", new AttributeItem(Items.SHULKER_SHELL, "Levitator", FEET, Formatting.GREEN, NONE));
         ATTRIBUTE_ITEMS.put("swift", new AttributeItem(Items.EMERALD, "Swift", ARMOR, Formatting.GREEN, NONE, "b4fa00c0-ac70-423a-9efa-ae86fb46be8f", EntityAttributes.GENERIC_MOVEMENT_SPEED, "swift", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0.04));
         ATTRIBUTE_ITEMS.put("crushing_wave", new AttributeItem(Items.SPONGE, "Crushing Wave", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT));
-        ATTRIBUTE_ITEMS.put("enhanced", new AttributeItem(Items.NETHERITE_BLOCK, "Enhanced", ANY, Formatting.LIGHT_PURPLE, UPGRADE_ENCHANTS));
+        ATTRIBUTE_ITEMS.put("enhanced", new AttributeItem(Items.NETHERITE_INGOT, "Enhanced", ANY, Formatting.LIGHT_PURPLE, UPGRADE_ENCHANTS));
         ATTRIBUTE_ITEMS.put("flowing_water", new AttributeItem(Items.TRIDENT, "Flowing Water", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT));
         ATTRIBUTE_ITEMS.put("rip_current", new AttributeItem(Items.HEART_OF_THE_SEA, "Rip Current", FISH, Formatting.LIGHT_PURPLE, CRUSHING_WAVE));
     }
