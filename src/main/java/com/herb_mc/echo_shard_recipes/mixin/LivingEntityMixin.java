@@ -86,7 +86,14 @@ public class LivingEntityMixin {
         LivingEntity e = (LivingEntity) (Object) this;
         for (Map.Entry<StatusEffect, StatusEffectInstance> entry : e.getActiveStatusEffects().entrySet()) {
             StatusEffectInstance i = entry.getValue();
-            if (((StatusEffectInstanceInterface) i).isBoosted()) entry.setValue(new StatusEffectInstance(entry.getKey(), i.getDuration(), i.getAmplifier() - 1, i.isAmbient(), i.shouldShowParticles(), i.shouldShowIcon()));
+            int duration = i.getDuration();
+            int amplifier = i.getAmplifier();
+            boolean ambient = i.isAmbient();
+            boolean particle = i.shouldShowParticles();
+            boolean icon = i.shouldShowIcon();
+            if (((StatusEffectInstanceInterface) i).isEquipBoosted()) {
+                entry.setValue(new StatusEffectInstance(entry.getKey(), duration, amplifier - 1, ambient, particle, icon));
+            }
         }
         Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
         for (EchoShardRecipesMod.AttributeItem i : items.values())
@@ -95,7 +102,7 @@ public class LivingEntityMixin {
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
         switch (getAttribute(e.getMainHandStack())) {
             case "light", "sharpened", "stonebreaker" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
-            case "hasty" -> boostStatusEffect(e, StatusEffects.HASTE, 0);
+            case "hasty" -> boostEquipStatusEffect(e, StatusEffects.HASTE, 0);
             case "rip_current" -> {
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "echo_shard_recipes:fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "echo_shard_recipes:fish", -0.5, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
@@ -124,6 +131,7 @@ public class LivingEntityMixin {
                 case "resilient" -> toughness += items.get(":resilient").base;
                 case "rejuvenating" -> health += items.get("rejuvenating").base;
                 case "stalwart" -> knockbackRes += items.get("stalwart").base;
+                //case "power_assist" -> boostArmorStatusEffect(e, StatusEffects.HASTE, 0);
                 default -> {
                 }
             }

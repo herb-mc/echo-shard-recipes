@@ -12,19 +12,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(StatusEffectInstance.class)
 public class StatusEffectInstanceMixin implements StatusEffectInstanceInterface {
 
-    @Unique private boolean boosted = false;
+    @Unique private boolean equipBoosted = false;
+    @Unique private boolean armorBoosted = false;
 
     @Shadow private int amplifier;
     @Shadow int duration;
 
     @Override
-    public void setBoosted(boolean b) {
-        boosted = b;
+    public void setEquipBoosted(boolean b) {
+        equipBoosted = b;
     }
 
     @Override
-    public boolean isBoosted() {
-        return boosted;
+    public boolean isEquipBoosted() {
+        return equipBoosted;
+    }
+
+    @Override
+    public void setArmorBoosted(boolean b) {
+        armorBoosted = b;
+    }
+
+    @Override
+    public boolean isArmorBoosted() {
+        return armorBoosted;
     }
 
     @Override
@@ -42,7 +53,8 @@ public class StatusEffectInstanceMixin implements StatusEffectInstanceInterface 
             at = @At("TAIL")
     )
     private void persistentBoost(StatusEffectInstance that, CallbackInfo ci) {
-        this.boosted = ((StatusEffectInstanceInterface)that).isBoosted();
+        this.equipBoosted = ((StatusEffectInstanceInterface)that).isEquipBoosted();
+        this.armorBoosted = ((StatusEffectInstanceInterface)that).isArmorBoosted();
     }
 
 }

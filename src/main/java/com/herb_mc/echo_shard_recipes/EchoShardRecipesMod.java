@@ -158,9 +158,10 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("snipe_shot", new AttributeItem(Items.ARROW, "Snipe Shot", HEAD, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5316", EntityAttributes.GENERIC_ATTACK_DAMAGE, "snipe_shot", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
         ATTRIBUTE_ITEMS.put("super_luck", new AttributeItem(Items.EMERALD, "Super Luck", BOW, Formatting.RED, NONE));
         ATTRIBUTE_ITEMS.put("superphysical", new AttributeItem(Items.ENDER_PEARL, "Superphysical", BOW, Formatting.RED, NONE));
-        ATTRIBUTE_ITEMS.put("stonebreaker", new AttributeItem(Items.GRINDSTONE, "Stonebreaker", TRUE_TOOL, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5416", EntityAttributes.GENERIC_ATTACK_SPEED, "stonebreaker", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
+        ATTRIBUTE_ITEMS.put("stonebreaker", new AttributeItem(Items.STONECUTTER, "Stonebreaker", TRUE_TOOL, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5416", EntityAttributes.GENERIC_ATTACK_SPEED, "stonebreaker", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
         ATTRIBUTE_ITEMS.put("antigravity", new AttributeItem(Items.WARPED_FUNGUS, "Antigravity", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("attuned", new AttributeItem(Items.EXPERIENCE_BOTTLE, "Attuned", TOOL, Formatting.AQUA, NONE));
+        ATTRIBUTE_ITEMS.put("power_assist", new AttributeItem(Items.REDSTONE, "Power Assist", CHEST, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("glowing", new AttributeItem(Items.GLOW_INK_SAC, "Glowing", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("hasty", new AttributeItem(Items.SUGAR, "Hasty", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("magnetized", new AttributeItem(Items.RAW_IRON, "Magnetized", TOOL, Formatting.AQUA, NONE));

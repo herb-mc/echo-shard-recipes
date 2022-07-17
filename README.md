@@ -51,6 +51,7 @@ Only one attribute can be applied to any given item!
 | Bottle o' Enchanting | Attuned       | Utility   | Small chance to gain experience while mining                        | Tools              |
 | Glow Ink Sac         | Glowing       | Utility   | Mined items glow                                                    | Tools              |
 | Raw Iron             | Magnetized    | Utility   | Attracts items to the user while held                               | Tools              |
+| Redstone             | Power Assist  | Utility   | Increase Haste level by 1 while worn                                | Chest              |
 | Sugar                | Hasty         | Utility   | Increase Haste level by 1 while held                                | Tools              |
 | Warped Fungus        | Antigravity   | Utility   | Mined items have no gravity                                         | Tools              |
 | Anvil                | Reinforced    | Defensive | Increases armor - a full set provides an additional boost           | Armor              |

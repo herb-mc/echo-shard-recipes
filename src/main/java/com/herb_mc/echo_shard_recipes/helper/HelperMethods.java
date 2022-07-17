@@ -60,7 +60,7 @@ public class HelperMethods {
             instance.addTemporaryModifier(new EntityAttributeModifier(uuid, tag, base, op));
     }
 
-    public static void boostStatusEffect(LivingEntity e, StatusEffect s, int amplifier) {
+    public static void boostEquipStatusEffect(LivingEntity e, StatusEffect s, int amplifier) {
         StatusEffectInstance i = e.getStatusEffect(s);
         boolean addAmp = true;
         if (i == null) {
@@ -70,10 +70,30 @@ public class HelperMethods {
             if (i != null) i.applyUpdateEffect(e);
         }
         if (i != null) {
-            if (!((StatusEffectInstanceInterface) i).isBoosted()) {
+            if (!((StatusEffectInstanceInterface) i).isEquipBoosted()) {
                 int a = addAmp ? i.getAmplifier() + amplifier + 1 : i.getAmplifier() + 1;
                 i.upgrade(new StatusEffectInstance(s, i.getDuration(), a, i.isAmbient(), i.shouldShowParticles(), i.shouldShowIcon()));
-                ((StatusEffectInstanceInterface) i).setBoosted(true);
+                ((StatusEffectInstanceInterface) i).setEquipBoosted(true);
+            }
+            i.applyUpdateEffect(e);
+            if (i.getAmplifier() == amplifier) ((StatusEffectInstanceInterface) i).setDuration(4);
+        }
+    }
+
+    public static void boostArmorStatusEffect(LivingEntity e, StatusEffect s, int amplifier) {
+        StatusEffectInstance i = e.getStatusEffect(s);
+        boolean addAmp = true;
+        if (i == null) {
+            addAmp = false;
+            e.addStatusEffect(new StatusEffectInstance(s, 4, -1, false, false, false), null);
+            i = e.getStatusEffect(s);
+            if (i != null) i.applyUpdateEffect(e);
+        }
+        if (i != null) {
+            if (!((StatusEffectInstanceInterface) i).isArmorBoosted()) {
+                int a = addAmp ? i.getAmplifier() + amplifier + 1 : i.getAmplifier() + 1;
+                i.upgrade(new StatusEffectInstance(s, i.getDuration(), a, i.isAmbient(), i.shouldShowParticles(), i.shouldShowIcon()));
+                ((StatusEffectInstanceInterface) i).setArmorBoosted(true);
             }
             i.applyUpdateEffect(e);
             if (i.getAmplifier() == amplifier) ((StatusEffectInstanceInterface) i).setDuration(4);
