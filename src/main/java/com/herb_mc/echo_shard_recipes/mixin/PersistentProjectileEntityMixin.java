@@ -85,8 +85,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
                     spawnParticles((ServerWorld) ref.world, i.particle, ref.getX() + xOffset, ref.getY() + yOffset, ref.getZ() + zOffset, 1, 0, 0, 0, 0.03);
             }
         }
-        if (ticksActive > 40 && attribute != null)
-            switch (attribute) {
+        if (ticksActive > 40 && attribute != null) switch (attribute) {
                 case "superphysical" -> {
                     spawnParticles((ServerWorld) ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1);
                     ref.discard();
@@ -105,8 +104,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     )
     private double processAttributes(double d) {
         PersistentProjectileEntity ref = ((PersistentProjectileEntity) (Object) this);
-        if (attribute != null)
-            switch (attribute) {
+        if (attribute != null) switch (attribute) {
                 case "metaphysical" -> ticksActive += 8;
                 case "superphysical" -> {if (!ref.isTouchingWater()) d = 1.0; ticksActive += 2;}
                 case "aquadynamic" -> d = ref.isTouchingWater() ? 1.0 : d;
@@ -147,8 +145,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             )
     )
     protected float increaseDamage(float f) {
-        if (attribute != null)
-            switch (attribute) {
+        if (attribute != null) switch (attribute) {
                 case "razor_tip" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? damage - 1 : 0;
                 case "super_luck" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? random.nextInt((int) (f / 2)) : 0;
                 default -> {}

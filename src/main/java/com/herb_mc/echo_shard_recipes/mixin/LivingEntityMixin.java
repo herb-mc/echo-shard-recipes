@@ -115,8 +115,7 @@ public class LivingEntityMixin {
         double toughness = 0.0;
         double health = 0.0;
         double knockbackRes = 0.0;
-        for (ItemStack i : e.getArmorItems())
-            switch (getAttribute(i)) {
+        for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
                 case "snipe_shot" -> addAttribute(e, items.get("snipe_shot"));
                 case "reinforced" -> armor += items.get("reinforced").base;
                 case "swift" -> moveSpeed += items.get("swift").base;
@@ -158,8 +157,7 @@ public class LivingEntityMixin {
             index = 0
     )
     public double modifyKnockback(double d) {
-        if (source instanceof EntityDamageSource && source.getAttacker() instanceof LivingEntity)
-            switch (getAttribute(((LivingEntity) source.getAttacker()).getMainHandStack())) {
+        if (source instanceof EntityDamageSource && source.getAttacker() instanceof LivingEntity) switch (getAttribute(((LivingEntity) source.getAttacker()).getMainHandStack())) {
                 case "flowing_water" -> d *= 0.6;
                 case "crushing_wave" -> d *= 0;
                 default -> {}

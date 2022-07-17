@@ -40,8 +40,7 @@ public class PlayerEntityMixin {
     )
     public float modifyDamage(float f) {
         PlayerEntity p = (PlayerEntity) (Object) this;
-        if (target instanceof LivingEntity)
-            switch(getAttribute(p.getMainHandStack())) {
+        if (target instanceof LivingEntity) switch(getAttribute(p.getMainHandStack())) {
                 case "flowing_water" -> {
                     if (((LivingEntity) target).hurtTime > 0) {
                         ((LivingEntity) target).hurtTime = 0;
