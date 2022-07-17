@@ -158,6 +158,7 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("superphysical", new AttributeItem(Items.ENDER_PEARL, "Superphysical", BOW, Formatting.RED, NONE));
         ATTRIBUTE_ITEMS.put("stonebreaker", new AttributeItem(Items.GRINDSTONE, "Stonebreaker", TRUE_TOOL, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5416", EntityAttributes.GENERIC_ATTACK_SPEED, "stonebreaker", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
         ATTRIBUTE_ITEMS.put("hasty", new AttributeItem(Items.SUGAR, "Hasty", TOOL, Formatting.AQUA, NONE));
+        ATTRIBUTE_ITEMS.put("satiating", new AttributeItem(Items.SUGAR, "Satiating", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("reinforced", new AttributeItem(Items.ANVIL, "Reinforced", ARMOR, Formatting.GRAY, NONE, "8b2ce124-8c71-4949-bca6-ba1779662fa7", EntityAttributes.GENERIC_ARMOR, "reinforced", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("rejuvenating", new AttributeItem(Items.GOLDEN_APPLE, "Rejuvenating", ARMOR, Formatting.GRAY, NONE, "06790794-1df4-4ee9-b4c8-0f9842f6ac54", EntityAttributes.GENERIC_MAX_HEALTH, "rejuvenating", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("resilient", new AttributeItem(Items.LEATHER, "Resilient", ARMOR, Formatting.GRAY, NONE, "b76e3bac-e417-4a8c-8ed3-1d843adf311e", EntityAttributes.GENERIC_ARMOR_TOUGHNESS, "resilient", EntityAttributeModifier.Operation.ADDITION, 2.0));

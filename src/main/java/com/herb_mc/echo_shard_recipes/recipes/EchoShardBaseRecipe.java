@@ -13,7 +13,6 @@ import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -81,50 +80,46 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe {
         output.setNbt(nbt);
     }
 
+    private int particle;
+    private String attribute;
+
     @Override
     public boolean matches(CraftingInventory inventory, World world) {
+        particle = -1;
+        attribute = null;
         boolean has_echo_shard = false;
         boolean has_valid_particle = false;
         boolean has_gunpowder = false;
         boolean has_valid_attribute = false;
         boolean has_nether_star = false;
+        ItemStack track = null;
         for(int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack = inventory.getStack(i);
             if (!itemStack.isEmpty())
                 if (itemStack.isOf(Items.ECHO_SHARD.asItem()) && isEmptyShard(itemStack) && !has_echo_shard) has_echo_shard = true;
                 else if (itemStack.isOf(Items.GUNPOWDER) && !has_gunpowder) has_gunpowder = true;
                 else if (itemStack.isOf(Items.NETHER_STAR) && !has_nether_star) has_nether_star = true;
-                else if (containsParticle(itemStack) != -1 || containsAttribute(itemStack) != null);
-                else return false;
+                else if (containsParticle(itemStack) == -1 && containsAttribute(itemStack) == null) return false;
         }
         for(int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack = inventory.getStack(i);
             if (!itemStack.isEmpty())
-                if (itemStack.isOf(Items.GUNPOWDER) || itemStack.isOf(Items.NETHER_STAR) || itemStack.isOf(Items.ECHO_SHARD));
-                else if (has_gunpowder && containsParticle(itemStack) != -1 && !has_valid_particle) has_valid_particle = true;
-                else if (has_nether_star && containsAttribute(itemStack) != null && !has_valid_attribute) has_valid_attribute = true;
-                else return false;
+                if (has_gunpowder && containsParticle(itemStack) != -1 && !has_valid_particle) {
+                    has_valid_particle = true; track = itemStack; particle = containsParticle(itemStack);
+                }
+                else if (has_nether_star && containsAttribute(itemStack) != null && !has_valid_attribute) {
+                    has_valid_attribute = true; attribute = containsAttribute(itemStack);
+                }
+                else if (has_gunpowder && has_nether_star && track != itemStack && containsParticle(itemStack) != -1 && has_valid_particle && containsAttribute(track) != null) {
+                    has_valid_attribute = true; attribute = containsAttribute(track); particle = containsParticle(itemStack);
+                }
+                else if (!(itemStack.isOf(Items.GUNPOWDER) || itemStack.isOf(Items.NETHER_STAR) || itemStack.isOf(Items.ECHO_SHARD))) return false;
         }
         return has_echo_shard && (has_valid_particle || has_valid_attribute) && (has_valid_particle == has_gunpowder && has_nether_star == has_valid_attribute);
     }
 
     @Override
     public ItemStack craft(CraftingInventory inventory) {
-        int particle = -1;
-        String attribute = null;
-        boolean has_gunpowder = false;
-        boolean has_nether_star = false;
-        for(int i = 0; i < inventory.size(); ++i) {
-            ItemStack itemStack = inventory.getStack(i);
-            if (!itemStack.isEmpty())
-                if (itemStack.isOf(Items.GUNPOWDER) && !has_gunpowder) has_gunpowder = true;
-                else if (itemStack.isOf(Items.NETHER_STAR) && !has_nether_star) has_nether_star = true;
-        }
-        for(int i = 0; i < inventory.size(); ++i) {
-            ItemStack temp = inventory.getStack(i);
-            if (has_gunpowder && particle == -1) particle = containsParticle(temp);
-            else if (has_nether_star && attribute == null) attribute = containsAttribute(temp);
-        }
         ItemStack output = new ItemStack(Items.ECHO_SHARD, 1);
         if (particle != -1) addParticles(output, particle);
         if (attribute != null) addAttributes(output, attribute);
