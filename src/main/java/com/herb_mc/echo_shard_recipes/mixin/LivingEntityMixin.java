@@ -129,11 +129,11 @@ public class LivingEntityMixin {
                 }
             }
         if (armor > 0) {
-            if (armor == items.get("reinforced").base * 4) armor += items.get("reinforced").base;
+            if (armor == items.get("reinforced").base * 4) armor += 2;
             addAttribute(e, items.get("reinforced"), armor);
         }
         if (moveSpeed > 0) {
-            if (moveSpeed == items.get("swift").base * 4) moveSpeed += items.get("swift").base;
+            if (moveSpeed == items.get("swift").base * 4) moveSpeed += 0.4;
             addAttribute(e, items.get("swift"), moveSpeed);
         }
         if (toughness > 0) addAttribute(e, items.get("resilient"), toughness);
