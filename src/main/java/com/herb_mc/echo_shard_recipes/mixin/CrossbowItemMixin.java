@@ -5,6 +5,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
@@ -26,12 +27,9 @@ import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ATTRIBUTE;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.spawnFrag;
-import static net.minecraft.item.BowItem.getPullProgress;
 
 @Mixin(CrossbowItem.class)
 public class CrossbowItemMixin {
-
-    private LivingEntity origShooter;
 
     @Inject(
             method = "shoot",
@@ -45,7 +43,13 @@ public class CrossbowItemMixin {
         NbtCompound nbt = crossbow.getNbt();
         if (nbt != null) {
             if (nbt.getBoolean(HAS_PARTICLE)) ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(PARTICLE));
-            if (nbt.getBoolean(HAS_ATTRIBUTE)) ((PersistentProjectileEntityInterface) projectileEntity).setAttribute(nbt.getString(ATTRIBUTE));
+            if (nbt.getBoolean(HAS_ATTRIBUTE)) {
+                ((PersistentProjectileEntityInterface) projectileEntity).setAttribute(nbt.getString(ATTRIBUTE));
+                switch (nbt.getString(ATTRIBUTE)) {
+                    case "metaphysical" -> ((PersistentProjectileEntity) projectileEntity).setNoClip(true);
+                    default -> {}
+                }
+            }
         }
         for (ItemStack item : shooter.getArmorItems()) if (getAttribute(item).equals("snipe_shot")) ((PersistentProjectileEntityInterface) projectileEntity).addDamageMultiplier(0.1f);
     }
@@ -60,13 +64,7 @@ public class CrossbowItemMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private static void removeRandomness(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated, CallbackInfo ci, boolean bl, ProjectileEntity projectileEntity, Vec3d vec3d, Quaternion quaternion, Vec3d vec3d2, Vec3f vec3f) {
-        NbtCompound nbt = crossbow.getNbt();
         for (ItemStack item : shooter.getArmorItems()) if (getAttribute(item).equals("sharpshooter")) projectileEntity.setVelocity(vec3f.getX(), vec3f.getY(), vec3f.getZ(), speed, 0.4f);
-        if (nbt != null && nbt.getBoolean(HAS_ATTRIBUTE))
-            switch (nbt.getString(ATTRIBUTE)) {
-                case "metaphysical" -> projectileEntity.noClip = true;
-                case "superphysical" -> projectileEntity.setNoGravity(true);
-            }
     }
 
     @Inject(

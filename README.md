@@ -3,7 +3,7 @@
 Additional uses for echo shards outside of vanilla. Apply particle/attribute augment to an echo shard to get an augment shard, and combine it with a matching tool.
 ___
 ### Particle Effects
-Can be applied to Bows, Crossbows, Elytra, and Tridents
+Can be applied to Bows, Crossbows, Elytra, and Tridents. Only one particle effect can be applied to any given item!
 
 **Base recipe:** echo shard + gunpowder + particle-specific ingredient
 
@@ -30,6 +30,7 @@ Can be applied to Bows, Crossbows, Elytra, and Tridents
 | Torch           | Small Flame           |
 ___
 ### Attributes
+Only one attribute can be applied to any given item!
 
 **Base recipe:** echo shard + nether star + attribute-specific ingredient
 

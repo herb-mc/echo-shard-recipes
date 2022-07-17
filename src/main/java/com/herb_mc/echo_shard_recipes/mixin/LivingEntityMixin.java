@@ -27,7 +27,6 @@ import java.util.UUID;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.PARTICLE_ITEMS;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
-import static com.herb_mc.echo_shard_recipes.helper.ParticleMethods.spawnParticles;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
