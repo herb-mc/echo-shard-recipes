@@ -16,6 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -32,8 +33,8 @@ import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 public class LivingEntityMixin {
 
     @Shadow protected int riptideTicks;
-    private int flightTime = 0;
-    private DamageSource source;
+    @Unique private int flightTime = 0;
+    @Unique private DamageSource source;
 
     @Inject(
             method = "travel",

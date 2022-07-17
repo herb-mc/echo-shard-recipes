@@ -16,12 +16,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Random;
+import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ECHO_SHARD_RANDOM;
 
 @Mixin(SnowballEntity.class)
 public class SnowballEntityMixin {
-
-    private static final Random snowballRandom = new Random();
 
     @Inject(
             method = "onEntityHit",
@@ -34,17 +32,16 @@ public class SnowballEntityMixin {
     )
     private void fragDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int i) {
         float f = 0.0f;
-        EchoShardRecipesMod.LOGGER.info("{}", f);
         if ("buckshot".equals(((ThrownItemEntityInterface) this).getAttribute())) {
             if (entity instanceof LivingEntity && !((LivingEntity) entity).isBlocking()) {
-                if ((entity instanceof ShulkerEntity && ((ShulkerEntityAccessor) entity).closed()) || (entity instanceof WitherEntity && ((WitherEntity) entity).shouldRenderOverlay())) f = snowballRandom.nextFloat();
+                if ((entity instanceof ShulkerEntity && ((ShulkerEntityAccessor) entity).closed()) || (entity instanceof WitherEntity && ((WitherEntity) entity).shouldRenderOverlay())) f = ECHO_SHARD_RANDOM.nextFloat();
                 if (f < 0.3f) {
                     ((LivingEntity) entity).hurtTime = 0;
                     entity.timeUntilRegen = 1;
                     entity.damage(new ProjectileDamageSource("arrow", (SnowballEntity) (Object) this, ((SnowballEntity) (Object) this).getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
                     ci.cancel();
                 }
-            } else if (entity instanceof EnderDragonPart && snowballRandom.nextFloat() < 0.3f) {
+            } else if (entity instanceof EnderDragonPart && ECHO_SHARD_RANDOM.nextFloat() < 0.3f) {
                 ((EnderDragonPart) entity).owner.hurtTime = 0;
                 ((EnderDragonPart) entity).owner.timeUntilRegen = 1;
                 ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, new ProjectileDamageSource("arrow", (SnowballEntity) (Object) this, ((SnowballEntity) (Object) this).getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());

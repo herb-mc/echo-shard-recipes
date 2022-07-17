@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -27,13 +28,13 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
 
     @Shadow private double damage;
     @Shadow protected boolean inGround;
-    private int particle = -1;
-    private boolean stopNoClip = false;
-    private int flatDamageBoost = 0;
-    private float damageMultiplier = 1.0f;
-    private int ticksActive = 0;
-    private String attribute = null;
-    private static final Random random = new Random();
+    @Unique private int particle = -1;
+    @Unique private boolean stopNoClip = false;
+    @Unique private int flatDamageBoost = 0;
+    @Unique private float damageMultiplier = 1.0f;
+    @Unique private int ticksActive = 0;
+    @Unique private String attribute = null;
+    @Unique private static final Random random = new Random();
 
     @Override
     public int getParticle() {

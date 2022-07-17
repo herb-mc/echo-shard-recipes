@@ -1,6 +1,7 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -16,12 +17,15 @@ import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class HelperMethods {
@@ -103,6 +107,19 @@ public class HelperMethods {
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), 128.0D))
                 player.networkHandler.sendPacket(packet);
         }
+    }
+
+    public static List<ItemEntity> getNearestItems(LivingEntity livingEntity, double dist) {
+        List<ItemEntity> list = livingEntity.world.getEntitiesByClass(ItemEntity.class, livingEntity.getBoundingBox().expand(dist), EntityPredicates.VALID_ENTITY);
+        List<ItemEntity> finalList = new ArrayList<>();
+        double sqDist = dist * dist;
+        if (!list.isEmpty()) for (ItemEntity entity : list) if (getSquareDist(entity.getPos(), livingEntity.getPos()) < sqDist) finalList.add(entity);
+        return finalList;
+    }
+
+    private static double getSquareDist(Vec3d in1, Vec3d in2){
+        in2 = in2.subtract(in1);
+        return in2.x * in2.x + in2.y * in2.y + in2.z * in2.z;
     }
 
 }

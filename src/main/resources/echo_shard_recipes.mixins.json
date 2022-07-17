@@ -4,6 +4,7 @@
   "package": "com.herb_mc.echo_shard_recipes.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BlockMixin",
     "BootstrapMixin",
     "BowItemMixin",
     "CrossbowItemMixin",

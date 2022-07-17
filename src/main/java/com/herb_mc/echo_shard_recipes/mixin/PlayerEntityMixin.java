@@ -1,11 +1,14 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -13,11 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.isInorganic;
+import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getNearestItems;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
 
-    private Entity target = null;
+    @Unique private Entity target = null;
 
     @Inject(
             method = "attack",
@@ -56,6 +60,23 @@ public class PlayerEntityMixin {
                 default -> {}
             }
         return f;
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At("HEAD")
+    )
+    private void magnetizeItems(CallbackInfo ci) {
+        PlayerEntity player = (PlayerEntity) (Object) this;
+        if (!player.world.isClient && "magnetized".equals(getAttribute(player.getMainHandStack())))
+            for (ItemEntity i : getNearestItems(player, 6.0)) {
+                Vec3d p = player.getPos().subtract(i.getPos()).normalize().multiply(0.1);
+                Vec3d v = i.getVelocity().add(p);
+                if (v.lengthSquared() > 0.25) v = p.multiply(5);
+                i.setVelocity(v);
+                i.velocityDirty = true;
+                i.velocityModified = true;
+            }
     }
 
     @ModifyArg(

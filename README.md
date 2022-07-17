@@ -48,7 +48,9 @@ Only one attribute can be applied to any given item!
 | Iron Nugget      | Buckshot      | Offensive | Fire additional low-damage fragments on use                         | True Ranged        |
 | Prismarine Shard | Razor Tip     | Offensive | Ranged attacks deal fixed extra damage                              | Ranged             |
 | Spyglass         | Sharpshooter  | Offensive | Bows and crossbows are much more accurate                           | Helmet             |
+| Raw Iron         | Magnetized    | Utility   | Attracts items to the user while held                               | Tools              |
 | Sugar            | Hasty         | Utility   | Increase Haste level by 1 while held                                | Tools              |
+| Warped Fungus    | Antigravity   | Utility   | Mined items have no gravity                                         | Tools              |
 | Anvil            | Reinforced    | Defensive | Increases armor - a full set provides an additional boost           | Armor              |
 | Golden Apple     | Rejuvenating  | Defensive | Increases max health                                                | Armor              |
 | Leather          | Resilient     | Defensive | Increases armor toughness                                           | Armor              |
