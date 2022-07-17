@@ -1,6 +1,7 @@
 package com.herb_mc.echo_shard_recipes.recipes;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -93,8 +94,15 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe {
                 if (itemStack.isOf(Items.ECHO_SHARD.asItem()) && isEmptyShard(itemStack) && !has_echo_shard) has_echo_shard = true;
                 else if (itemStack.isOf(Items.GUNPOWDER) && !has_gunpowder) has_gunpowder = true;
                 else if (itemStack.isOf(Items.NETHER_STAR) && !has_nether_star) has_nether_star = true;
-                else if (containsParticle(itemStack) != -1 && !has_valid_particle) has_valid_particle = true;
-                else if (containsAttribute(itemStack) != null && !has_valid_attribute) has_valid_attribute = true;
+                else if (containsParticle(itemStack) != -1 || containsAttribute(itemStack) != null);
+                else return false;
+        }
+        for(int i = 0; i < inventory.size(); ++i) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (!itemStack.isEmpty())
+                if (itemStack.isOf(Items.GUNPOWDER) || itemStack.isOf(Items.NETHER_STAR) || itemStack.isOf(Items.ECHO_SHARD));
+                else if (has_gunpowder && containsParticle(itemStack) != -1 && !has_valid_particle) has_valid_particle = true;
+                else if (has_nether_star && containsAttribute(itemStack) != null && !has_valid_attribute) has_valid_attribute = true;
                 else return false;
         }
         return has_echo_shard && (has_valid_particle || has_valid_attribute) && (has_valid_particle == has_gunpowder && has_nether_star == has_valid_attribute);
@@ -104,14 +112,25 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingInventory inventory) {
         int particle = -1;
         String attribute = null;
+        boolean has_gunpowder = false;
+        boolean has_nether_star = false;
+        for(int i = 0; i < inventory.size(); ++i) {
+            ItemStack itemStack = inventory.getStack(i);
+            if (!itemStack.isEmpty())
+                if (itemStack.isOf(Items.GUNPOWDER) && !has_gunpowder) has_gunpowder = true;
+                else if (itemStack.isOf(Items.NETHER_STAR) && !has_nether_star) has_nether_star = true;
+        }
         for(int i = 0; i < inventory.size(); ++i) {
             ItemStack temp = inventory.getStack(i);
-            if (particle == -1) particle = containsParticle(temp);
-            if (attribute == null) attribute = containsAttribute(temp);
+            if (has_gunpowder && particle == -1) particle = containsParticle(temp);
+            else if (has_nether_star && attribute == null) attribute = containsAttribute(temp);
         }
         ItemStack output = new ItemStack(Items.ECHO_SHARD, 1);
         if (particle != -1) addParticles(output, particle);
         if (attribute != null) addAttributes(output, attribute);
+        output.setCustomName(MutableText.of(Text.of("Augment Shard").getContent()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.AQUA)));
+        output.addEnchantment(Enchantments.PIERCING, 1);
+        output.addHideFlag(ItemStack.TooltipSection.ENCHANTMENTS);
         return output;
     }
 

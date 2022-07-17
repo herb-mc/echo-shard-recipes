@@ -26,6 +26,7 @@ import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ATTRIBUTE;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.spawnFrag;
+import static net.minecraft.item.BowItem.getPullProgress;
 
 @Mixin(CrossbowItem.class)
 public class CrossbowItemMixin {
@@ -59,7 +60,13 @@ public class CrossbowItemMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private static void removeRandomness(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated, CallbackInfo ci, boolean bl, ProjectileEntity projectileEntity, Vec3d vec3d, Quaternion quaternion, Vec3d vec3d2, Vec3f vec3f) {
+        NbtCompound nbt = crossbow.getNbt();
         for (ItemStack item : shooter.getArmorItems()) if (getAttribute(item).equals("sharpshooter")) projectileEntity.setVelocity(vec3f.getX(), vec3f.getY(), vec3f.getZ(), speed, 0.4f);
+        if (nbt != null && nbt.getBoolean(HAS_ATTRIBUTE))
+            switch (nbt.getString(ATTRIBUTE)) {
+                case "metaphysical" -> projectileEntity.noClip = true;
+                case "superphysical" -> projectileEntity.setNoGravity(true);
+            }
     }
 
     @Inject(
