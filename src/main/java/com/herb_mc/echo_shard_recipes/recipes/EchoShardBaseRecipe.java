@@ -65,10 +65,15 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe {
         output.setNbt(nbt);
     }
 
+    private int particle;
+    private String attribute;
+    private ItemStack ingredient;
+
     public void addAttributes(ItemStack output, String id) {
         NbtCompound nbt = output.getOrCreateNbt();
         nbt.putBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE, true);
-        nbt.putString(EchoShardRecipesMod.ATTRIBUTE, id);
+        nbt.putString(EchoShardRecipesMod.STORED_ATTRIBUTE, id);
+        EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(id).ingredientProcessor.process(ingredient, output);
         NbtCompound nbtDisplay = nbt.getCompound(ItemStack.DISPLAY_KEY);
         NbtList nbtLore = (NbtList) nbtDisplay.get(ItemStack.LORE_KEY);
         if (nbtLore == null) nbtLore = new NbtList();
@@ -80,13 +85,11 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe {
         output.setNbt(nbt);
     }
 
-    private int particle;
-    private String attribute;
-
     @Override
     public boolean matches(CraftingInventory inventory, World world) {
         particle = -1;
         attribute = null;
+        ingredient = ItemStack.EMPTY;
         boolean has_echo_shard = false;
         boolean has_valid_particle = false;
         boolean has_gunpowder = false;
@@ -108,10 +111,10 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe {
                     has_valid_particle = true; track = itemStack; particle = containsParticle(itemStack);
                 }
                 else if (has_nether_star && containsAttribute(itemStack) != null && !has_valid_attribute) {
-                    has_valid_attribute = true; attribute = containsAttribute(itemStack);
+                    has_valid_attribute = true; attribute = containsAttribute(itemStack); ingredient = itemStack;
                 }
                 else if (has_gunpowder && has_nether_star && track != itemStack && containsParticle(itemStack) != -1 && has_valid_particle && containsAttribute(track) != null) {
-                    has_valid_attribute = true; attribute = containsAttribute(track); particle = containsParticle(itemStack);
+                    has_valid_attribute = true; attribute = containsAttribute(track); particle = containsParticle(itemStack); ingredient = track;
                 }
                 else if (!(itemStack.isOf(Items.GUNPOWDER) || itemStack.isOf(Items.NETHER_STAR) || itemStack.isOf(Items.ECHO_SHARD))) return false;
         }

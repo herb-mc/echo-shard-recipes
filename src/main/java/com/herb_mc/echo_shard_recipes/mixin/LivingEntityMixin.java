@@ -1,6 +1,7 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -28,12 +29,25 @@ import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.PARTICLE_ITEMS;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin {
+public abstract class LivingEntityMixin implements LivingEntityInterface {
 
     @Shadow protected int riptideTicks;
 
     @Unique private int flightTime = 0;
+    @Unique private int dealtDamageTime = 0;
+    @Unique private int momentumBoost = 0;
     @Unique private DamageSource source;
+
+    @Override
+    public void addMomentum() {
+        momentumBoost++;
+        dealtDamageTime = 0;
+    }
+
+    @Override
+    public int getMomentum() {
+        return momentumBoost;
+    }
 
     @Inject(
             method = "travel",
@@ -86,21 +100,29 @@ public abstract class LivingEntityMixin {
             if (i.attribute != null) removeAttribute(e, i.attribute, i.uuid);
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"));
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
+        removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"));
+        removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"));
         switch (getAttribute(e.getMainHandStack())) {
             case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
             case "rip_current" -> {
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "echo_shard_recipes:fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "echo_shard_recipes:fish", -0.5, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.5, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
             }
             case "flowing_water" -> {
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "echo_shard_recipes:fish", 4.0, EntityAttributeModifier.Operation.ADDITION);
-                addAttribute(e,EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "echo_shard_recipes:fish", -0.3, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 4.0, EntityAttributeModifier.Operation.ADDITION);
+                addAttribute(e,EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.3, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
             }
             case "crushing_wave" -> {
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "echo_shard_recipes:fish", 11.0, EntityAttributeModifier.Operation.ADDITION);
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "echo_shard_recipes:fish", -0.85, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 11.0, EntityAttributeModifier.Operation.ADDITION);
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.85, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
             }
             default -> {}
+        }
+        if (dealtDamageTime > 0) dealtDamageTime--;
+        if (dealtDamageTime <= 0 && momentumBoost > 0) {momentumBoost--; dealtDamageTime = 50;}
+        if (momentumBoost > 0) {
+            addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"),  "momentum", 0.07 * momentumBoost, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+            addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"),  "momentum", 0.05 * momentumBoost, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
         }
         double armor = 0.0;
         double moveSpeed = 0.0;
@@ -165,6 +187,7 @@ public abstract class LivingEntityMixin {
         LivingEntity e = (LivingEntity) (Object) this;
         if (!e.world.isClient()) {
             int hasteBoost = 0;
+            int strengthBoost = 0;
             switch (getAttribute(e.getMainHandStack())) {
                 case "hasty" -> hasteBoost += 1;
                 case "terraforming" -> hasteBoost += 15;
@@ -172,13 +195,15 @@ public abstract class LivingEntityMixin {
                 default -> {}
             }
             for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
-                case "power_assist" -> hasteBoost += 1;
+                case "power_assist" -> {
+                    hasteBoost += 1;
+                    strengthBoost += 1;
+                }
                 default -> {}
             }
-            if (hasteBoost > 0) {
-                StatusEffectInstance s = new StatusEffectInstance(StatusEffects.HASTE, 4, -1 + hasteBoost, true, false, false);
-                e.addStatusEffect(s);
-            }
+            if (hasteBoost > 0) e.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 4, -1 + hasteBoost, true, false, false));
+            if (strengthBoost > 0) e.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 4, -1 + strengthBoost, true, false, false));
+
             /*
             TODO
             if (hasteBoost > 0 && !((StatusEffectInstanceInterface) s).isBoosted()) {

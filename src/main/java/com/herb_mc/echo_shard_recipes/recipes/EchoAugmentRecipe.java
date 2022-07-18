@@ -28,7 +28,7 @@ public class EchoAugmentRecipe extends SpecialCraftingRecipe {
 
     private String getShardAttribute(ItemStack in) {
         assert in.getNbt() != null;
-        return in.getNbt().getString(EchoShardRecipesMod.ATTRIBUTE).equals("") ? null : in.getNbt().getString(EchoShardRecipesMod.ATTRIBUTE);
+        return in.getNbt().getString(EchoShardRecipesMod.STORED_ATTRIBUTE).equals("") ? null : in.getNbt().getString(EchoShardRecipesMod.STORED_ATTRIBUTE);
     }
 
     private boolean hasValidParticleItem(ItemStack i) {
@@ -52,7 +52,7 @@ public class EchoAugmentRecipe extends SpecialCraftingRecipe {
             }
         }
         if (nbt.getBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE)) {
-            String augment = nbt.getString(EchoShardRecipesMod.ATTRIBUTE);
+            String augment = nbt.getString(EchoShardRecipesMod.STORED_ATTRIBUTE);
             if (hasValidAttributedItem(i, augment)) {
                 EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(augment).processor.process(i);
                 out.putBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE, true);

@@ -1,5 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
+import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -59,6 +60,17 @@ public class PlayerEntityMixin {
                 default -> {}
             }
         return f;
+    }
+
+    @Inject(
+            method = "attack",
+            at = @At(
+                    target = "Lnet/minecraft/entity/LivingEntity;getHealth()F",
+                    value = "INVOKE"
+            )
+    )
+    public void momentumBoost(Entity target, CallbackInfo ci) {
+        if ("momentum".equals(getAttribute(((LivingEntity) (Object) this).getMainHandStack())) && ((LivingEntityInterface) this).getMomentum() < 5) ((LivingEntityInterface) this).addMomentum();
     }
 
     @Inject(
