@@ -14,18 +14,33 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.function.Supplier;
 
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ATTRIBUTE;
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ECHO_SHARD_RANDOM;
+import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
+import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
 
 @Mixin(Block.class)
 public abstract class BlockMixin {
 
     @Unique private static int modifier;
+
+    @Inject(
+            method = "afterBreak",
+            at = @At(
+                    target = "Lnet/minecraft/block/Block;dropStacks(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/item/ItemStack;)V",
+                    value = "INVOKE"
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT,
+            cancellable = true
+    )
+    public void terraformingNoDrops(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack stack, CallbackInfo ci) {
+        if("terraforming".equals(getAttribute(player.getMainHandStack()))) ci.cancel();
+    }
 
     @Inject(
             method = "afterBreak",

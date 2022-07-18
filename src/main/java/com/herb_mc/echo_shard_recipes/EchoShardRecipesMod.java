@@ -161,10 +161,12 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("stonebreaker", new AttributeItem(Items.STONECUTTER, "Stonebreaker", TRUE_TOOL, Formatting.RED, NONE, "36545877-4a33-4614-a0fa-95d768ba5416", EntityAttributes.GENERIC_ATTACK_SPEED, "stonebreaker", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
         ATTRIBUTE_ITEMS.put("antigravity", new AttributeItem(Items.WARPED_FUNGUS, "Antigravity", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("attuned", new AttributeItem(Items.EXPERIENCE_BOTTLE, "Attuned", TOOL, Formatting.AQUA, NONE));
-        ATTRIBUTE_ITEMS.put("power_assist", new AttributeItem(Items.REDSTONE, "Power Assist", CHEST, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("glowing", new AttributeItem(Items.GLOW_INK_SAC, "Glowing", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("hasty", new AttributeItem(Items.SUGAR, "Hasty", TOOL, Formatting.AQUA, NONE));
         ATTRIBUTE_ITEMS.put("magnetized", new AttributeItem(Items.RAW_IRON, "Magnetized", TOOL, Formatting.AQUA, NONE));
+        ATTRIBUTE_ITEMS.put("excavator", new AttributeItem(Items.OBSIDIAN, "Excavator", TOOL, Formatting.AQUA, NONE));
+        ATTRIBUTE_ITEMS.put("power_assist", new AttributeItem(Items.REDSTONE, "Power Assist", CHEST, Formatting.AQUA, NONE));
+        ATTRIBUTE_ITEMS.put("terraforming", new AttributeItem(Items.GRASS_BLOCK, "Terraforming", TOOL, Formatting.AQUA, NONE, "36545877-4a33-4614-a0fa-95d765ca5416", EntityAttributes.GENERIC_ATTACK_SPEED, "terraforming", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.8));
         ATTRIBUTE_ITEMS.put("reinforced", new AttributeItem(Items.ANVIL, "Reinforced", ARMOR, Formatting.GRAY, NONE, "8b2ce124-8c71-4949-bca6-ba1779662fa7", EntityAttributes.GENERIC_ARMOR, "reinforced", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("rejuvenating", new AttributeItem(Items.GOLDEN_APPLE, "Rejuvenating", ARMOR, Formatting.GRAY, NONE, "06790794-1df4-4ee9-b4c8-0f9842f6ac54", EntityAttributes.GENERIC_MAX_HEALTH, "rejuvenating", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("resilient", new AttributeItem(Items.LEATHER, "Resilient", ARMOR, Formatting.GRAY, NONE, "b76e3bac-e417-4a8c-8ed3-1d843adf311e", EntityAttributes.GENERIC_ARMOR_TOUGHNESS, "resilient", EntityAttributeModifier.Operation.ADDITION, 2.0));

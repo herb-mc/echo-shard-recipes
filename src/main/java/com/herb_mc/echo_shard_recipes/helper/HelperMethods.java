@@ -9,6 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
@@ -58,46 +59,6 @@ public class HelperMethods {
         EntityAttributeInstance instance = l.getAttributeInstance(e);
         if (instance != null && uuid != null)
             instance.addTemporaryModifier(new EntityAttributeModifier(uuid, tag, base, op));
-    }
-
-    public static void boostEquipStatusEffect(LivingEntity e, StatusEffect s, int amplifier) {
-        StatusEffectInstance i = e.getStatusEffect(s);
-        boolean addAmp = true;
-        if (i == null) {
-            addAmp = false;
-            e.addStatusEffect(new StatusEffectInstance(s, 4, -1, false, false, false), null);
-            i = e.getStatusEffect(s);
-            if (i != null) i.applyUpdateEffect(e);
-        }
-        if (i != null) {
-            if (!((StatusEffectInstanceInterface) i).isEquipBoosted()) {
-                int a = addAmp ? i.getAmplifier() + amplifier + 1 : i.getAmplifier() + 1;
-                i.upgrade(new StatusEffectInstance(s, i.getDuration(), a, i.isAmbient(), i.shouldShowParticles(), i.shouldShowIcon()));
-                ((StatusEffectInstanceInterface) i).setEquipBoosted(true);
-            }
-            i.applyUpdateEffect(e);
-            if (i.getAmplifier() == amplifier) ((StatusEffectInstanceInterface) i).setDuration(4);
-        }
-    }
-
-    public static void boostArmorStatusEffect(LivingEntity e, StatusEffect s, int amplifier) {
-        StatusEffectInstance i = e.getStatusEffect(s);
-        boolean addAmp = true;
-        if (i == null) {
-            addAmp = false;
-            e.addStatusEffect(new StatusEffectInstance(s, 4, -1, false, false, false), null);
-            i = e.getStatusEffect(s);
-            if (i != null) i.applyUpdateEffect(e);
-        }
-        if (i != null) {
-            if (!((StatusEffectInstanceInterface) i).isArmorBoosted()) {
-                int a = addAmp ? i.getAmplifier() + amplifier + 1 : i.getAmplifier() + 1;
-                i.upgrade(new StatusEffectInstance(s, i.getDuration(), a, i.isAmbient(), i.shouldShowParticles(), i.shouldShowIcon()));
-                ((StatusEffectInstanceInterface) i).setArmorBoosted(true);
-            }
-            i.applyUpdateEffect(e);
-            if (i.getAmplifier() == amplifier) ((StatusEffectInstanceInterface) i).setDuration(4);
-        }
     }
 
     public static void spawnFrag(World world, LivingEntity user, float bonus, float speed,  float divergence) {

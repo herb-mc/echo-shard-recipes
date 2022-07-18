@@ -1,13 +1,11 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
-import com.herb_mc.echo_shard_recipes.helper.StatusEffectInstanceInterface;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
@@ -30,9 +28,10 @@ import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.PARTICLE_ITEMS;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin {
+public abstract class LivingEntityMixin {
 
     @Shadow protected int riptideTicks;
+
     @Unique private int flightTime = 0;
     @Unique private DamageSource source;
 
@@ -64,9 +63,7 @@ public class LivingEntityMixin {
                     EchoShardRecipesMod.ParticleItem p = PARTICLE_ITEMS[nbt.getInt("ShardParticleEffect")];
                     float pitch = entity.getPitch(1.0F) * 0.017453292F;
                     Vec3d rot =  entity.getRotationVector().normalize();
-                    // calculate a relative offset using the normal between the rotation and the up vector
                     Vec3d v = entity.getRotationVector().crossProduct(new Vec3d(0, 1, 0)).normalize();
-                    // scale the offset scale down as angle approaches pi/2 from the horizontal
                     double mul = 0.3 * (1 - Math.pow(Math.PI / - (Math.acos(rot.dotProduct(new Vec3d(0, pitch, 0).normalize())) - 1.5 * Math.PI) - 1, 3)) ;
                     double x = entity.getX() - 0.5 * rot.x;
                     double y = entity.getY() - 0.5 * rot.y;
@@ -84,25 +81,13 @@ public class LivingEntityMixin {
     )
     public void applyAttributes(CallbackInfo ci) {
         LivingEntity e = (LivingEntity) (Object) this;
-        for (Map.Entry<StatusEffect, StatusEffectInstance> entry : e.getActiveStatusEffects().entrySet()) {
-            StatusEffectInstance i = entry.getValue();
-            int duration = i.getDuration();
-            int amplifier = i.getAmplifier();
-            boolean ambient = i.isAmbient();
-            boolean particle = i.shouldShowParticles();
-            boolean icon = i.shouldShowIcon();
-            if (((StatusEffectInstanceInterface) i).isEquipBoosted()) {
-                entry.setValue(new StatusEffectInstance(entry.getKey(), duration, amplifier - 1, ambient, particle, icon));
-            }
-        }
         Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
         for (EchoShardRecipesMod.AttributeItem i : items.values())
             if (i.attribute != null) removeAttribute(e, i.attribute, i.uuid);
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"));
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
         switch (getAttribute(e.getMainHandStack())) {
-            case "light", "sharpened", "stonebreaker" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
-            case "hasty" -> boostEquipStatusEffect(e, StatusEffects.HASTE, 0);
+            case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
             case "rip_current" -> {
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "echo_shard_recipes:fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "echo_shard_recipes:fish", -0.5, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
@@ -131,7 +116,6 @@ public class LivingEntityMixin {
                 case "resilient" -> toughness += items.get(":resilient").base;
                 case "rejuvenating" -> health += items.get("rejuvenating").base;
                 case "stalwart" -> knockbackRes += items.get("stalwart").base;
-                //case "power_assist" -> boostArmorStatusEffect(e, StatusEffects.HASTE, 0);
                 default -> {
                 }
             }
@@ -171,6 +155,51 @@ public class LivingEntityMixin {
                 default -> {}
             }
         return d;
+    }
+
+    @Inject(
+            method = "tickStatusEffects",
+            at = @At("HEAD")
+    )
+    private void addStatus(CallbackInfo ci) {
+        LivingEntity e = (LivingEntity) (Object) this;
+        if (!e.world.isClient()) {
+            int hasteBoost = 0;
+            switch (getAttribute(e.getMainHandStack())) {
+                case "hasty" -> hasteBoost += 1;
+                case "terraforming" -> hasteBoost += 15;
+                case "excavator" -> e.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 4, e.isSneaking() ? 1 : 0, true, false, false));
+                default -> {}
+            }
+            for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
+                case "power_assist" -> hasteBoost += 1;
+                default -> {}
+            }
+            if (hasteBoost > 0) {
+                StatusEffectInstance s = new StatusEffectInstance(StatusEffects.HASTE, 4, -1 + hasteBoost, true, false, false);
+                e.addStatusEffect(s);
+            }
+            /*
+            TODO
+            if (hasteBoost > 0 && !((StatusEffectInstanceInterface) s).isBoosted()) {
+                LOGGER.info("not boosted case");
+                ((StatusEffectInstanceInterface) s).setBoosted(true);
+                ((StatusEffectInstanceInterface) s).setLevelBoost(hasteBoost);
+                ((StatusEffectInstanceInterface) s).setAmplifier(s.getAmplifier() + hasteBoost);
+                e.addStatusEffect(s);
+            }
+            else if (hasteBoost > 0 && ((StatusEffectInstanceInterface) s).isBoosted() && s.getAmplifier() == hasteBoost - 1) {
+                LOGGER.info("maintain case");
+                ((StatusEffectInstanceInterface) s).setDuration(4);
+            }
+            else if (hasteBoost != ((StatusEffectInstanceInterface) s).getLevelBoost()) {
+                LOGGER.info("level change case {} {}", hasteBoost, ((StatusEffectInstanceInterface) s).getLevelBoost());
+                s = ((StatusEffectInstanceInterface)new StatusEffectInstance(StatusEffects.HASTE, 4, s.getAmplifier() + hasteBoost - ((StatusEffectInstanceInterface) s).getLevelBoost(), true, false, false)).setBoosted(true);
+                ((StatusEffectInstanceInterface) s).setLevelBoost(hasteBoost);
+                if (hasteBoost == 0) ((StatusEffectInstanceInterface) s).setBoosted(false);
+            }
+             */
+        }
     }
 
 }
