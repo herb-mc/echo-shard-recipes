@@ -64,9 +64,9 @@ Only one attribute can be applied to any given item!
 | Emerald               | Swift         | Mobility  | Increases movement speed - a full set provides an additional boost                        | Armor              |
 | Phantom Membrane      | Featherweight | Mobility  | While crouching: gain slow falling                                                        | Boots              |
 | Shulker Shell         | Levitator     | Mobility  | While crouching: gain levitation                                                          | Boots              |
-| Curse of Binding Book | Soulbound     | Special   | Remains in inventory after death                                                          | Anything           |
+| Curse of Binding Book | Soulbound     | Special   | Remains in inventory after death                                                          | Any Equips         |
 | Heart of the Sea      | Rip Current   | Special   | ???                                                                                       | ???                |
 | Netherite Ingot       | Enhanced      | Special   | Raises levels of all current enchantments by one                                          | Anything enchanted |
-| Obsidian              | Unbreakable   | Special   | Does not lose durability                                                                  | Anything           |
+| Obsidian              | Unbreakable   | Special   | Does not lose durability                                                                  | Any Equips         |
 | Sponge                | Crushing Wave | Special   | ???                                                                                       | ???                |
 | Trident               | Flowing Water | Special   | ???                                                                                       | ???                |
