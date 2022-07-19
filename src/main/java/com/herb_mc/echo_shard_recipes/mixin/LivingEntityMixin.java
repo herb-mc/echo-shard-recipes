@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.PARTICLE_ITEMS;
+import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.TOOL;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 
 @Mixin(LivingEntity.class)
@@ -41,7 +42,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     @Override
     public void addMomentum() {
         momentumBoost++;
-        dealtDamageTime = 0;
+        dealtDamageTime = 50;
     }
 
     @Override
@@ -102,6 +103,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"));
         removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"));
+        int numStatus = 0;
         switch (getAttribute(e.getMainHandStack())) {
             case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
             case "rip_current" -> {
@@ -115,6 +117,9 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             case "crushing_wave" -> {
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 11.0, EntityAttributeModifier.Operation.ADDITION);
                 addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.85, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+            }
+            case "alchemist" -> {
+                numStatus = e.getActiveStatusEffects().size();
             }
             default -> {}
         }
@@ -135,7 +140,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                 case "swift" -> moveSpeed += items.get("swift").base;
                 case "levitator" -> { if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 4, 3, false, false, false), null); }
                 case "featherweight" -> { if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4, 0, false, false, false), null); }
-                case "resilient" -> toughness += items.get(":resilient").base;
+                case "resilient" -> toughness += items.get("resilient").base;
                 case "rejuvenating" -> health += items.get("rejuvenating").base;
                 case "stalwart" -> knockbackRes += items.get("stalwart").base;
                 default -> {
@@ -149,6 +154,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             if (moveSpeed == items.get("swift").base * 4) moveSpeed += 0.4;
             addAttribute(e, items.get("swift"), moveSpeed);
         }
+        if (numStatus > 0) addAttribute(e, items.get("alchemist"), numStatus);
         if (toughness > 0) addAttribute(e, items.get("resilient"), toughness);
         if (health > 0) addAttribute(e, items.get("rejuvenating"), health);
         if (knockbackRes > 0) addAttribute(e, items.get("stalwart"), knockbackRes);
@@ -196,8 +202,10 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             }
             for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
                 case "power_assist" -> {
-                    hasteBoost += 1;
-                    strengthBoost += 1;
+                    if (TOOL.isValidItem(e.getMainHandStack().getItem())) {
+                        hasteBoost += 1;
+                        strengthBoost += 1;
+                    }
                 }
                 default -> {}
             }

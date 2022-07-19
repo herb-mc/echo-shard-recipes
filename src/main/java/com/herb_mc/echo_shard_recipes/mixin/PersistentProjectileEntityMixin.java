@@ -146,7 +146,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     )
     protected float increaseDamage(float f) {
         if (attribute != null) switch (attribute) {
-                case "razor_tip" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? damage - 1 : 0;
+                case "jagged" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? damage - 1 : 0;
                 case "super_luck" -> f += ((PersistentProjectileEntity) (Object) this).isCritical() ? random.nextInt((int) (f / 2)) : 0;
                 default -> {}
             }

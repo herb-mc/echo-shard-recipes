@@ -18,7 +18,7 @@ public class TridentEntityMixin {
             )
     )
     protected float modifyDamage(float f) {
-        if ("razor_tip".equals(((PersistentProjectileEntityInterface) this).getAttribute())) f += 2;
+        if ("jagged".equals(((PersistentProjectileEntityInterface) this).getAttribute())) f += 2;
         return f;
     }
 

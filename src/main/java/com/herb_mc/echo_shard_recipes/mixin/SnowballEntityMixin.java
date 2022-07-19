@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
@@ -31,20 +32,21 @@ public class SnowballEntityMixin {
             cancellable = true
     )
     private void fragDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int i) {
-        float f = 0.0f;
         if ("buckshot".equals(((ThrownItemEntityInterface) this).getAttribute())) {
+            float f = 0.0f;
+            SnowballEntity s = (SnowballEntity) (Object) this;
             if (entity instanceof LivingEntity && !((LivingEntity) entity).isBlocking()) {
                 if ((entity instanceof ShulkerEntity && ((ShulkerEntityAccessor) entity).closed()) || (entity instanceof WitherEntity && ((WitherEntity) entity).shouldRenderOverlay())) f = ECHO_SHARD_RANDOM.nextFloat();
                 if (f < 0.3f) {
                     ((LivingEntity) entity).hurtTime = 0;
                     entity.timeUntilRegen = 1;
-                    entity.damage(new ProjectileDamageSource("arrow", (SnowballEntity) (Object) this, ((SnowballEntity) (Object) this).getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
+                    entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
                     ci.cancel();
                 }
             } else if (entity instanceof EnderDragonPart && ECHO_SHARD_RANDOM.nextFloat() < 0.3f) {
                 ((EnderDragonPart) entity).owner.hurtTime = 0;
                 ((EnderDragonPart) entity).owner.timeUntilRegen = 1;
-                ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, new ProjectileDamageSource("arrow", (SnowballEntity) (Object) this, ((SnowballEntity) (Object) this).getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
+                ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
                 ci.cancel();
             }
         }

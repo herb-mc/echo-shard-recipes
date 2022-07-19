@@ -34,39 +34,43 @@ Only one attribute can be applied to any given item!
 
 **Base recipe:** echo shard + nether star + attribute-specific ingredient
 
-| Ingredient            | Name          | Type      | Description                                                                               | Accepted Items     | 
-|-----------------------|---------------|-----------|-------------------------------------------------------------------------------------------|--------------------|
-| Arrow                 | Snipe Shot    | Offensive | Deal extra ranged damage but much less melee damage                                       | Helmet             |
-| Conduit               | Aquadynamic   | Offensive | Arrows experience no drag in water                                                        | Bow                |
-| Diamond               | Light         | Offensive | Increased swing speed                                                                     | True Melee         |
-| Emerald               | Super Luck    | Offensive | Arrows roll critical hits twice                                                           | Bow                |
-| Ender Pearl           | Superphysical | Offensive | Arrows experience no gravity/drag but disappear after a short while                       | Bow                |
-| Eye of Ender          | Metaphysical  | Offensive | Arrows briefly ignore terrain                                                             | True Ranged        |
-| Fire Charge           | Firebrand     | Offensive | Deal additional damage to enemies on fire                                                 | Melee              |
-| Flint                 | Sharpened     | Offensive | Melee hits deal fixed extra damage                                                        | Melee              |
-| Grindstone            | Stonebreaker  | Offensive | Deal massive damage against inorganic targets                                             | True Tools         |
-| Iron Nugget           | Buckshot      | Offensive | Fire additional low-damage fragments on use                                               | True Ranged        |
-| Lapis Lazuli          | Momentum      | Offensive | Gain melee damage/speed on a successful attack - boost stacks five times, gradually fades | True Ranged        |
-| Prismarine Shard      | Razor Tip     | Offensive | Ranged attacks deal fixed extra damage                                                    | Ranged             |
-| Spyglass              | Sharpshooter  | Offensive | Bows and crossbows are much more accurate                                                 | Helmet             |
-| Bottle o' Enchanting  | Attuned       | Utility   | Small chance to gain experience while mining                                              | Tools              |
-| Glow Ink Sac          | Glowing       | Utility   | Mined items glow                                                                          | Tools              |
-| Grass Block           | Terraforming  | Utility   | Haste XV - stacks with other status effect gear - mined blocks drop nothing               | Tools              |
-| Raw Iron              | Magnetized    | Utility   | Attracts items to the user while held                                                     | Tools              |
-| Redstone              | Power Assist  | Utility   | Haste I and Strength I - stacks with other status effect gear                             | Chest              |
-| Sugar                 | Hasty         | Utility   | Haste I - stacks with other status effect gear                                            | Tools              |
-| Stone                 | Excavator     | Utility   | Mines in a 5 block cross, or a 3x3 area while crouching, but mining speed is lower        | Tools              |
-| Warped Fungus         | Antigravity   | Utility   | Mined items have no gravity                                                               | Tools              |
-| Anvil                 | Reinforced    | Defensive | Increases armor - a full set provides an additional boost                                 | Armor              |
-| Golden Apple          | Rejuvenating  | Defensive | Increases max health                                                                      | Armor              |
-| Leather               | Resilient     | Defensive | Increases armor toughness                                                                 | Armor              |
-| Iron Block            | Stalwart      | Defensive | Increases knockback resistance                                                            | Armor              |
-| Emerald               | Swift         | Mobility  | Increases movement speed - a full set provides an additional boost                        | Armor              |
-| Phantom Membrane      | Featherweight | Mobility  | While crouching: gain slow falling                                                        | Boots              |
-| Shulker Shell         | Levitator     | Mobility  | While crouching: gain levitation                                                          | Boots              |
-| Curse of Binding Book | Soulbound     | Special   | Remains in inventory after death                                                          | Any Equips         |
-| Heart of the Sea      | Rip Current   | Special   | ???                                                                                       | ???                |
-| Netherite Ingot       | Enhanced      | Special   | Raises levels of all current enchantments by one                                          | Anything enchanted |
-| Obsidian              | Unbreakable   | Special   | Does not lose durability                                                                  | Any Equips         |
-| Sponge                | Crushing Wave | Special   | ???                                                                                       | ???                |
-| Trident               | Flowing Water | Special   | ???                                                                                       | ???                |
+| Attribute      | Ingredient            | Type      | Accepted Items      | Description                                                                                  | 
+|----------------|-----------------------|-----------|---------------------|----------------------------------------------------------------------------------------------|
+| Alchemist      | Potion                | Offensive | Melee               | Gain melee damage for every active status effect                                             |
+| Aquadynamic    | Conduit               | Offensive | Bow                 | Arrows experience no drag in water                                                           |
+| Buckshot       | Iron Nugget           | Offensive | True Ranged         | Fire additional low-damage fragments on use                                                  |
+| Firebrand      | Fire Charge           | Offensive | Melee               | Deal additional damage to enemies on fire                                                    |
+| Jagged         | Prismarine Shard      | Offensive | Ranged, Fishing Rod | Ranged attacks deal fixed extra damage, fishing hooks deal damage and cannot reel enemies in |
+| Light          | Diamond               | Offensive | True Melee          | Increased swing speed                                                                        |
+| Metaphysical   | Eye of Ender          | Offensive | True Ranged         | Arrows briefly ignore terrain                                                                |
+| Momentum       | Lapis Lazuli          | Offensive | True Ranged         | Gain melee damage/speed on a successful attack - boost stacks five times, gradually fades    |
+| Sharpened      | Flint                 | Offensive | Melee               | Melee hits deal fixed extra damage                                                           |
+| Sharpshooter   | Spyglass              | Offensive | Helmet              | Bows and crossbows are much more accurate                                                    |
+| Snipe Shot     | Arrow                 | Offensive | Helmet              | Deal extra ranged damage but much less melee damage                                          |
+| Super Luck     | Emerald               | Offensive | Bow                 | Arrows roll critical hits twice                                                              |
+| Superphysical  | Ender Pearl           | Offensive | Bow                 | Arrows experience no gravity/drag but disappear after a short while                          |
+| Stonebreaker   | Stonecutter           | Offensive | True Tools          | Deal massive damage against inorganic targets                                                |
+| Antigravity    | Warped Fungus         | Utility   | Tools               | Mined items have no gravity                                                                  |
+| Attuned        | Bottle o' Enchanting  | Utility   | Tools               | Small chance to gain experience while mining                                                 |
+| Excavator      | Stone                 | Utility   | Tools               | Mines in a 5 block cross, or a 3x3 area while crouching, but mining speed is lower           |
+| Glowing        | Glow Ink Sac          | Utility   | Tools               | Mined items glow                                                                             |
+| Hasty          | Sugar                 | Utility   | Tools               | Haste I - stacks with other status effect gear                                               |
+| Stronger Pull  | Prismarine Crystals   | Utility   | Fishing Rod         | Pull strength when reeling in is much stronger                                               |
+| High Test      | String                | Utility   | Fishing Rod         | Cast velocity and range are much higher                                                      |
+| Magnetized     | Raw Iron              | Utility   | Tools               | Attracts items to the user while held                                                        |
+| Power Assist   | Redstone              | Utility   | Chestplate          | Haste I and Strength I while holding a tool - stacks with other status effect gear           |
+| Terraforming   | Grass Block           | Utility   | Tools               | Haste XV - stacks with other status effect gear - mined blocks drop nothing                  |
+| Anti-Corrosive | Gold Ingot            | Defensive | Chestplate          | Prevents poison and wither damage, take much less from instant damage                        |
+| Reinforced     | Anvil                 | Defensive | Armor               | Increases armor - a full set provides an additional boost                                    |
+| Rejuvenating   | Golden Apple          | Defensive | Armor               | Increases max health                                                                         |
+| Resilient      | Leather               | Defensive | Armor               | Increases armor toughness                                                                    |
+| Stalwart       | Iron Block            | Defensive | Armor               | Increases knockback resistance                                                               |
+| Featherweight  | Phantom Membrane      | Mobility  | Boots               | While crouching: gain slow falling                                                           |
+| Levitator      | Shulker Shell         | Mobility  | Boots               | While crouching: gain levitation                                                             |
+| Swift          | Emerald               | Mobility  | Armor               | Increases movement speed - a full set provides an additional boost                           |
+| Crushing Wave  | Sponge                | Special   | ???                 | ???                                                                                          |
+| Enhanced       | Netherite Ingot       | Special   | Anything enchanted  | Raises levels of all current enchantments by one                                             |
+| Flowing Water  | Trident               | Special   | ???                 | ???                                                                                          |
+| Rip Current    | Heart of the Sea      | Special   | ???                 | ???                                                                                          |
+| Soulbound      | Curse of Binding Book | Special   | Any Equips          | Remains in inventory after death                                                             |
+| Unbreakable    | Obsidian              | Special   | Any Equips          | Does not lose durability                                                                     |
