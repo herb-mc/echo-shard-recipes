@@ -52,8 +52,8 @@ public class FishingBobberEntityMixin implements FishingBobberEntityInterface {
             ),
             cancellable = true
     )
-    public void luckyCastLongerLine(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if (attribute == 2 && ((FishingBobberEntity) (Object) this).squaredDistanceTo(player) < 4096) cir.setReturnValue(false);
+    public void highTestLongerLine(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        if (attribute == 3 && ((FishingBobberEntity) (Object) this).squaredDistanceTo(player) < 4096) cir.setReturnValue(false);
     }
 
     @ModifyArg(
