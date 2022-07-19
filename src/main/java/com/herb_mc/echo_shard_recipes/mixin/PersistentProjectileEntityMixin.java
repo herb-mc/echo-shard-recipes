@@ -216,5 +216,4 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
         return vec;
     }
 
-
 }

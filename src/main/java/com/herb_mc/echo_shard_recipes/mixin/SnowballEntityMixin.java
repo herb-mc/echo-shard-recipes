@@ -31,22 +31,34 @@ public class SnowballEntityMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT,
             cancellable = true
     )
-    private void fragDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int i) {
-        if ("buckshot".equals(((ThrownItemEntityInterface) this).getAttribute())) {
-            float f = 0.0f;
-            SnowballEntity s = (SnowballEntity) (Object) this;
-            if (entity instanceof LivingEntity && !((LivingEntity) entity).isBlocking()) {
-                if ((entity instanceof ShulkerEntity && ((ShulkerEntityAccessor) entity).closed()) || (entity instanceof WitherEntity && ((WitherEntity) entity).shouldRenderOverlay())) f = ECHO_SHARD_RANDOM.nextFloat();
-                if (f < 0.3f) {
-                    ((LivingEntity) entity).hurtTime = 0;
-                    entity.timeUntilRegen = 1;
-                    entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
+    private void damageEvent(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int i) {
+        switch (((ThrownItemEntityInterface) this).getAttribute()) {
+            case "buckshot" -> {
+                float f = 0.0f;
+                SnowballEntity s = (SnowballEntity) (Object) this;
+                if (entity instanceof LivingEntity && !((LivingEntity) entity).isBlocking()) {
+                    if ((entity instanceof ShulkerEntity && ((ShulkerEntityAccessor) entity).closed()) || (entity instanceof WitherEntity && ((WitherEntity) entity).shouldRenderOverlay())) f = ECHO_SHARD_RANDOM.nextFloat();
+                    if (f < 0.3f) {
+                        ((LivingEntity) entity).hurtTime = 0;
+                        entity.timeUntilRegen = 1;
+                        entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
+                        ci.cancel();
+                    }
+                } else if (entity instanceof EnderDragonPart && ECHO_SHARD_RANDOM.nextFloat() < 0.3f) {
+                    ((EnderDragonPart) entity).owner.hurtTime = 0;
+                    ((EnderDragonPart) entity).owner.timeUntilRegen = 1;
+                    ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
                     ci.cancel();
                 }
-            } else if (entity instanceof EnderDragonPart && ECHO_SHARD_RANDOM.nextFloat() < 0.3f) {
-                ((EnderDragonPart) entity).owner.hurtTime = 0;
-                ((EnderDragonPart) entity).owner.timeUntilRegen = 1;
-                ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
+            }
+            case "flamethrower" -> {
+                SnowballEntity s = (SnowballEntity) (Object) this;
+                if (entity instanceof LivingEntity && !((LivingEntity) entity).isBlocking() && !entity.isFireImmune()) {
+                    ((LivingEntity) entity).hurtTime = 0;
+                    entity.timeUntilRegen = 1;
+                    entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), 1.0f);
+                    entity.setFireTicks(30);
+                }
                 ci.cancel();
             }
         }

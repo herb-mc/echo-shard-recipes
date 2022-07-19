@@ -32,7 +32,7 @@ public class FishingRodItemMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    private void makeBobberDamage(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, int i, int j) {
+    private void getAttributeFromRod(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, int i, int j) {
         attribute = 0;
         switch (getAttribute(itemStack)) {
             case "jagged" -> attribute = 1;
@@ -49,7 +49,7 @@ public class FishingRodItemMixin {
                     value = "INVOKE"
             )
     )
-    private Entity makeBobberDamage(Entity bobber) {
+    private Entity applyAttributeToBobber(Entity bobber) {
         ((FishingBobberEntityInterface) bobber).setAttribute(attribute);
         if (attribute == 3) bobber.setVelocity(bobber.getVelocity().multiply(2.5));
         return bobber;

@@ -7,9 +7,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
@@ -17,10 +14,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -71,6 +72,16 @@ public class HelperMethods {
         world.spawnEntity(frag);
     }
 
+    public static void spewFire(World world, LivingEntity user, float speed,  float divergence) {
+        SnowballEntity fireball = new SnowballEntity(world, user);
+        ((ThrownItemEntityInterface) fireball).setAttribute("flamethrower");
+        fireball.setFireTicks(20000);
+        fireball.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, speed, divergence);
+        fireball.setVelocity(user.getVelocity().multiply(0.1).add(fireball.getVelocity()));
+        fireball.setItem(new ItemStack(Items.FIRE_CHARGE));
+        world.spawnEntity(fireball);
+    }
+
     public static boolean isInorganic(LivingEntity e) {
         return e instanceof ShulkerEntity || e instanceof IronGolemEntity || e instanceof SkeletonEntity || e instanceof WitherSkeletonEntity || e instanceof WitherEntity || e instanceof BlazeEntity || e instanceof SkeletonHorseEntity || e instanceof StrayEntity || e instanceof EndermanEntity;
     }
@@ -81,11 +92,26 @@ public class HelperMethods {
             sendToPlayerWithinRenderDistance(world, world.getPlayers().get(j), x, y, z, particleS2CPacket);
     }
 
+    public static void playSound(ServerWorld world, LivingEntity entity, SoundEvent s, float volume, float pitch) {
+        PlaySoundFromEntityS2CPacket packet = new PlaySoundFromEntityS2CPacket(s, SoundCategory.MASTER, entity, volume, pitch, 102);
+        for(int j = 0; j < world.getPlayers().size(); ++j)
+            sendToPlayerInRange(world, world.getPlayers().get(j), entity.getX(), entity.getY(), entity.getZ(), packet, 40);
+    }
+
     private static void sendToPlayerWithinRenderDistance(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet) {
         if (player.getWorld() != world) return;
         else {
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), 128.0D))
+                player.networkHandler.sendPacket(packet);
+        }
+    }
+
+    public static void sendToPlayerInRange(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet, double range) {
+        if (player.getWorld() != world) return;
+        else {
+            BlockPos blockPos = player.getBlockPos();
+            if (blockPos.isWithinDistance(new Vec3d(x, y, z), range))
                 player.networkHandler.sendPacket(packet);
         }
     }

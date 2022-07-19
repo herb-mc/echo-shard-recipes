@@ -39,7 +39,9 @@ Only one attribute can be applied to any given item!
 | Alchemist      | Potion                | Offensive | Melee               | Gain melee damage for every active status effect                                             |
 | Aquadynamic    | Conduit               | Offensive | Bow                 | Arrows experience no drag in water                                                           |
 | Buckshot       | Iron Nugget           | Offensive | True Ranged         | Fire additional low-damage fragments on use                                                  |
-| Firebrand      | Fire Charge           | Offensive | Melee               | Deal additional damage to enemies on fire                                                    |
+| Fireball       | Ghast Tear            | Offensive | Flint and Steel     | Shoot explosive fireballs on right click - stronger while sneaking                           |
+| Firebrand      | Lava Bucket           | Offensive | Melee               | Deal additional damage to enemies on fire                                                    |
+| Flamethrower   | Fire Charge           | Offensive | Flint and Steel     | Shoot small, low damage fireballs on right click - stronger while sneaking                   |
 | Jagged         | Prismarine Shard      | Offensive | Ranged, Fishing Rod | Ranged attacks deal fixed extra damage, fishing hooks deal damage and cannot reel enemies in |
 | Light          | Diamond               | Offensive | True Melee          | Increased swing speed                                                                        |
 | Metaphysical   | Eye of Ender          | Offensive | True Ranged         | Arrows briefly ignore terrain                                                                |
@@ -65,18 +67,20 @@ Only one attribute can be applied to any given item!
 | Reflecting     | Shield                | Defensive | Shield              | Arrows are reflected with much greater strength                                              |
 | Reflex         | Feather               | Defensive | Legs                | Resistance I and a speed boost for a short time after taking damage                          |
 | Reinforced     | Anvil                 | Defensive | Armor               | Increases armor - a full set provides an additional boost                                    |
-| Rejuvenating   | Golden Apple          | Defensive | Armor               | Increases max health                                                                         |
-| Resilient      | Leather               | Defensive | Armor               | Increases armor toughness                                                                    |
+| Rejuvenating   | Golden Apple          | Defensive | Armor               | Increases max health - a full set provides an additional boost                               |
+| Resilient      | Leather               | Defensive | Armor               | Increases armor toughness - a full set provides an additional boost                          |
 | Revenge        | Iron Sword            | Defensive | Shield              | After blocking, briefly gain Resistance I and Strength I                                     |
 | Stalwart       | Iron Block            | Defensive | Armor               | Increases knockback resistance                                                               |
 | Steady Body    | Cobbled Deepslate     | Defensive | Armor               | Resistance I and greatly increased knockback resistance while crouching                      |
+| Turtle Shell   | Turtle Helmet         | Defensive | Armor               | Immunity to many forms of ambient damage                                                     |
 | Featherweight  | Phantom Membrane      | Mobility  | Boots               | While crouching: gain slow falling                                                           |
 | Levitator      | Shulker Shell         | Mobility  | Boots               | While crouching: gain levitation                                                             |
+| Machine Assist | Piston                | Mobility  | Legs                | Jump Boost I or II while sneaking - stacks with other status effect gear                     |
 | Swift          | Emerald               | Mobility  | Armor               | Increases movement speed - a full set provides an additional boost                           |
+| Enhanced       | Netherite Ingot       | General   | Anything enchanted  | Raises levels of all current enchantments by one                                             |
+| Fireproof      | Blaze Rod             | General   | Any equips          | Item cannot burn                                                                             |
+| Soulbound      | Curse of Binding Book | General   | Any equips          | Remains in inventory after death                                                             |
+| Unbreakable    | Obsidian              | General   | Any equips          | Does not lose durability                                                                     |
 | Crushing Wave  | Sponge                | Special   | ???                 | ???                                                                                          |
-| Enhanced       | Netherite Ingot       | Special   | Anything enchanted  | Raises levels of all current enchantments by one                                             |
-| Fireproof      | Blaze Rod             | Special   | Any Equips          | Item cannot burn                                                                             |
 | Flowing Water  | Trident               | Special   | ???                 | ???                                                                                          |
 | Rip Current    | Heart of the Sea      | Special   | ???                 | ???                                                                                          |
-| Soulbound      | Curse of Binding Book | Special   | Any Equips          | Remains in inventory after death                                                             |
-| Unbreakable    | Obsidian              | Special   | Any Equips          | Does not lose durability                                                                     |

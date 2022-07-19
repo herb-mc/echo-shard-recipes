@@ -6,6 +6,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
@@ -53,7 +55,8 @@ public class FishingBobberEntityMixin implements FishingBobberEntityInterface {
             cancellable = true
     )
     public void highTestLongerLine(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if (attribute == 3 && ((FishingBobberEntity) (Object) this).squaredDistanceTo(player) < 4096) cir.setReturnValue(false);
+        boolean bl = player.getMainHandStack().isOf(Items.FISHING_ROD) || player.getOffHandStack().isOf(Items.FISHING_ROD);
+        if (bl && attribute == 3 && ((FishingBobberEntity) (Object) this).squaredDistanceTo(player) < 4096) cir.setReturnValue(false);
     }
 
     @ModifyArg(
@@ -64,7 +67,8 @@ public class FishingBobberEntityMixin implements FishingBobberEntityInterface {
             )
     )
     private Vec3d pullModifier(Vec3d velocity) {
-        return attribute == 2 ? velocity.multiply(3.0) : velocity;
+        double scale = 5 / velocity.multiply(3.0).length();
+        return attribute == 2 ? scale < 1 ? velocity.multiply(3.0 * scale) : velocity.multiply(3.0) : velocity;
     }
 
     @Inject(
