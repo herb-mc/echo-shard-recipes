@@ -55,16 +55,19 @@ Only one attribute can be applied to any given item!
 | Excavator      | Stone                 | Utility   | Tools               | Mines in a 5 block cross, or a 3x3 area while crouching, but mining speed is lower           |
 | Glowing        | Glow Ink Sac          | Utility   | Tools               | Mined items glow                                                                             |
 | Hasty          | Sugar                 | Utility   | Tools               | Haste I - stacks with other status effect gear                                               |
-| Stronger Pull  | Prismarine Crystals   | Utility   | Fishing Rod         | Pull strength when reeling in is much stronger                                               |
 | High Test      | String                | Utility   | Fishing Rod         | Cast velocity and range are much higher                                                      |
 | Magnetized     | Raw Iron              | Utility   | Tools               | Attracts items to the user while held                                                        |
 | Power Assist   | Redstone              | Utility   | Chestplate          | Haste I and Strength I while holding a tool - stacks with other status effect gear           |
+| Stronger Pull  | Prismarine Crystals   | Utility   | Fishing Rod         | Pull strength when reeling in is much stronger                                               |
 | Terraforming   | Grass Block           | Utility   | Tools               | Haste XV - stacks with other status effect gear - mined blocks drop nothing                  |
 | Anti-Corrosive | Gold Ingot            | Defensive | Chestplate          | Prevents poison and wither damage, take much less from instant damage                        |
+| Indomitable    | Scute                 | Defensive | Armor               | Reistance I while blocking - stacks with other status effect gear                            |
 | Reinforced     | Anvil                 | Defensive | Armor               | Increases armor - a full set provides an additional boost                                    |
 | Rejuvenating   | Golden Apple          | Defensive | Armor               | Increases max health                                                                         |
 | Resilient      | Leather               | Defensive | Armor               | Increases armor toughness                                                                    |
+| Revenge        | Iron Sword            | Defensive | Armor               | After blocking, briefly gain Resistance I and Strength I                                     |
 | Stalwart       | Iron Block            | Defensive | Armor               | Increases knockback resistance                                                               |
+| Steady Body    | Cobbled Deepslate     | Defensive | Armor               | Resistance I and greatly increased knockback resistance while crouching                      |
 | Featherweight  | Phantom Membrane      | Mobility  | Boots               | While crouching: gain slow falling                                                           |
 | Levitator      | Shulker Shell         | Mobility  | Boots               | While crouching: gain levitation                                                             |
 | Swift          | Emerald               | Mobility  | Armor               | Increases movement speed - a full set provides an additional boost                           |

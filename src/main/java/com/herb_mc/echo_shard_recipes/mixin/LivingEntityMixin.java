@@ -135,11 +135,17 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         double health = 0.0;
         double knockbackRes = 0.0;
         for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
-                case "snipe_shot" -> addAttribute(e, items.get("snipe_shot"));
+                case "snipe_shot" -> addAttribute(e, items.get(getAttribute(i)));
                 case "reinforced" -> armor += items.get("reinforced").base;
                 case "swift" -> moveSpeed += items.get("swift").base;
-                case "levitator" -> { if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 4, 3, false, false, false), null); }
-                case "featherweight" -> { if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4, 0, false, false, false), null); }
+                case "steady_body" -> {
+                    if (e.isSneaking()) {
+                        addAttribute(e, items.get("steady_body"));
+                        e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4, 0, false, false, false), null);
+                    }
+                }
+                case "levitator" -> {if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 4, 3, false, false, false), null);}
+                case "featherweight" -> {if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4, 0, false, false, false), null);}
                 case "resilient" -> toughness += items.get("resilient").base;
                 case "rejuvenating" -> health += items.get("rejuvenating").base;
                 case "stalwart" -> knockbackRes += items.get("stalwart").base;
@@ -194,6 +200,9 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         if (!e.world.isClient()) {
             int hasteBoost = 0;
             int strengthBoost = 0;
+            int resistance = 0;
+            if ("indomitable".equals(getAttribute(e.getMainHandStack())) && e.isBlocking()) resistance++;
+            else if ("indomitable".equals(getAttribute(e.getOffHandStack())) && e.isBlocking()) resistance++;
             switch (getAttribute(e.getMainHandStack())) {
                 case "hasty" -> hasteBoost += 1;
                 case "terraforming" -> hasteBoost += 15;
@@ -211,6 +220,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             }
             if (hasteBoost > 0) e.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 4, -1 + hasteBoost, true, false, false));
             if (strengthBoost > 0) e.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 4, -1 + strengthBoost, true, false, false));
+            if (resistance > 0) e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4, -1 + resistance, true, false, false));
 
             /*
             TODO
@@ -232,6 +242,18 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                 if (hasteBoost == 0) ((StatusEffectInstanceInterface) s).setBoosted(false);
             }
              */
+        }
+    }
+
+    @Inject(
+            method = "takeShieldHit",
+            at = @At("HEAD")
+    )
+    private void addRevengeBuff(LivingEntity attacker, CallbackInfo ci) {
+        LivingEntity e = (LivingEntity) (Object) this;
+        if ("revenge".equals(getAttribute(e.getMainHandStack())) || "revenge".equals(getAttribute(e.getOffHandStack()))) {
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 30, 0, true, false, false));
+            e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30, 0, true, false, false));
         }
     }
 

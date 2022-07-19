@@ -37,7 +37,7 @@ public class FishingRodItemMixin {
         switch (getAttribute(itemStack)) {
             case "jagged" -> attribute = 1;
             case "stronger_pull" -> attribute = 2;
-            case "high_test" -> attribute = 2;
+            case "high_test" -> attribute = 3;
             default -> attribute = 0;
         }
     }
@@ -51,7 +51,7 @@ public class FishingRodItemMixin {
     )
     private Entity makeBobberDamage(Entity bobber) {
         ((FishingBobberEntityInterface) bobber).setAttribute(attribute);
-        if (attribute == 2) bobber.setVelocity(bobber.getVelocity().multiply(2.5));
+        if (attribute == 3) bobber.setVelocity(bobber.getVelocity().multiply(2.5));
         return bobber;
     }
 
