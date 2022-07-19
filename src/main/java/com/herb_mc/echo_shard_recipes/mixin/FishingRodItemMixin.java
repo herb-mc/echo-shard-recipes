@@ -36,7 +36,7 @@ public class FishingRodItemMixin {
         attribute = 0;
         switch (getAttribute(itemStack)) {
             case "jagged" -> attribute = 1;
-            case "stronger_pull" -> attribute = 2;
+            case "faster_reel" -> attribute = 2;
             case "high_test" -> attribute = 3;
             default -> attribute = 0;
         }

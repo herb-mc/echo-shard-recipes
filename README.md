@@ -58,14 +58,16 @@ Only one attribute can be applied to any given item!
 | High Test      | String                | Utility   | Fishing Rod         | Cast velocity and range are much higher                                                      |
 | Magnetized     | Raw Iron              | Utility   | Tools               | Attracts items to the user while held                                                        |
 | Power Assist   | Redstone              | Utility   | Chestplate          | Haste I and Strength I while holding a tool - stacks with other status effect gear           |
-| Stronger Pull  | Prismarine Crystals   | Utility   | Fishing Rod         | Pull strength when reeling in is much stronger                                               |
+| Faster Reel    | Prismarine Crystals   | Utility   | Fishing Rod         | Pull strength when reeling in is much stronger                                               |
 | Terraforming   | Grass Block           | Utility   | Tools               | Haste XV - stacks with other status effect gear - mined blocks drop nothing                  |
 | Anti-Corrosive | Gold Ingot            | Defensive | Chestplate          | Prevents poison and wither damage, take much less from instant damage                        |
-| Indomitable    | Scute                 | Defensive | Armor               | Reistance I while blocking - stacks with other status effect gear                            |
+| Indomitable    | Scute                 | Defensive | Shield              | Resistance I while blocking - stacks with other status effect gear                           |
+| Reflecting     | Shield                | Defensive | Shield              | Arrows are reflected with much greater strength                                              |
+| Reflex         | Feather               | Defensive | Legs                | Resistance I and a speed boost for a short time after taking damage                          |
 | Reinforced     | Anvil                 | Defensive | Armor               | Increases armor - a full set provides an additional boost                                    |
 | Rejuvenating   | Golden Apple          | Defensive | Armor               | Increases max health                                                                         |
 | Resilient      | Leather               | Defensive | Armor               | Increases armor toughness                                                                    |
-| Revenge        | Iron Sword            | Defensive | Armor               | After blocking, briefly gain Resistance I and Strength I                                     |
+| Revenge        | Iron Sword            | Defensive | Shield              | After blocking, briefly gain Resistance I and Strength I                                     |
 | Stalwart       | Iron Block            | Defensive | Armor               | Increases knockback resistance                                                               |
 | Steady Body    | Cobbled Deepslate     | Defensive | Armor               | Resistance I and greatly increased knockback resistance while crouching                      |
 | Featherweight  | Phantom Membrane      | Mobility  | Boots               | While crouching: gain slow falling                                                           |
@@ -73,6 +75,7 @@ Only one attribute can be applied to any given item!
 | Swift          | Emerald               | Mobility  | Armor               | Increases movement speed - a full set provides an additional boost                           |
 | Crushing Wave  | Sponge                | Special   | ???                 | ???                                                                                          |
 | Enhanced       | Netherite Ingot       | Special   | Anything enchanted  | Raises levels of all current enchantments by one                                             |
+| Fireproof      | Blaze Rod             | Special   | Any Equips          | Item cannot burn                                                                             |
 | Flowing Water  | Trident               | Special   | ???                 | ???                                                                                          |
 | Rip Current    | Heart of the Sea      | Special   | ???                 | ???                                                                                          |
 | Soulbound      | Curse of Binding Book | Special   | Any Equips          | Remains in inventory after death                                                             |

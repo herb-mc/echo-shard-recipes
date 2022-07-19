@@ -55,7 +55,10 @@ public class PlayerEntityMixin {
                         ((LivingEntity) target).addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 50, 2));
                     }
                 }
-                case "firebrand" -> f *= target.isOnFire() ? 1.25f : 1;
+                case "firebrand" -> {
+                    f *= p.isOnFire() ? 1.1f : 1;
+                    f *= target.isOnFire() ? 1.2f : 1;
+                }
                 case "stonebreaker" -> f *= isInorganic((LivingEntity) target) ? 4 : 1;
                 default -> {}
             }

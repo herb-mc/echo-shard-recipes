@@ -1,7 +1,10 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
+import com.herb_mc.echo_shard_recipes.helper.HelperMethods;
 import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -34,6 +37,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     @Unique private float damageMultiplier = 1.0f;
     @Unique private int ticksActive = 0;
     @Unique private String attribute = null;
+    @Unique private Entity hitResult;
     @Unique private static final Random random = new Random();
 
     @Override
@@ -190,5 +194,27 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             ref.discard();
         }
     }
+
+    @Inject(
+            method = "onEntityHit",
+            at = @At("HEAD")
+    )
+    protected void getEntityHitResult(EntityHitResult entityHitResult, CallbackInfo info) {
+        hitResult = entityHitResult.getEntity();
+    }
+
+    @ModifyArg(
+            method = "onEntityHit",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"
+            )
+    )
+    private Vec3d setReflected(Vec3d vec) {
+        if (hitResult instanceof LivingEntity && ((LivingEntity) hitResult).isBlocking() && ((LivingEntity) hitResult).getActiveItem() != null && "reflecting".equals(HelperMethods.getAttribute(((LivingEntity) hitResult).getActiveItem())))
+            vec = hitResult.getRotationVector().normalize().multiply(vec.length() * 7);
+        return vec;
+    }
+
 
 }

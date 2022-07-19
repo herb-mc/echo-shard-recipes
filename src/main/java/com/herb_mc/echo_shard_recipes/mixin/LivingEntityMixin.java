@@ -25,8 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.PARTICLE_ITEMS;
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.TOOL;
+import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 
 @Mixin(LivingEntity.class)
@@ -37,6 +36,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     @Unique private int flightTime = 0;
     @Unique private int dealtDamageTime = 0;
     @Unique private int momentumBoost = 0;
+    @Unique private int reflexBoost = 0;
     @Unique private DamageSource source;
 
     @Override
@@ -96,74 +96,93 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     )
     public void applyAttributes(CallbackInfo ci) {
         LivingEntity e = (LivingEntity) (Object) this;
-        Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
-        for (EchoShardRecipesMod.AttributeItem i : items.values())
-            if (i.attribute != null) removeAttribute(e, i.attribute, i.uuid);
-        removeAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"));
-        removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
-        removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"));
-        removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"));
-        int numStatus = 0;
-        switch (getAttribute(e.getMainHandStack())) {
-            case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
-            case "rip_current" -> {
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.5, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-            }
-            case "flowing_water" -> {
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 4.0, EntityAttributeModifier.Operation.ADDITION);
-                addAttribute(e,EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.3, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-            }
-            case "crushing_wave" -> {
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"),  "fish", 11.0, EntityAttributeModifier.Operation.ADDITION);
-                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"),  "fish", -0.85, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-            }
-            case "alchemist" -> {
-                numStatus = e.getActiveStatusEffects().size();
-            }
-            default -> {}
-        }
-        if (dealtDamageTime > 0) dealtDamageTime--;
-        if (dealtDamageTime <= 0 && momentumBoost > 0) {momentumBoost--; dealtDamageTime = 50;}
-        if (momentumBoost > 0) {
-            addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"),  "momentum", 0.07 * momentumBoost, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-            addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"),  "momentum", 0.05 * momentumBoost, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
-        }
-        double armor = 0.0;
-        double moveSpeed = 0.0;
-        double toughness = 0.0;
-        double health = 0.0;
-        double knockbackRes = 0.0;
-        for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
-                case "snipe_shot" -> addAttribute(e, items.get(getAttribute(i)));
-                case "reinforced" -> armor += items.get("reinforced").base;
-                case "swift" -> moveSpeed += items.get("swift").base;
-                case "steady_body" -> {
-                    if (e.isSneaking()) {
-                        addAttribute(e, items.get("steady_body"));
-                        e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4, 0, false, false, false), null);
-                    }
+        if (!e.world.isClient()) {
+            Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
+            for (EchoShardRecipesMod.AttributeItem i : items.values())
+                if (i.attribute != null) removeAttribute(e, i.attribute, i.uuid);
+            removeAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"));
+            removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"));
+            removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"));
+            removeAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"));
+            int numStatus = 0;
+            switch (getAttribute(e.getMainHandStack())) {
+                case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
+                case "rip_current" -> {
+                    addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"), "fish", 7.0, EntityAttributeModifier.Operation.ADDITION);
+                    addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"), "fish", -0.5, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
                 }
-                case "levitator" -> {if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 4, 3, false, false, false), null);}
-                case "featherweight" -> {if (e.isSneaking()) e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4, 0, false, false, false), null);}
-                case "resilient" -> toughness += items.get("resilient").base;
-                case "rejuvenating" -> health += items.get("rejuvenating").base;
-                case "stalwart" -> knockbackRes += items.get("stalwart").base;
+                case "flowing_water" -> {
+                    addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"), "fish", 4.0, EntityAttributeModifier.Operation.ADDITION);
+                    addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"), "fish", -0.3, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                }
+                case "crushing_wave" -> {
+                    addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800bd8a39d89"), "fish", 11.0, EntityAttributeModifier.Operation.ADDITION);
+                    addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d11cff35b9"), "fish", -0.85, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                }
+                case "alchemist" -> {
+                    numStatus = e.getActiveStatusEffects().size();
+                }
                 default -> {
                 }
             }
-        if (armor > 0) {
-            if (armor == items.get("reinforced").base * 4) armor += 2;
-            addAttribute(e, items.get("reinforced"), armor);
+            if (dealtDamageTime > 0) dealtDamageTime--;
+            if (dealtDamageTime <= 0 && momentumBoost > 0) {
+                momentumBoost--;
+                dealtDamageTime = 50;
+            }
+            if (momentumBoost > 0) {
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, UUID.fromString("401ef5aa-ea51-4964-ab92-800cd8a39d89"), "momentum", 0.07 * momentumBoost, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, UUID.fromString("231b1cf0-82ff-4432-b939-f2d14cff35b9"), "momentum", 0.05 * momentumBoost, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+            }
+            double armor = 0.0;
+            double moveSpeed = 0.0;
+            double toughness = 0.0;
+            double health = 0.0;
+            double knockbackRes = 0.0;
+            for (ItemStack i : e.getArmorItems())
+                switch (getAttribute(i)) {
+                    case "snipe_shot" -> addAttribute(e, items.get(getAttribute(i)));
+                    case "reflex" -> {
+                        if (reflexBoost > 0) {
+                            addAttribute(e, items.get(getAttribute(i)));
+                            reflexBoost--;
+                        }
+                    }
+                    case "reinforced" -> armor += items.get("reinforced").base;
+                    case "swift" -> moveSpeed += items.get("swift").base;
+                    case "steady_body" -> {
+                        if (e.isSneaking()) {
+                            addAttribute(e, items.get("steady_body"));
+                            e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4, 0, false, false, false), null);
+                        }
+                    }
+                    case "levitator" -> {
+                        if (e.isSneaking())
+                            e.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 4, 3, false, false, false), null);
+                    }
+                    case "featherweight" -> {
+                        if (e.isSneaking())
+                            e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4, 0, false, false, false), null);
+                    }
+                    case "resilient" -> toughness += items.get("resilient").base;
+                    case "rejuvenating" -> health += items.get("rejuvenating").base;
+                    case "stalwart" -> knockbackRes += items.get("stalwart").base;
+                    default -> {
+                    }
+                }
+            if (armor > 0) {
+                if (armor == items.get("reinforced").base * 4) armor += 2;
+                addAttribute(e, items.get("reinforced"), armor);
+            }
+            if (moveSpeed > 0) {
+                if (moveSpeed == items.get("swift").base * 4) moveSpeed += 0.4;
+                addAttribute(e, items.get("swift"), moveSpeed);
+            }
+            if (numStatus > 0) addAttribute(e, items.get("alchemist"), numStatus);
+            if (toughness > 0) addAttribute(e, items.get("resilient"), toughness);
+            if (health > 0) addAttribute(e, items.get("rejuvenating"), health);
+            if (knockbackRes > 0) addAttribute(e, items.get("stalwart"), knockbackRes);
         }
-        if (moveSpeed > 0) {
-            if (moveSpeed == items.get("swift").base * 4) moveSpeed += 0.4;
-            addAttribute(e, items.get("swift"), moveSpeed);
-        }
-        if (numStatus > 0) addAttribute(e, items.get("alchemist"), numStatus);
-        if (toughness > 0) addAttribute(e, items.get("resilient"), toughness);
-        if (health > 0) addAttribute(e, items.get("rejuvenating"), health);
-        if (knockbackRes > 0) addAttribute(e, items.get("stalwart"), knockbackRes);
     }
 
     @Inject(
@@ -172,6 +191,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     )
     public void getSource(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         this.source = source;
+        if (source.getAttacker() != null) reflexBoost = 40;
     }
 
     @ModifyArg(
@@ -201,6 +221,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             int hasteBoost = 0;
             int strengthBoost = 0;
             int resistance = 0;
+            if (reflexBoost > 0) resistance++;
             if ("indomitable".equals(getAttribute(e.getMainHandStack())) && e.isBlocking()) resistance++;
             else if ("indomitable".equals(getAttribute(e.getOffHandStack())) && e.isBlocking()) resistance++;
             switch (getAttribute(e.getMainHandStack())) {
