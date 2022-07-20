@@ -4,7 +4,12 @@ public interface ThrownItemEntityInterface {
 
     String getAttribute();
     void setAttribute(String s);
+    void addBonusDamage(float f);
+    void setIncrement(float f);
+    float getIncrement();
     void setBonusDamage(float f);
     float getBonusDamage();
+    void setDamage(float f);
+    float getDamage();
 
 }

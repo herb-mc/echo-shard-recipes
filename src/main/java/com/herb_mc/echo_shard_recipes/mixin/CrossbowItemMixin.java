@@ -51,7 +51,11 @@ public class CrossbowItemMixin {
                 }
             }
         }
-        for (ItemStack item : shooter.getArmorItems()) if (getAttribute(item).equals("snipe_shot")) ((PersistentProjectileEntityInterface) projectileEntity).addDamageMultiplier(0.1f);
+        for (ItemStack item : shooter.getArmorItems()) switch(getAttribute(item)) {
+            case "snipe_shot" -> ((PersistentProjectileEntityInterface) projectileEntity).addDamageMultiplier(0.1f);
+            case "infernal" -> ((PersistentProjectileEntityInterface) projectileEntity).addFlatDamage(2);
+            default -> {}
+        }
     }
 
     @Inject(

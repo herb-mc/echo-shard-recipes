@@ -23,6 +23,11 @@ public class ExplosiveProjectileEntityMixin implements ExplosiveProjectileEntity
         shouldLimit = bl;
     }
 
+    @Override
+    public boolean getLimit() {
+        return shouldLimit;
+    }
+
     @Inject(
             method = "tick",
             at = @At("HEAD")
@@ -31,7 +36,7 @@ public class ExplosiveProjectileEntityMixin implements ExplosiveProjectileEntity
         ExplosiveProjectileEntity e = ((ExplosiveProjectileEntity) (Object) this);
         if (shouldLimit && timeLimit == 0 && e instanceof FireballEntity) {
             boolean bl = e.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
-            e.world.createExplosion(null, e.getX(), e.getY(), e.getZ(), 1, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
+            e.world.createExplosion(null, e.getX(), e.getY(), e.getZ(), 1, bl, Explosion.DestructionType.NONE);
             e.discard();
         }
         if (timeLimit > 0) timeLimit--;

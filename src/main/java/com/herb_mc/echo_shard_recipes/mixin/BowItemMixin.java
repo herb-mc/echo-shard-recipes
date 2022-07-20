@@ -59,7 +59,11 @@ public class BowItemMixin {
                 }
             }
         }
-        for (ItemStack item : user.getArmorItems()) if (getAttribute(item).equals("snipe_shot")) ((PersistentProjectileEntityInterface) persistentProjectileEntity).addDamageMultiplier(0.2f);
+        for (ItemStack item : user.getArmorItems()) switch(getAttribute(item)) {
+            case "snipe_shot" -> ((PersistentProjectileEntityInterface) persistentProjectileEntity).addDamageMultiplier(0.2f);
+            case "infernal" -> ((PersistentProjectileEntityInterface) persistentProjectileEntity).addFlatDamage(3);
+            default -> {}
+        }
     }
 
     @Inject(

@@ -1,21 +1,33 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonPart;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -23,14 +35,16 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class HelperMethods {
+
+    private static final Random ECHO_RANDOM = new Random();
 
     public static String getAttribute(ItemStack i) {
         if (!i.getOrCreateNbt().getBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE)) return "";
@@ -82,6 +96,28 @@ public class HelperMethods {
         world.spawnEntity(fireball);
     }
 
+    public static SnowballEntity gunShoot(World world, LivingEntity user, float speed, double divergence, float damage) {
+        SnowballEntity bullet = new SnowballEntity(world, user);
+        bullet.setNoGravity(true);
+        ((ThrownItemEntityInterface) bullet).setAttribute("gun_ho");
+        ((ThrownItemEntityInterface) bullet).setDamage(damage);
+        bullet.setVelocity(applyDivergence(user.getRotationVector(), divergence).normalize().multiply(speed));
+        bullet.setItem(new ItemStack(Items.GOLD_NUGGET));
+        world.spawnEntity(bullet);
+        return bullet;
+    }
+
+    public static SnowballEntity fireRocket(World world, LivingEntity user, float speed, double divergence, int explosionPower) {
+        SnowballEntity bullet = new SnowballEntity(world, user);
+        bullet.setNoGravity(true);
+        ((ThrownItemEntityInterface) bullet).setAttribute("rocket");
+        ((ThrownItemEntityInterface) bullet).setDamage(explosionPower);
+        bullet.setVelocity(applyDivergence(user.getRotationVector(), divergence).normalize().multiply(speed));
+        bullet.setItem(new ItemStack(Items.TNT));
+        world.spawnEntity(bullet);
+        return bullet;
+    }
+
     public static boolean isInorganic(LivingEntity e) {
         return e instanceof ShulkerEntity || e instanceof IronGolemEntity || e instanceof SkeletonEntity || e instanceof WitherSkeletonEntity || e instanceof WitherEntity || e instanceof BlazeEntity || e instanceof SkeletonHorseEntity || e instanceof StrayEntity || e instanceof EndermanEntity;
     }
@@ -127,6 +163,211 @@ public class HelperMethods {
     private static double getSquareDist(Vec3d in1, Vec3d in2){
         in2 = in2.subtract(in1);
         return in2.x * in2.x + in2.y * in2.y + in2.z * in2.z;
+    }
+
+    public static void shootFireball(ItemStack itemStack, PlayerEntity user) {
+        if (!((LivingEntityInterface) user).getUsing()) {
+            boolean c = user.isCreative();
+            Vec3d v = user.getRotationVector();
+            boolean bl = user.isSneaking();
+            int power = user.isSneaking() ? 2 : 1;
+            if (!c) itemStack.damage(bl ? 3 : 1, user.getRandom(), (ServerPlayerEntity) user);
+            FireballEntity f = new FireballEntity(user.world, user, v.x, v.y, v.z, power);
+            f.setPosition(user.getEyePos().add(v.multiply(0.4)));
+            f.setVelocity(v.multiply(2));
+            playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_BLAZE_SHOOT, 1.0f, 0);
+            ((ExplosiveProjectileEntityInterface) f).limitLifetime(true);
+            user.world.spawnEntity(f);
+            ((ItemStackInterface) (Object) itemStack).setCooldown(bl ? 60 : 20);
+        }
+    }
+
+    public static void flamethrower(ItemStack itemStack, PlayerEntity user) {
+        if (!((LivingEntityInterface) user).getUsing()) {
+            boolean c = user.isCreative();
+            if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+            boolean bl = user.isSneaking();
+            playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_BLAZE_SHOOT, 0.8f, 0);
+            for (int i = 0; i < (bl ? 6 : 4); i++) spewFire(user.world, user, bl ? 1.4f : 1.2f, bl ? 7.5f : 10.0f);
+            ((ItemStackInterface) (Object) itemStack).setCooldown(3);
+        }
+    }
+
+    public static ItemStack hasItem(PlayerInventory inventory, Item item) {
+        for (int i = 0; i < inventory.size(); i++) if (inventory.getStack(i).getItem() == item) return inventory.getStack(i);
+        return null;
+    }
+
+    public static void decrement(ItemStack i) {
+        i.setCount(i.getCount() - 1);
+    }
+
+    public static void shoot(ItemStack itemStack, PlayerEntity user) {
+        Item it = itemStack.getItem();
+        boolean c = user.isCreative();
+        boolean isSneak = user.isSneaking();
+        if (Items.NETHERITE_HOE.equals(it)) {
+            ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_NUGGET);
+            if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
+                if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533 * (isSneak ? 1 : 2.5), 6.0f)).setIncrement(0.5f);
+                Vec3d rot = user.getRotationVector().multiply(isSneak ? -0.05 : -0.1);
+                user.addVelocity(rot.x, rot.y, rot.z);
+                if (user instanceof ServerPlayerEntity && !user.world.isClient())
+                    ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                addCooldown(user, itemStack.getItem(), 3);
+                ((LivingEntityInterface) user).setUsing(true);
+                if (!c) decrement(ammo);
+            }
+        }
+        else if (Items.DIAMOND_HOE.equals(it)) {
+            ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_NUGGET);
+            if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
+                if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533, 5.0f)).setIncrement(0.6f);
+                Vec3d rot = user.getRotationVector().multiply(-0.1);
+                user.addVelocity(rot.x, rot.y, rot.z);
+                if (user instanceof ServerPlayerEntity && !user.world.isClient())
+                    ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                addCooldown(user, itemStack.getItem(), 12);
+                ((LivingEntityInterface) user).setUsing(true);
+                if (!c) decrement(ammo);
+                ((LivingEntityInterface) user).setBurst(4, itemStack);
+            }
+        }
+        else if (!((LivingEntityInterface) user).getUsing() && Items.IRON_HOE.equals(it)) {
+            ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_NUGGET);
+            if (ammo != null || c) {
+                if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                playSound((ServerWorld) user.world, user, SoundEvents.ITEM_CROSSBOW_SHOOT, 0.8f, 0.4f);
+                ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533 * (isSneak ? 1.5 : 3.5), 6.0f)).setIncrement(1.0f);
+                Vec3d rot = user.getRotationVector().multiply(isSneak ? -0.05 : -0.1);
+                user.addVelocity(rot.x, rot.y, rot.z);
+                if (user instanceof ServerPlayerEntity && !user.world.isClient())
+                    ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                ((ItemStackInterface) (Object) itemStack).setCooldown(12);
+                ((LivingEntityInterface) user).setUsing(true);
+                if (!c) decrement(ammo);
+            }
+        }
+        else if (Items.STONE_HOE.equals(it)) {
+            ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_INGOT);
+            if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
+                if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0f, 1.5f);
+                for (int i = 0; i < user.getRandom().nextBetween(12, 16); i++)
+                    ((ThrownItemEntityInterface) gunShoot(user.world, user, 3.0f, 0.0174533 * 5, 2.0f)).setIncrement(0.8f);
+                Vec3d rot = user.getRotationVector().multiply(-1);
+                user.addVelocity(rot.x, rot.y, rot.z);
+                if (user instanceof ServerPlayerEntity && !user.world.isClient())
+                    ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                addCooldown(user, itemStack.getItem(), 50);
+                ((LivingEntityInterface) user).setUsing(true);
+                if (!c) decrement(ammo);
+            }
+        }
+        else if (Items.WOODEN_HOE.equals(it)) {
+            ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_INGOT);
+            if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
+                if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                playSound((ServerWorld) user.world, user, SoundEvents.ITEM_TOTEM_USE, 0.35f, 2);
+                Vec3d rot = user.getRotationVector().multiply(isSneak ? -0.1 : -0.3);
+                user.addVelocity(rot.x, rot.y, rot.z);
+                Vec3d dir = user.getRotationVector().normalize();
+                double deg = 0;
+                if (!user.isSneaking()) deg += 0.01;
+                if (!user.isOnGround()) deg += 0.01;
+                if (user.isOnFire()) deg += 0.03;
+                if (deg > 0) dir = applyDivergence(dir, deg);
+                dir = dir.multiply(0.2);
+                if (user instanceof ServerPlayerEntity && !user.world.isClient()) {
+                    damageRaycastEntity((ServerWorld) user.world, 500, user.getEyePos(), dir, user);
+                    ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                }
+                addCooldown(user, itemStack.getItem(), 60);
+                ((LivingEntityInterface) user).setUsing(true);
+                if (!c) decrement(ammo);
+            }
+        }
+        else if (Items.GOLDEN_HOE.equals(it)) {
+            ItemStack ammo = hasItem(user.getInventory(), Items.TNT);
+            if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
+                if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_TNT_PRIMED, 0.6f, 2);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0f, 1.5f);
+                ((ThrownItemEntityInterface) fireRocket(user.world, user, 1.0f, 0.0174533 * 1.5, 4)).setIncrement(0.25f);
+                Vec3d rot = user.getRotationVector().multiply(-1.4);
+                user.addVelocity(rot.x, rot.y, rot.z);
+                if (user instanceof ServerPlayerEntity && !user.world.isClient())
+                    ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                addCooldown(user, itemStack.getItem(), 90);
+                ((LivingEntityInterface) user).setUsing(true);
+                if (!c) decrement(ammo);
+            }
+        }
+    }
+
+    private static Vec3d applyDivergence(Vec3d in, double maxAngle) {
+        return rotateAbout(rotateAbout(in, (in.y == 1 || in.y == -1) ? new Vec3d(1, 0, 0) : new Vec3d(0,
+                1, 0).crossProduct(in.normalize()).normalize(), ECHO_RANDOM.nextDouble() * maxAngle), in,
+                ECHO_RANDOM.nextDouble() * Math.PI * 2).normalize();
+    }
+
+    private static Vec3d rotateAbout(Vec3d base, Vec3d axis, double angle) {
+        return base.multiply(Math.cos(angle))
+                .add(axis.crossProduct(base).multiply(Math.sin(angle)))
+                .add(axis.multiply(axis.dotProduct(base)).multiply(1 - Math.cos(angle)));
+    }
+
+    public static void addCooldown(PlayerEntity user, Item item, int cooldown) {
+        user.getItemCooldownManager().set(item, cooldown);
+    }
+
+    private static void damageRaycastEntity(ServerWorld world, int limit, Vec3d pos, Vec3d dir, Entity user) {
+        BlockPos b;
+        VoxelShape vs;
+        Box box;
+        ParticleEffect p = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.GOLD_BLOCK.getDefaultState());
+        Vec3d v = new Vec3d(0.15, 0.15, 0.15);
+        for (int iter = 0; iter < limit; iter++) {
+            b = new BlockPos(pos);
+            vs = world.getBlockState(b).getCollisionShape(world, b, ShapeContext.of(user));
+            if (!vs.isEmpty() && vs.getBoundingBox().offset(b).contains(pos)) return;
+            if (iter % 3 == 0) spawnParticles(world, p, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0.05);
+            box = new Box(pos.subtract(v), pos.add(v));
+            for (Iterator<Entity> it = world.getOtherEntities(user, box, (e) -> (true)).iterator(); it.hasNext(); ) {
+                Entity e = it.next();
+                float damage = 22;
+                double dist = Math.pow((e.getBoundingBox().maxX - e.getBoundingBox().minX) / 1.2, 2);
+                if (pos.squaredDistanceTo(e.getEyePos()) < dist && user.isSneaking() && user.isOnGround()) damage *= 1.5f;
+                damageEntity(e, user, damage, damage - 5, true);
+                return;
+            }
+            pos = pos.add(dir);
+        }
+    }
+
+    private static void damageEntity(Entity e, Entity user, float damage, float dragonDamage, boolean ignoreIframes) {
+        if (e instanceof EnderDragonPart) {
+            ((EnderDragonPart) e).owner.hurtTime = 0;
+            ((EnderDragonPart) e).owner.timeUntilRegen = 1;
+            ((EnderDragonPart) e).owner.damagePart((EnderDragonPart) e, DamageSource.thrownProjectile(user, user), dragonDamage);
+        } else {
+            if (e instanceof LivingEntity) ((LivingEntity) e).hurtTime = 0;
+            e.timeUntilRegen = 1;
+            e.damage(DamageSource.thrownProjectile(user, user), damage);
+        }
     }
 
 }

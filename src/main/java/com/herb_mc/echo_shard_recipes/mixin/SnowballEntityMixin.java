@@ -1,16 +1,16 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.helper.ThrownItemEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -50,6 +50,11 @@ public class SnowballEntityMixin {
                     ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
                     ci.cancel();
                 }
+                else if (!(entity instanceof LivingEntity)) {
+                    entity.timeUntilRegen = 1;
+                    entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), 0.5f + ((ThrownItemEntityInterface) this).getBonusDamage());
+                    ci.cancel();
+                }
             }
             case "flamethrower" -> {
                 SnowballEntity s = (SnowballEntity) (Object) this;
@@ -61,6 +66,37 @@ public class SnowballEntityMixin {
                 }
                 ci.cancel();
             }
+            case "gun_ho" -> {
+                SnowballEntity s = (SnowballEntity) (Object) this;
+                float d = ((ThrownItemEntityInterface) s).getDamage();
+                if (entity instanceof LivingEntity && !((LivingEntity) entity).isBlocking()) {
+                    ((LivingEntity) entity).hurtTime = 0;
+                    entity.timeUntilRegen = 1;
+                    entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), d);
+                } else if (entity instanceof EnderDragonPart) {
+                    ((EnderDragonPart) entity).owner.hurtTime = 0;
+                    ((EnderDragonPart) entity).owner.timeUntilRegen = 1;
+                    ((EnderDragonPart) entity).owner.damagePart((EnderDragonPart) entity, DamageSource.thrownProjectile(s, s.getOwner()), d);
+                } else if (!(entity instanceof LivingEntity)) {
+                    entity.timeUntilRegen = 1;
+                    entity.damage(DamageSource.thrownProjectile(s, s.getOwner()), d);
+                }
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(
+            method = "onCollision",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void rocket(HitResult hitResult, CallbackInfo ci) {
+        if ("rocket".equals(((ThrownItemEntityInterface) this).getAttribute())){
+            SnowballEntity s = (SnowballEntity) (Object) this;
+            s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), ((ThrownItemEntityInterface) s).getDamage(), Explosion.DestructionType.BREAK);
+            s.discard();
+            ci.cancel();
         }
     }
 
