@@ -30,10 +30,14 @@ public class TridentItemMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     public void addParticles(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, int i, int j, TridentEntity tridentEntity) {
-        NbtCompound nbt = stack.getNbt();
-        if (nbt != null){
-            if (nbt.getBoolean(HAS_PARTICLE)) ((PersistentProjectileEntityInterface) tridentEntity).setParticle(nbt.getInt(PARTICLE));
-            if (nbt.getBoolean(HAS_ATTRIBUTE)) ((PersistentProjectileEntityInterface) tridentEntity).setAttribute(nbt.getString(ATTRIBUTE));
+        if (!world.isClient()) {
+            NbtCompound nbt = stack.getNbt();
+            if (nbt != null) {
+                if (nbt.getBoolean(HAS_PARTICLE))
+                    ((PersistentProjectileEntityInterface) tridentEntity).setParticle(nbt.getInt(PARTICLE));
+                if (nbt.getBoolean(HAS_ATTRIBUTE))
+                    ((PersistentProjectileEntityInterface) tridentEntity).setAttribute(nbt.getString(ATTRIBUTE));
+            }
         }
     }
 

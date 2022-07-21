@@ -46,6 +46,7 @@ public class ItemStackMixin implements ItemStackInterface {
             at = @At("HEAD")
     )
     private void tickCooldown(World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
-        //if (entity instanceof PlayerEntity && itemCooldown > 0) itemCooldown--;
+        if (entity instanceof PlayerEntity && itemCooldown > 0) itemCooldown--;
     }
+
 }

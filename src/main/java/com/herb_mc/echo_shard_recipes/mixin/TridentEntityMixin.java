@@ -1,6 +1,5 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
 import net.minecraft.entity.projectile.TridentEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +17,7 @@ public class TridentEntityMixin {
             )
     )
     protected float modifyDamage(float f) {
-        if ("jagged".equals(((PersistentProjectileEntityInterface) this).getAttribute())) f += 2;
+        if (((TridentEntity) (Object) this).world.isClient() && "jagged".equals(((PersistentProjectileEntityInterface) this).getAttribute())) f += 2;
         return f;
     }
 

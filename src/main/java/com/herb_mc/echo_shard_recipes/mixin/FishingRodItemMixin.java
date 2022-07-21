@@ -22,7 +22,7 @@ import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
 @Mixin(FishingRodItem.class)
 public class FishingRodItemMixin {
 
-   @Unique private int attribute = 0;
+    @Unique private int attribute = 0;
 
     @Inject(
             method = "use",
@@ -33,11 +33,11 @@ public class FishingRodItemMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private void getAttributeFromRod(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, int i, int j) {
-        attribute = 0;
         switch (getAttribute(itemStack)) {
             case "jagged" -> attribute = 1;
             case "faster_reel" -> attribute = 2;
             case "high_test" -> attribute = 3;
+            case "grappling" -> attribute = 4;
             default -> attribute = 0;
         }
     }
@@ -51,7 +51,11 @@ public class FishingRodItemMixin {
     )
     private Entity applyAttributeToBobber(Entity bobber) {
         ((FishingBobberEntityInterface) bobber).setAttribute(attribute);
-        if (attribute == 3) bobber.setVelocity(bobber.getVelocity().multiply(2.5));
+        switch(attribute) {
+            case 3 -> bobber.setVelocity(bobber.getVelocity().multiply(2.5));
+            case 4 -> bobber.setVelocity(bobber.getVelocity().multiply(1.5));
+            default -> {}
+        }
         return bobber;
     }
 

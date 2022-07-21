@@ -2,6 +2,8 @@ package com.herb_mc.echo_shard_recipes;
 
 import com.herb_mc.echo_shard_recipes.recipes.EchoAugmentRecipe;
 import com.herb_mc.echo_shard_recipes.recipes.EchoShardBaseRecipe;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -11,7 +13,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
@@ -241,6 +242,7 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("steady_body", new AttributeItem(Items.COBBLED_DEEPSLATE, "Steady Body", LEGS, Formatting.GRAY, "7dd3b0f6-a0d7-4de1-918c-3df131b1e53c", EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, "steady_body", EntityAttributeModifier.Operation.ADDITION, 1.0));
         ATTRIBUTE_ITEMS.put("turtle_shell", new AttributeItem(Items.TURTLE_HELMET, "Turtle Shell", CHEST, Formatting.GRAY));
         ATTRIBUTE_ITEMS.put("featherweight", new AttributeItem(Items.PHANTOM_MEMBRANE, "Featherweight", FEET, Formatting.GREEN));
+        ATTRIBUTE_ITEMS.put("grappling", new AttributeItem(Items.FISHING_ROD, "Grappling", ROD, Formatting.GREEN));
         ATTRIBUTE_ITEMS.put("heat_conductor", new AttributeItem(Items.EMERALD, "Heat Conductor", LEGS, Formatting.GREEN, "bafb4ce9-c1ee-4247-9570-dcc412335e5b", EntityAttributes.GENERIC_MOVEMENT_SPEED, "heat_conductor", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0.15));
         ATTRIBUTE_ITEMS.put("levitator", new AttributeItem(Items.SHULKER_SHELL, "Levitator", FEET, Formatting.GREEN));
         ATTRIBUTE_ITEMS.put("machine_assist", new AttributeItem(Items.PISTON, "Machine Assist", LEGS, Formatting.GREEN));
@@ -252,6 +254,7 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("crushing_wave", new AttributeItem(Items.SPONGE, "Crushing Wave", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));
         ATTRIBUTE_ITEMS.put("gun_ho", new AttributeItem(Items.TNT, "Gun Ho", HOE, Formatting.LIGHT_PURPLE, "7a11103b-8823-4db9-bf48-ce4801a3ec57", EntityAttributes.GENERIC_ATTACK_SPEED, "gun_hoe", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0));
         ATTRIBUTE_ITEMS.put("flowing_water", new AttributeItem(Items.TRIDENT, "Flowing Water", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));
+        ATTRIBUTE_ITEMS.put("infernal", new AttributeItem(Items.BEACON, "Infernal", CHEST, Formatting.LIGHT_PURPLE, NONE, NO_REQ));
         ATTRIBUTE_ITEMS.put("rip_current", new AttributeItem(Items.HEART_OF_THE_SEA, "Rip Current", FISH, Formatting.LIGHT_PURPLE, CRUSHING_WAVE, NO_REQ));
         ATTRIBUTE_ITEMS.put("voided", new AttributeItem(Items.ELYTRA, "Voided", CHEST, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
     }

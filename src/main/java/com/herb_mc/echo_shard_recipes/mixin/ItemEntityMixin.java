@@ -15,8 +15,8 @@ public class ItemEntityMixin {
             at = @At("RETURN"),
             cancellable = true
     )
-    public void setFireproof(CallbackInfoReturnable<Boolean> info) {
-        if ("fireproof".equals(HelperMethods.getAttribute(((ItemEntity) (Object) this).getStack()))) info.setReturnValue(true);
+    public void setFireproof(CallbackInfoReturnable<Boolean> cir) {
+        if ("fireproof".equals(HelperMethods.getAttribute(((ItemEntity) (Object) this).getStack()))) cir.setReturnValue(true);
     }
 
 }

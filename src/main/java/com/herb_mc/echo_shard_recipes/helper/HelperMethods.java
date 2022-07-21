@@ -53,8 +53,7 @@ public class HelperMethods {
     private static final Random ECHO_RANDOM = new Random();
 
     public static String getAttribute(ItemStack i) {
-        if (!i.getOrCreateNbt().getBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE)) return "";
-        return i.getOrCreateNbt().getString(EchoShardRecipesMod.ATTRIBUTE);
+        return (i.getNbt() != null) ? i.getNbt().getString(EchoShardRecipesMod.ATTRIBUTE) : "";
     }
 
     public static void removeAttribute(LivingEntity entity, EntityAttribute attribute, UUID uuid){
@@ -325,7 +324,7 @@ public class HelperMethods {
             }
     }
 
-    private static Vec3d applyDivergence(Vec3d in, double maxAngle) {
+    public static Vec3d applyDivergence(Vec3d in, double maxAngle) {
         return rotateAbout(rotateAbout(in, (in.y == 1 || in.y == -1) ? new Vec3d(1, 0, 0) : new Vec3d(0,
                 1, 0).crossProduct(in.normalize()).normalize(), ECHO_RANDOM.nextDouble() * maxAngle), in,
                 ECHO_RANDOM.nextDouble() * Math.PI * 2).normalize();

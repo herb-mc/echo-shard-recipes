@@ -1,5 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
+import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.PlayerEntityInterface;
 import net.minecraft.entity.Entity;
@@ -57,7 +58,7 @@ public class PlayerEntityMixin implements PlayerEntityInterface {
         PlayerEntity p = (PlayerEntity) (Object) this;
         if (target instanceof LivingEntity) switch(getAttribute(p.getMainHandStack())) {
                 case "flowing_water" -> {
-                    if (((LivingEntity) target).hurtTime > 0) {
+                    if (((LivingEntity) target).hurtTime > 0 && ((LivingEntity) target).hurtTime < 9) {
                         ((LivingEntity) target).hurtTime = 0;
                         target.timeUntilRegen = 1;
                         if (((LivingEntity) target).hurtTime < 6) f *= 1.6;
