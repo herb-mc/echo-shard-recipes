@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.HelperMethods;
+import com.herb_mc.echo_shard_recipes.helper.Attributes;
 import net.minecraft.entity.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +16,7 @@ public class ItemEntityMixin {
             cancellable = true
     )
     public void setFireproof(CallbackInfoReturnable<Boolean> cir) {
-        if ("fireproof".equals(HelperMethods.getAttribute(((ItemEntity) (Object) this).getStack()))) cir.setReturnValue(true);
+        if ("fireproof".equals(Attributes.getAttribute(((ItemEntity) (Object) this).getStack()))) cir.setReturnValue(true);
     }
 
 }

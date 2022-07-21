@@ -1,13 +1,12 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 
 import java.util.UUID;
 
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.addAttribute;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.removeAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.addAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.removeAttribute;
 import static net.minecraft.entity.attribute.EntityAttributeModifier.Operation.*;
 
 public class SpecialAttributes {

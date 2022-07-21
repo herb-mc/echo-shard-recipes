@@ -1,8 +1,7 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
-import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
-import com.herb_mc.echo_shard_recipes.helper.PlayerEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.LivingEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.PlayerEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -18,9 +17,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.isInorganic;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getNearestItems;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Entities.isInorganic;
+import static com.herb_mc.echo_shard_recipes.helper.Items.getNearestItems;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements PlayerEntityInterface {

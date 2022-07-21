@@ -1,4 +1,4 @@
-package com.herb_mc.echo_shard_recipes.helper;
+package com.herb_mc.echo_shard_recipes.api;
 
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;

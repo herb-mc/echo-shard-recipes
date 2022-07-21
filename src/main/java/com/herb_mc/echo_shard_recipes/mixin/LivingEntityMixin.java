@@ -1,8 +1,11 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
-import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
-import com.herb_mc.echo_shard_recipes.helper.ThrownItemEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.LivingEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.Attributes;
+import com.herb_mc.echo_shard_recipes.helper.Items;
+import com.herb_mc.echo_shard_recipes.helper.Projectiles;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -13,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Map;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
+import static com.herb_mc.echo_shard_recipes.helper.Network.*;
 import static com.herb_mc.echo_shard_recipes.helper.SpecialAttributes.*;
 
 @Mixin(LivingEntity.class)
@@ -41,7 +43,6 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
 
     @Shadow protected int riptideTicks;
 
-    @Unique private int flightTime = 0;
     @Unique private boolean using = false;
     @Unique private int dealtDamageTime = 0;
     @Unique private int momentumBoost = 0;
@@ -84,25 +85,13 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                     value = "INVOKE"
             )
     )
-    private void resetFlight(Vec3d movementInput, CallbackInfo ci) {
-        if (!((LivingEntity) (Object) this).isFallFlying()) flightTime = 0;
-    }
-
-    @Inject(
-            method = "travel",
-            at = @At(
-                    target = "Lnet/minecraft/entity/LivingEntity;getVelocity()Lnet/minecraft/util/math/Vec3d;",
-                    value = "INVOKE"
-            )
-    )
     private void elytraParticles(Vec3d movementInput, CallbackInfo ci) {
-        if (!((LivingEntity) (Object) this).world.isClient() && flightTime >= 10 && this.riptideTicks <= 0) {
-            flightTime++;
+        if (!((LivingEntity) (Object) this).world.isClient() && this.riptideTicks <= 0 && ((LivingEntity) (Object) this).isFallFlying()) {
             LivingEntity entity = (LivingEntity) (Object) this;
             for (ItemStack i: entity.getArmorItems()) {
                 NbtCompound nbt = i.getNbt();
-                if (nbt != null && nbt.getBoolean("HasShardParticleEffect")){
-                    EchoShardRecipesMod.ParticleItem p = PARTICLE_ITEMS[nbt.getInt("ShardParticleEffect")];
+                if (nbt != null && nbt.getBoolean(HAS_PARTICLE)){
+                    EchoShardRecipesMod.ParticleItem p = PARTICLE_ITEMS[nbt.getInt(PARTICLE)];
                     float pitch = entity.getPitch(1.0F) * 0.017453292F;
                     Vec3d rot =  entity.getRotationVector().normalize();
                     Vec3d v = entity.getRotationVector().crossProduct(new Vec3d(0, 1, 0)).normalize();
@@ -125,25 +114,24 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         if (!((LivingEntity) (Object) this).world.isClient()) {
             LivingEntity e = (LivingEntity) (Object) this;
             using = false;
-            if (e instanceof PlayerEntity) {
-                PlayerEntity user = (PlayerEntity) e;
+            if (e instanceof PlayerEntity user) {
                 boolean c = user.isCreative();
                 if (burstTimer > 0) {
                     burstTimer--;
                     using = true;
                 }
                 if (currentStack != ItemStack.EMPTY && burstTimer % 2 == 0 && e.getMainHandStack() == currentStack) {
-                    ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_NUGGET);
+                    ItemStack ammo = Items.hasItem(user.getInventory(), net.minecraft.item.Items.GOLD_NUGGET);
                     if (ammo != null || c) {
                         if (!c) currentStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
                         playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
                         playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
-                        ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533, 5.0f)).setIncrement(1.0f);
+                        ((ThrownItemEntityInterface) Projectiles.createBullet(user.world, user, 4.0f, 0.0174533, 5.0f)).setIncrement(1.0f);
                         Vec3d rot = user.getRotationVector().multiply(-0.05);
                         user.addVelocity(rot.x, rot.y, rot.z);
                         if (user instanceof ServerPlayerEntity && !user.world.isClient())
                             ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
-                        if (!c) decrement(ammo);
+                        if (!c) Items.decrement(ammo);
                     } else {
                         currentStack = ItemStack.EMPTY;
                         burstTimer = 0;
@@ -156,22 +144,22 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             }
             Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
             for (EchoShardRecipesMod.AttributeItem i : items.values())
-                if (i.attribute != null) removeAttribute(e, i.attribute, i.uuid);
+                if (i.attribute != null) Attributes.removeAttribute(e, i.attribute, i.uuid);
             removeSpecialAttributes(e);
             int numStatus = 0;
-            switch (getAttribute(e.getMainHandStack())) {
-                case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
+            switch (Attributes.getAttribute(e.getMainHandStack())) {
+                case "light", "sharpened", "stonebreaker", "terraforming" -> Attributes.addAttribute(e, items.get(Attributes.getAttribute(e.getMainHandStack())));
                 case "rip_current" -> applyFishAttributes(e, 7.0, -0.5);
                 case "flowing_water" -> applyFishAttributes(e, 4.0, -0.25);
                 case "crushing_wave" -> applyFishAttributes(e, 1.0, -0.85);
                 case "alchemist" -> numStatus = e.getActiveStatusEffects().size();
                 case "gun_ho" -> {
                     Item i = e.getMainHandStack().getItem();
-                    if (i == Items.WOODEN_HOE || i == Items.GOLDEN_HOE) addAttribute(e, items.get("gun_ho"), -0.5);
-                    else if (i == Items.STONE_HOE || i == Items.IRON_HOE)
-                        addAttribute(e, items.get("gun_ho"), -0.67);
-                    else if (i == Items.DIAMOND_HOE || i == Items.NETHERITE_HOE)
-                        addAttribute(e, items.get("gun_ho"), -0.75);
+                    if (i == net.minecraft.item.Items.WOODEN_HOE || i == net.minecraft.item.Items.GOLDEN_HOE) Attributes.addAttribute(e, items.get("gun_ho"), -0.5);
+                    else if (i == net.minecraft.item.Items.STONE_HOE || i == net.minecraft.item.Items.IRON_HOE)
+                        Attributes.addAttribute(e, items.get("gun_ho"), -0.67);
+                    else if (i == net.minecraft.item.Items.DIAMOND_HOE || i == net.minecraft.item.Items.NETHERITE_HOE)
+                        Attributes.addAttribute(e, items.get("gun_ho"), -0.75);
                 }
                 default -> {
                 }
@@ -188,19 +176,19 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             double health = 0.0;
             double knockbackRes = 0.0;
             for (ItemStack i : e.getArmorItems())
-                switch (getAttribute(i)) {
-                    case "snipe_shot" -> addAttribute(e, items.get(getAttribute(i)));
+                switch (Attributes.getAttribute(i)) {
+                    case "snipe_shot" -> Attributes.addAttribute(e, items.get(Attributes.getAttribute(i)));
                     case "heat_conductor" -> {
-                        if (e.isOnFire()) addAttribute(e, items.get(getAttribute(i)));
+                        if (e.isOnFire()) Attributes.addAttribute(e, items.get(Attributes.getAttribute(i)));
                     }
                     case "reflex" -> {
-                        if (reflexBoost-- > 0) addAttribute(e, items.get(getAttribute(i)));
+                        if (reflexBoost-- > 0) Attributes.addAttribute(e, items.get(Attributes.getAttribute(i)));
                     }
                     case "reinforced" -> armor += items.get("reinforced").base;
                     case "swift" -> moveSpeed += items.get("swift").base;
                     case "steady_body" -> {
                         if (e.isSneaking()) {
-                            addAttribute(e, items.get("steady_body"));
+                            Attributes.addAttribute(e, items.get("steady_body"));
                             e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 4, 0, false, false, false), null);
                         }
                     }
@@ -221,15 +209,15 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                     }
                 }
             if (armor > 0)
-                addAttribute(e, items.get("reinforced"), (armor == items.get("reinforced").base * 4) ? armor + 2 : armor);
+                Attributes.addAttribute(e, items.get("reinforced"), (armor == items.get("reinforced").base * 4) ? armor + 2 : armor);
             if (moveSpeed > 0)
-                addAttribute(e, items.get("swift"), (moveSpeed == items.get("swift").base * 4) ? moveSpeed + 0.08 : moveSpeed);
+                Attributes.addAttribute(e, items.get("swift"), (moveSpeed == items.get("swift").base * 4) ? moveSpeed + 0.08 : moveSpeed);
             if (toughness > 0)
-                addAttribute(e, items.get("resilient"), (toughness == items.get("resilient").base * 4) ? toughness + 4 : toughness);
+                Attributes.addAttribute(e, items.get("resilient"), (toughness == items.get("resilient").base * 4) ? toughness + 4 : toughness);
             if (health > 0)
-                addAttribute(e, items.get("rejuvenating"), (toughness == items.get("rejuvenating").base * 4) ? health + 2 : health);
-            if (numStatus > 0) addAttribute(e, items.get("alchemist"), numStatus);
-            if (knockbackRes > 0) addAttribute(e, items.get("stalwart"), knockbackRes);
+                Attributes.addAttribute(e, items.get("rejuvenating"), (toughness == items.get("rejuvenating").base * 4) ? health + 2 : health);
+            if (numStatus > 0) Attributes.addAttribute(e, items.get("alchemist"), numStatus);
+            if (knockbackRes > 0) Attributes.addAttribute(e, items.get("stalwart"), knockbackRes);
 
             int hasteBoost = 0;
             int strengthBoost = 0;
@@ -237,16 +225,16 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             int jumpBoost = 0;
             int slowness = 0;
             if (reflexBoost > 0) resistance++;
-            if ("indomitable".equals(getAttribute(e.getMainHandStack())) && e.isBlocking()) resistance++;
-            else if ("indomitable".equals(getAttribute(e.getOffHandStack())) && e.isBlocking()) resistance++;
-            switch (getAttribute(e.getMainHandStack())) {
+            if ("indomitable".equals(Attributes.getAttribute(e.getMainHandStack())) && e.isBlocking()) resistance++;
+            else if ("indomitable".equals(Attributes.getAttribute(e.getOffHandStack())) && e.isBlocking()) resistance++;
+            switch (Attributes.getAttribute(e.getMainHandStack())) {
                 case "hasty" -> hasteBoost += 1;
                 case "terraforming" -> hasteBoost += 15;
                 case "excavator" -> e.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 4, e.isSneaking() ? 1 : 0, true, false, false));
-                case "gun_ho" -> {if (e.getMainHandStack().getItem() == Items.WOODEN_HOE && e.isSneaking()) slowness += 60;}
+                case "gun_ho" -> {if (e.getMainHandStack().getItem() == net.minecraft.item.Items.WOODEN_HOE && e.isSneaking()) slowness += 60;}
                 default -> {}
             }
-            for (ItemStack i : e.getArmorItems()) switch (getAttribute(i)) {
+            for (ItemStack i : e.getArmorItems()) switch (Attributes.getAttribute(i)) {
                 case "power_assist" -> {
                     if (TOOL.isValidItem(e.getMainHandStack().getItem())) {
                         hasteBoost++;
@@ -276,7 +264,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         LivingEntity e = ((LivingEntity) (Object) this);
         if (!e.world.isClient()) {
             this.source = source;
-            for (ItemStack i : e.getArmorItems()) if ("turtle_shell".equals(getAttribute(i)) && (source == DamageSource.CACTUS || source == DamageSource.FREEZE || source == DamageSource.ON_FIRE || source == DamageSource.HOT_FLOOR || source == DamageSource.LAVA || source == DamageSource.SWEET_BERRY_BUSH))
+            for (ItemStack i : e.getArmorItems()) if ("turtle_shell".equals(Attributes.getAttribute(i)) && (source == DamageSource.CACTUS || source == DamageSource.FREEZE || source == DamageSource.ON_FIRE || source == DamageSource.HOT_FLOOR || source == DamageSource.LAVA || source == DamageSource.SWEET_BERRY_BUSH))
                     cir.setReturnValue(false);
             if (source.getAttacker() != null) reflexBoost = 40;
         }
@@ -292,7 +280,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             argsOnly = true
     )
     private float applyDamageMods(float value) {
-        for (ItemStack i : ((LivingEntity) (Object) this).getArmorItems()) switch (getAttribute(i)) {
+        for (ItemStack i : ((LivingEntity) (Object) this).getArmorItems()) switch (Attributes.getAttribute(i)) {
             case "voided" -> value *= 0.65;
             case "infernal" -> {
                 if (source.getAttacker() != null) {
@@ -316,7 +304,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             index = 0
     )
     private double modifyKnockback(double d) {
-        if (source instanceof EntityDamageSource && source.getAttacker() instanceof LivingEntity) switch (getAttribute(((LivingEntity) source.getAttacker()).getMainHandStack())) {
+        if (source instanceof EntityDamageSource && source.getAttacker() instanceof LivingEntity) switch (Attributes.getAttribute(((LivingEntity) source.getAttacker()).getMainHandStack())) {
                 case "flowing_water" -> d *= 0.6;
                 case "crushing_wave" -> d *= 0;
                 default -> {}
@@ -332,7 +320,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     )
     private void addRevengeBuff(LivingEntity attacker, CallbackInfo ci) {
         LivingEntity e = (LivingEntity) (Object) this;
-        if ("revenge".equals(getAttribute(e.getMainHandStack())) || "revenge".equals(getAttribute(e.getOffHandStack()))) {
+        if ("revenge".equals(Attributes.getAttribute(e.getMainHandStack())) || "revenge".equals(Attributes.getAttribute(e.getOffHandStack()))) {
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 30, 0, true, false, false));
             e.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30, 0, true, false, false));
         }

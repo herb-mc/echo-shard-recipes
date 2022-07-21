@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.FishingBobberEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.FishingBobberEntityInterface;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -133,13 +133,15 @@ public class FishingBobberEntityMixin implements FishingBobberEntityInterface {
     private void bobberGrapple(ItemStack usedItem, CallbackInfoReturnable<Integer> cir) {
         FishingBobberEntity f = (FishingBobberEntity) (Object) this;
         PlayerEntity p = f.getPlayerOwner();
-        if (attribute == 4 && f.hasNoGravity() && p != null) {
-            Vec3d v = f.getPos().subtract(f.getPlayerOwner().getPos()).multiply(0.5);
+        if (attribute == 4 && f.hasNoGravity() && p != null && !p.world.isClient()) {
+            p.getItemCooldownManager().set(usedItem.getItem(), 30);
+            if (!p.isCreative()) usedItem.damage(1, p.getRandom(), (ServerPlayerEntity) p);
+            Vec3d v = f.getPos().subtract(p.getPos()).multiply(0.5);
             double scale = 2.0 / v.length();
             if (v.length() > 2.0) v = v.multiply(scale);
             p.addVelocity(v.x, v.y, v.z);
             if (p.getVelocity().y > 0) p.fallDistance = 0;
-            if (p instanceof ServerPlayerEntity && !p.world.isClient()) ((ServerPlayerEntity) p).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(p));
+            ((ServerPlayerEntity) p).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(p));
         }
     }
 

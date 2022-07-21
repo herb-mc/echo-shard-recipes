@@ -2,8 +2,7 @@ package com.herb_mc.echo_shard_recipes;
 
 import com.herb_mc.echo_shard_recipes.recipes.EchoAugmentRecipe;
 import com.herb_mc.echo_shard_recipes.recipes.EchoShardBaseRecipe;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.herb_mc.echo_shard_recipes.recipes.EchoWandRecipe;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -18,6 +17,9 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -105,6 +107,27 @@ public class EchoShardRecipesMod {
 
     }
 
+    public static class WandItem {
+
+        public Item item;
+        public String spell;
+        public Formatting color;
+        public PostProcess processor;
+
+        WandItem(Item i, String s, Formatting f, PostProcess p) {
+            item = i;
+            spell = s;
+            color = f;
+            processor = p;
+        }
+
+
+        WandItem(Item i, String s, Formatting f) {
+            this(i, s, f, ENCHANT_GLINT);
+        }
+
+    }
+
     public static class ParticleItem {
 
         public Item item;
@@ -142,6 +165,7 @@ public class EchoShardRecipesMod {
     public static final Logger LOGGER = LoggerFactory.getLogger("echo_shard_recipes");
     public static final SpecialRecipeSerializer<EchoShardBaseRecipe> ECHO_SHARD_BASE = new SpecialRecipeSerializer<>(EchoShardBaseRecipe::new);
     public static final SpecialRecipeSerializer<EchoAugmentRecipe> ECHO_SHARD_AUGMENT = new SpecialRecipeSerializer<>(EchoAugmentRecipe::new);
+    public static final SpecialRecipeSerializer<EchoWandRecipe> ECHO_WAND = new SpecialRecipeSerializer<>(EchoWandRecipe::new);
     public static final Random ECHO_SHARD_RANDOM = new Random();
 
     public static final String HAS_PARTICLE = "HasShardParticleEffect";
@@ -149,6 +173,7 @@ public class EchoShardRecipesMod {
     public static final String HAS_ATTRIBUTE = "HasShardAttribute";
     public static final String ATTRIBUTE = "ShardAttribute";
     public static final String STORED_ATTRIBUTE = "StoredShardAttribute";
+    public static final String SPELL = "StoredSpell";
 
     public static final ItemChecker TRUE_MELEE = (i) -> (i instanceof AxeItem || i instanceof SwordItem);
     public static final ItemChecker MELEE = (i) -> (TRUE_MELEE.isValidItem(i) || i instanceof TridentItem);
@@ -171,6 +196,7 @@ public class EchoShardRecipesMod {
     public static final ItemChecker FEET = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.FEET);
     public static final ItemChecker FISH = (i) -> (i == Items.SALMON || i == Items.COD || i == Items.TROPICAL_FISH);
     public static final ItemChecker EQUIPS = (i) -> (WEAPON.isValidItem(i) || TOOL.isValidItem(i) || ARMOR.isValidItem(i) || MISC.isValidItem(i));
+    public static final ItemChecker SPELL_FOCUS = (i) -> (i == Items.EMERALD);
     public static final ItemChecker ANY = (i) -> true;
 
     public static final PostProcess NONE = (i) -> {};
@@ -187,6 +213,7 @@ public class EchoShardRecipesMod {
         for (Map.Entry<Enchantment, Integer> entry : m.entrySet()) if (entry.getKey() == Enchantments.PROTECTION) entry.setValue(entry.getValue() + 1);
         EnchantmentHelper.set(m, i);
     };
+
     public static final IngredientProcessor NO_REQ = (in, i) -> {};
     public static final IngredientProcessor REQUIRES_BINDING = (in, i) -> {
         boolean remove = true;
@@ -199,8 +226,15 @@ public class EchoShardRecipesMod {
         }
         if (remove) i.setCount(0);
     };
+    public static final IngredientProcessor SET_SPELL_FOCUS = (in, i) -> {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putBoolean("spell_focus", true);
+        i.setNbt(nbt);
+        i.setCustomName(MutableText.of(Text.of("Spell Focus").getContent()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_PURPLE)));
+    };
 
     public static HashMap<String, AttributeItem> ATTRIBUTE_ITEMS = new HashMap<>();
+    public static HashMap<String, WandItem> WANDS = new HashMap<>();
 
     static {
         ATTRIBUTE_ITEMS.put("alchemist", new AttributeItem(Items.POTION, "Alchemist", MELEE, Formatting.RED, "ac18a4c5-ffff-4777-8827-b62582306fe3", EntityAttributes.GENERIC_ATTACK_DAMAGE, "alchemist", EntityAttributeModifier.Operation.ADDITION, 1.0));
@@ -256,7 +290,10 @@ public class EchoShardRecipesMod {
         ATTRIBUTE_ITEMS.put("flowing_water", new AttributeItem(Items.TRIDENT, "Flowing Water", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));
         ATTRIBUTE_ITEMS.put("infernal", new AttributeItem(Items.BEACON, "Infernal", CHEST, Formatting.LIGHT_PURPLE, NONE, NO_REQ));
         ATTRIBUTE_ITEMS.put("rip_current", new AttributeItem(Items.HEART_OF_THE_SEA, "Rip Current", FISH, Formatting.LIGHT_PURPLE, CRUSHING_WAVE, NO_REQ));
+        ATTRIBUTE_ITEMS.put("spell_focus", new AttributeItem(Items.BOOK, "Spell Focus", SPELL_FOCUS, Formatting.LIGHT_PURPLE, NONE, SET_SPELL_FOCUS));
         ATTRIBUTE_ITEMS.put("voided", new AttributeItem(Items.ELYTRA, "Voided", CHEST, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
+
+        WANDS.put("lightning", new WandItem(Items.LIGHTNING_ROD, "Lightning", Formatting.YELLOW));
     }
 
     public static final ParticleItem[] PARTICLE_ITEMS = {
@@ -284,5 +321,6 @@ public class EchoShardRecipesMod {
     public static void init() {
         Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(MOD_ID, "crafting_special_echo_augments"), ECHO_SHARD_AUGMENT);
         Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(MOD_ID, "crafting_special_echo_shard_particle_base"), ECHO_SHARD_BASE);
+        Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(MOD_ID, "crafting_special_echo_wand"), ECHO_WAND);
     }
 }

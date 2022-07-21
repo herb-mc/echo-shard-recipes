@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.ThrownItemEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
 import net.minecraft.entity.projectile.thrown.ThrownEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.spawnParticles;
+import static com.herb_mc.echo_shard_recipes.helper.Network.spawnParticles;
 
 @Mixin(ThrownEntity.class)
 public class ThrownEntityMixin {

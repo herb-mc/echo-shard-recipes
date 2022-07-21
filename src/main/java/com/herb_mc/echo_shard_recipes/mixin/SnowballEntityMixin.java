@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.ThrownItemEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;

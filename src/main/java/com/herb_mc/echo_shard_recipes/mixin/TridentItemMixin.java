@@ -1,7 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
-import net.minecraft.enchantment.EnchantmentHelper;
+import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;

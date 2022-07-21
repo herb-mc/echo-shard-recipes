@@ -1,9 +1,8 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.FishingBobberEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.FishingBobberEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -17,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
 
 @Mixin(FishingRodItem.class)
 public class FishingRodItemMixin {

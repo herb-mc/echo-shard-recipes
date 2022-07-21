@@ -1,11 +1,12 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.Attributes;
+import com.herb_mc.echo_shard_recipes.helper.Projectiles;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.BowItem;
@@ -19,10 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Locale;
-
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 import static net.minecraft.item.BowItem.getPullProgress;
 
 @Mixin(BowItem.class)
@@ -47,13 +45,13 @@ public abstract class BowItemMixin {
                         if (getPullProgress(i) >= 1.0f) {
                             float speed = 1.4f;
                             float divergence = 8.0f;
-                            for (ItemStack item : user.getArmorItems()) if (getAttribute(item).equals("sharpshooter")) divergence /= 1.5f;
+                            for (ItemStack item : user.getArmorItems()) if (Attributes.getAttribute(item).equals("sharpshooter")) divergence /= 1.5f;
                             if (user.isSneaking()) {
                                 divergence /= 1.6f;
                                 speed *= 1.5f;
                             }
                             float bonus = EnchantmentHelper.getLevel(Enchantments.POWER, stack) / 10.0f;
-                            for (int j = 0; j < 12; j++) spawnFrag(world, user, bonus, speed, divergence);
+                            for (int j = 0; j < 12; j++) Projectiles.spawnFrag(world, user, bonus, speed, divergence);
                         }
                     }
                     case "metaphysical" -> {if (getPullProgress(i) >= 1.0f) persistentProjectileEntity.setNoClip(true);}
@@ -62,7 +60,7 @@ public abstract class BowItemMixin {
                 }
             }
         }
-        for (ItemStack item : user.getArmorItems()) switch(getAttribute(item)) {
+        for (ItemStack item : user.getArmorItems()) switch(Attributes.getAttribute(item)) {
             case "snipe_shot" -> ((PersistentProjectileEntityInterface) persistentProjectileEntity).addDamageMultiplier(0.2f);
             case "infernal" -> ((PersistentProjectileEntityInterface) persistentProjectileEntity).addFlatDamage(3);
             default -> {}
@@ -81,7 +79,7 @@ public abstract class BowItemMixin {
     private void arrowRaycasting(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null && "hitscan".equals(nbt.getString(ATTRIBUTE)) && getPullProgress(i) >= 1.0f)
-            if (arrowRaycast((ServerWorld) world, 100, persistentProjectileEntity, user)) persistentProjectileEntity.discard();
+            if (Projectiles.arrowHitscan((ServerWorld) world, 100, persistentProjectileEntity, user)) persistentProjectileEntity.discard();
 
     }
 
@@ -95,7 +93,7 @@ public abstract class BowItemMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private void removeRandomness(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
-        for (ItemStack item : user.getArmorItems()) if (getAttribute(item).equals("sharpshooter")) persistentProjectileEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, f * 3.0F, 0.4F);
+        for (ItemStack item : user.getArmorItems()) if (Attributes.getAttribute(item).equals("sharpshooter")) persistentProjectileEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, f * 3.0F, 0.4F);
     }
 
 }

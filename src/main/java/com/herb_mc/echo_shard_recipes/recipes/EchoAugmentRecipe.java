@@ -1,7 +1,7 @@
 package com.herb_mc.echo_shard_recipes.recipes;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
-import com.herb_mc.echo_shard_recipes.helper.ServersideRecipe;
+import com.herb_mc.echo_shard_recipes.api.ServersideRecipe;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

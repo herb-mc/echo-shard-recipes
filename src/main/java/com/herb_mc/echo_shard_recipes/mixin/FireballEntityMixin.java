@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.ExplosiveProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.ExplosiveProjectileEntityInterface;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Mixin;

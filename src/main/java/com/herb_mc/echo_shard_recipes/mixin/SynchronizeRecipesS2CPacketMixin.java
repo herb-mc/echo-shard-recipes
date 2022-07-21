@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.ServersideRecipe;
+import com.herb_mc.echo_shard_recipes.api.ServersideRecipe;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.recipe.Recipe;
 import org.spongepowered.asm.mixin.Final;

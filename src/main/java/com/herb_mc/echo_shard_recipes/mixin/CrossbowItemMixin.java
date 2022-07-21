@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
@@ -25,8 +25,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ATTRIBUTE;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.spawnFrag;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Projectiles.spawnFrag;
 
 @Mixin(CrossbowItem.class)
 public class CrossbowItemMixin {

@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.function.Supplier;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
 
 @Mixin(Block.class)
 public abstract class BlockMixin {

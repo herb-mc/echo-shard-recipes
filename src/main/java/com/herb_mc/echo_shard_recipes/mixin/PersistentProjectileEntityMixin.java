@@ -1,7 +1,7 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.HelperMethods;
-import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.Attributes;
+import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Random;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
+import static com.herb_mc.echo_shard_recipes.helper.Network.*;
 
 @Mixin(PersistentProjectileEntity.class)
 public class PersistentProjectileEntityMixin implements PersistentProjectileEntityInterface {
@@ -211,7 +211,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             )
     )
     private Vec3d setReflected(Vec3d vec) {
-        if (hitResult instanceof LivingEntity && ((LivingEntity) hitResult).isBlocking() && ((LivingEntity) hitResult).getActiveItem() != null && "reflecting".equals(HelperMethods.getAttribute(((LivingEntity) hitResult).getActiveItem())))
+        if (hitResult instanceof LivingEntity && ((LivingEntity) hitResult).isBlocking() && ((LivingEntity) hitResult).getActiveItem() != null && "reflecting".equals(Attributes.getAttribute(((LivingEntity) hitResult).getActiveItem())))
             vec = hitResult.getRotationVector().normalize().multiply(vec.length() * 7);
         return vec;
     }

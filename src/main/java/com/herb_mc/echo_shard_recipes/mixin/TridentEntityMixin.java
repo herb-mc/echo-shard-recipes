@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import net.minecraft.entity.projectile.TridentEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

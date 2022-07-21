@@ -1,21 +1,18 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.ItemStackInterface;
+import com.herb_mc.echo_shard_recipes.api.ItemStackInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
 
 @Mixin(ItemStack.class)
 public class ItemStackMixin implements ItemStackInterface {
