@@ -46,7 +46,7 @@ Only one attribute can be applied to any given item!
 | Jagged         | Prismarine Shard      | Offensive | Ranged, Fishing Rod | Ranged attacks deal fixed extra damage, fishing hooks deal damage and cannot reel enemies in                                         |
 | Light          | Diamond               | Offensive | True Melee          | Increased swing speed                                                                                                                |
 | Metaphysical   | Eye of Ender          | Offensive | True Ranged         | Arrows briefly ignore terrain                                                                                                        |
-| Momentum       | Lapis Lazuli          | Offensive | True Ranged         | Gain melee damage/speed on a successful attack - boost stacks five times, gradually fades                                            |
+| Momentum       | Lapis Lazuli          | Offensive | Melee               | Gain melee damage/speed on a successful attack - boost stacks five times, gradually fades                                            |
 | Sharpened      | Flint                 | Offensive | Melee               | Melee hits deal fixed extra damage                                                                                                   |
 | Sharpshooter   | Spyglass              | Offensive | Helmet              | Bows and crossbows are much more accurate                                                                                            |
 | Snipe Shot     | Arrow                 | Offensive | Helmet              | Deal extra ranged damage but much less melee damage                                                                                  |
