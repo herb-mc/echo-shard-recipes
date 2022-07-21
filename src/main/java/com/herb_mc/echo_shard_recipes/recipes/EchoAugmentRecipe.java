@@ -1,6 +1,7 @@
 package com.herb_mc.echo_shard_recipes.recipes;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import com.herb_mc.echo_shard_recipes.helper.ServersideRecipe;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,7 +13,7 @@ import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public class EchoAugmentRecipe extends SpecialCraftingRecipe {
+public class EchoAugmentRecipe extends SpecialCraftingRecipe implements ServersideRecipe {
 
     public EchoAugmentRecipe(Identifier id) {
         super(id);

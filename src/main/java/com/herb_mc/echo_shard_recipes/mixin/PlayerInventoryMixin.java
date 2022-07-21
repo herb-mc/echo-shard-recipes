@@ -1,6 +1,5 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

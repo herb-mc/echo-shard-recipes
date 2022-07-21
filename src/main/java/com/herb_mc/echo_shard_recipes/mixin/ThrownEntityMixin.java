@@ -27,7 +27,7 @@ public class ThrownEntityMixin {
             if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()))
                 if (!e.world.isClient()) spawnParticles((ServerWorld) e.world, ParticleTypes.SMOKE, e.getX(), e.getY(), e.getZ(), 1, 0, 0, 0, 0.05);
             if (((ThrownItemEntityInterface) e).getBonusDamage() >= 10) {
-                if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute())) e.world.createExplosion(e.getOwner(), e.getX(), e.getY(), e.getZ(), ((ThrownItemEntityInterface) e).getDamage(), Explosion.DestructionType.BREAK);
+                if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute())) e.world.createExplosion(e.getOwner(), e.getX(), e.getY(), e.getZ(), ((ThrownItemEntityInterface) e).getDamage(), Explosion.DestructionType.NONE);
                 e.discard();
             }
             ((ThrownItemEntityInterface) e).addBonusDamage(((ThrownItemEntityInterface) e).getIncrement());

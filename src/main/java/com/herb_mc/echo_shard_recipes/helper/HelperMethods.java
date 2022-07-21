@@ -219,22 +219,6 @@ public class HelperMethods {
                     if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
                     playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
                     playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
-                    ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533 * (isSneak ? 1 : 2.5), 6.0f)).setIncrement(0.5f);
-                    Vec3d rot = user.getRotationVector().multiply(isSneak ? -0.05 : -0.1);
-                    user.addVelocity(rot.x, rot.y, rot.z);
-                    if (user instanceof ServerPlayerEntity && !user.world.isClient())
-                        ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
-                    addCooldown(user, itemStack.getItem(), 3);
-                    ((LivingEntityInterface) user).setUsing(true);
-                    if (!c) decrement(ammo);
-                }
-            }
-            else if (Items.DIAMOND_HOE.equals(it)) {
-                ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_NUGGET);
-                if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
-                    if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
-                    playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
-                    playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
                     ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533, 5.0f)).setIncrement(0.6f);
                     Vec3d rot = user.getRotationVector().multiply(-0.1);
                     user.addVelocity(rot.x, rot.y, rot.z);
@@ -244,6 +228,22 @@ public class HelperMethods {
                     ((LivingEntityInterface) user).setUsing(true);
                     if (!c) decrement(ammo);
                     ((LivingEntityInterface) user).setBurst(4, itemStack);
+                }
+            }
+            else if (Items.DIAMOND_HOE.equals(it)) {
+                ItemStack ammo = hasItem(user.getInventory(), Items.GOLD_NUGGET);
+                if ((ammo != null || c) && itemStack == user.getMainHandStack()) {
+                    if (!c) itemStack.damage(1, user.getRandom(), (ServerPlayerEntity) user);
+                    playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
+                    playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
+                    ((ThrownItemEntityInterface) gunShoot(user.world, user, 4.0f, 0.0174533 * (isSneak ? 1 : 2.5), 6.0f)).setIncrement(0.5f);
+                    Vec3d rot = user.getRotationVector().multiply(isSneak ? -0.05 : -0.1);
+                    user.addVelocity(rot.x, rot.y, rot.z);
+                    if (user instanceof ServerPlayerEntity && !user.world.isClient())
+                        ((ServerPlayerEntity) user).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(user));
+                    addCooldown(user, itemStack.getItem(), 3);
+                    ((LivingEntityInterface) user).setUsing(true);
+                    if (!c) decrement(ammo);
                 }
             }
             else if (!((LivingEntityInterface) user).getUsing() && Items.IRON_HOE.equals(it)) {

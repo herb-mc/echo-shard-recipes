@@ -163,8 +163,8 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             int numStatus = 0;
             switch (getAttribute(e.getMainHandStack())) {
                 case "light", "sharpened", "stonebreaker", "terraforming" -> addAttribute(e, items.get(getAttribute(e.getMainHandStack())));
-                case "rip_current" -> applyFishAttributes(e, 7.0, 0.5);
-                case "flowing_water" -> applyFishAttributes(e, 4.0, -3.0);
+                case "rip_current" -> applyFishAttributes(e, 7.0, -0.5);
+                case "flowing_water" -> applyFishAttributes(e, 4.0, -0.25);
                 case "crushing_wave" -> applyFishAttributes(e, 1.0, -0.85);
                 case "alchemist" -> numStatus = e.getActiveStatusEffects().size();
                 case "gun_ho" -> {
@@ -215,7 +215,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                     default -> {}
                 }
             if (armor > 0) addAttribute(e, items.get("reinforced"), (armor == items.get("reinforced").base * 4) ? armor + 2 : armor);
-            if (moveSpeed > 0) addAttribute(e, items.get("swift"), (moveSpeed == items.get("swift").base * 4) ? moveSpeed + 0.8 : moveSpeed);
+            if (moveSpeed > 0) addAttribute(e, items.get("swift"), (moveSpeed == items.get("swift").base * 4) ? moveSpeed + 0.08 : moveSpeed);
             if (toughness > 0) addAttribute(e, items.get("resilient"), (toughness == items.get("resilient").base * 4) ? toughness + 4 : toughness);
             if (health > 0) addAttribute(e, items.get("rejuvenating"), (toughness == items.get("rejuvenating").base * 4) ? health + 2 : health);
             if (numStatus > 0) addAttribute(e, items.get("alchemist"), numStatus);
