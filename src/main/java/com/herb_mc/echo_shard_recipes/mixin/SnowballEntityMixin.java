@@ -94,7 +94,7 @@ public class SnowballEntityMixin {
     private void rocket(HitResult hitResult, CallbackInfo ci) {
         if ("rocket".equals(((ThrownItemEntityInterface) this).getAttribute())){
             SnowballEntity s = (SnowballEntity) (Object) this;
-            s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), ((ThrownItemEntityInterface) s).getDamage(), Explosion.DestructionType.BREAK);
+            s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), ((ThrownItemEntityInterface) s).getDamage(), Explosion.DestructionType.NONE);
             s.discard();
             ci.cancel();
         }

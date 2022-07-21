@@ -42,6 +42,7 @@ Only one attribute can be applied to any given item!
 | Fireball       | Ghast Tear            | Offensive | Flint and Steel     | Shoot explosive fireballs on right click - stronger while sneaking                                                                   |
 | Firebrand      | Lava Bucket           | Offensive | Melee               | Deal additional damage to enemies on fire                                                                                            |
 | Flamethrower   | Fire Charge           | Offensive | Flint and Steel     | Shoot small, low damage fireballs on right click - stronger while sneaking                                                           |
+| Hitscan        | Ender Pearl           | Offensive | Bow                 | Arrows instantly travel to their destination                                                                                         |
 | Jagged         | Prismarine Shard      | Offensive | Ranged, Fishing Rod | Ranged attacks deal fixed extra damage, fishing hooks deal damage and cannot reel enemies in                                         |
 | Light          | Diamond               | Offensive | True Melee          | Increased swing speed                                                                                                                |
 | Metaphysical   | Eye of Ender          | Offensive | True Ranged         | Arrows briefly ignore terrain                                                                                                        |
@@ -50,7 +51,7 @@ Only one attribute can be applied to any given item!
 | Sharpshooter   | Spyglass              | Offensive | Helmet              | Bows and crossbows are much more accurate                                                                                            |
 | Snipe Shot     | Arrow                 | Offensive | Helmet              | Deal extra ranged damage but much less melee damage                                                                                  |
 | Super Luck     | Emerald               | Offensive | Bow                 | Arrows roll critical hits twice                                                                                                      |
-| Superphysical  | Ender Pearl           | Offensive | Bow                 | Arrows experience no gravity/drag but disappear after a short while                                                                  |
+| Superphysical  | End Rod               | Offensive | Bow                 | Arrows experience no gravity/drag but disappear after a short while                                                                  |
 | Stonebreaker   | Stonecutter           | Offensive | True Tools          | Deal massive damage against inorganic targets                                                                                        |
 | Antigravity    | Warped Fungus         | Utility   | Tools               | Mined items have no gravity                                                                                                          |
 | Attuned        | Bottle o' Enchanting  | Utility   | Tools               | Small chance to gain experience while mining                                                                                         |
@@ -83,7 +84,7 @@ Only one attribute can be applied to any given item!
 | Soulbound      | Curse of Binding Book | General   | Any equips          | Remains in inventory after death                                                                                                     |
 | Unbreakable    | Obsidian              | General   | Any equips          | Does not lose durability                                                                                                             |
 | Crushing Wave  | Sponge                | Special   | Any raw fish        | Becomes a slow but powerful weapon that deals massive damage to and stuns foes at full health                                        |
-| Gun Ho         | TNT                   | Special   | Hoe                 | Hoes become guns - effect varies by material; requires gold nuggets, ingots or TNT as ammo depending on the gun                      |
+| Gun Ho         | TNT                   | Special   | Hoe                 | Hoes become guns - effect varies by material; requires gold nuggets, ingots or gunpowder as ammo depending on the gun                |
 | Flowing Water  | Trident               | Special   | Any raw fish        | Becomes a fast but initially weak weapon that ignores immunity frames and deals extra damage as they are about to end                |
 | Infernal       | Beacon                | Special   | Chestplate          | Health is doubled and dealt damage and movement speed are increased, but armor is decreased and incoming damage has a chance to crit |
 | Rip Current    | Heart of the Sea      | Special   | Any raw fish        | Becomes a balanced weapon with greatly increased knockback                                                                           |

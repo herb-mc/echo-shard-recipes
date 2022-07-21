@@ -5,11 +5,13 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,13 +19,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.Locale;
+
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getAttribute;
-import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.spawnFrag;
+import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
 import static net.minecraft.item.BowItem.getPullProgress;
 
 @Mixin(BowItem.class)
-public class BowItemMixin {
+public abstract class BowItemMixin {
 
     @Inject(
             method = "onStoppedUsing",
@@ -64,6 +67,22 @@ public class BowItemMixin {
             case "infernal" -> ((PersistentProjectileEntityInterface) persistentProjectileEntity).addFlatDamage(3);
             default -> {}
         }
+    }
+
+    @Inject(
+            method = "onStoppedUsing",
+            at = @At(
+                    target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z",
+                    value = "INVOKE",
+                    shift = At.Shift.AFTER
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT
+    )
+    private void arrowRaycasting(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
+        NbtCompound nbt = stack.getNbt();
+        if (nbt != null && "hitscan".equals(nbt.getString(ATTRIBUTE)) && getPullProgress(i) >= 1.0f)
+            if (arrowRaycast((ServerWorld) world, 100, persistentProjectileEntity, user)) persistentProjectileEntity.discard();
+
     }
 
     @Inject(

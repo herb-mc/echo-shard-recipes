@@ -1,12 +1,14 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.PlayerEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,9 +22,21 @@ import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.isInorganic;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.getNearestItems;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin {
+public class PlayerEntityMixin implements PlayerEntityInterface {
 
     @Unique private Entity target = null;
+    @Unique private boolean canShoot = false;
+    @Unique private ItemStack lastStack = ItemStack.EMPTY;
+
+    @Override
+    public boolean canShoot() {
+        return canShoot;
+    }
+
+    @Override
+    public ItemStack getLastStack() {
+        return lastStack;
+    }
 
     @Inject(
             method = "attack",
@@ -82,6 +96,9 @@ public class PlayerEntityMixin {
     )
     private void magnetizeItems(CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
+        canShoot = player.getAttackCooldownProgress(0.5f) >= 1;
+        if (lastStack != player.getMainHandStack()) canShoot = false;
+        lastStack = player.getMainHandStack();
         if (!player.world.isClient && "magnetized".equals(getAttribute(player.getMainHandStack())))
             for (ItemEntity i : getNearestItems(player, 6.0)) {
                 Vec3d p = player.getPos().subtract(i.getPos()).normalize().multiply(0.1);

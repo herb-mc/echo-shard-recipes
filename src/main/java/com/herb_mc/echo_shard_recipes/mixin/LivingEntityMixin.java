@@ -5,14 +5,13 @@ import com.herb_mc.echo_shard_recipes.helper.LivingEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.ThrownItemEntityInterface;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -32,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.helper.HelperMethods.*;
@@ -169,6 +167,12 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                 case "flowing_water" -> applyFishAttributes(e, 4.0, -3.0);
                 case "crushing_wave" -> applyFishAttributes(e, 1.0, -0.85);
                 case "alchemist" -> numStatus = e.getActiveStatusEffects().size();
+                case "gun_ho" -> {
+                    Item i = e.getMainHandStack().getItem();
+                    if (i == Items.WOODEN_HOE || i == Items.GOLDEN_HOE) addAttribute(e, items.get("gun_ho"), -0.5);
+                    else if (i == Items.STONE_HOE || i == Items.IRON_HOE) addAttribute(e, items.get("gun_ho"), -0.67);
+                    else if (i == Items.DIAMOND_HOE || i == Items.NETHERITE_HOE) addAttribute(e, items.get("gun_ho"), -0.75);
+                }
                 default -> {}
             }
             if (dealtDamageTime > 0) dealtDamageTime--;
