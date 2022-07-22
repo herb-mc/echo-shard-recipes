@@ -145,7 +145,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             switch (AttributeHelper.getAttribute(e.getMainHandStack())) {
                 case "light", "sharpened", "stonebreaker", "terraforming" -> AttributeHelper.addAttribute(e, items.get(AttributeHelper.getAttribute(e.getMainHandStack())));
                 case "rip_current" -> applyFishAttributes(e, 7.0, -0.5);
-                case "flowing_water" -> applyFishAttributes(e, 4.0, -0.25);
+                case "flowing_water" -> applyFishAttributes(e, 4.0, -0.35);
                 case "crushing_wave" -> applyFishAttributes(e, 1.0, -0.85);
                 case "alchemist" -> numStatus = e.getActiveStatusEffects().size();
                 case "gun_ho" -> {

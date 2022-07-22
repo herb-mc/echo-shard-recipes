@@ -106,5 +106,5 @@ Wands
 | Boost      | Feather       | Launches the user forward                                                                            | 0.8       | 0.25s    |
 | Healing    | Golden Apple  | Heals for one heart                                                                                  | 2.5       | 1.5s     |
 | Lightning  | Lightning Rod | Lightning does random but potentially massive damage                                                 | 3         | 2s       |
-| Sacrifice  | Arrow         | Gain Strength + Haste III, Resistance I for 10 seconds, take 10 damage                               | 8         | 4s       |
+| Sacrifice  | Rotten Flesh  | Gain Strength + Haste III, Resistance I for 10 seconds, take 10 damage                               | 8         | 4s       |
 | Sunbeam    | Sunflower     | After a short delay, an explosive attack descends upon the cursor location - only works above ground | 5         | 4s       |
