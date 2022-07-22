@@ -329,7 +329,12 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             )
     )
     private void restoreMana(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if ((LivingEntity) (Object) this instanceof PlayerEntity) ((ManaPlayer) this).addMana(stack.getItem().getFoodComponent().getHunger() / 5.0);
+        if ((LivingEntity) (Object) this instanceof PlayerEntity) {
+            LivingEntity e = (LivingEntity) (Object) this;
+            double div = 5.0;
+            for (ItemStack i : e.getArmorItems()) if ("archmage".equals(AttributeHelper.getAttribute(i))) div = 3.0;
+            ((ManaPlayer) this).addMana(stack.getItem().getFoodComponent().getHunger() / div);
+        }
     }
 
 }

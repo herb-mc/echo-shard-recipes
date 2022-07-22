@@ -49,7 +49,7 @@ public class SpecialAttributes {
 
     public static void applyArchmageAttributes(LivingEntity e) {
         addAttribute(e, EntityAttributes.GENERIC_ARMOR, SPECIAL_CHEST_ARMOR, "special_armor", -0.2, MULTIPLY_TOTAL);
-        addAttribute(e, EntityAttributes.GENERIC_MAX_HEALTH, SPECIAL_CHEST_MAX_HEALTH, "special_max_health", -0.2, MULTIPLY_TOTAL);
+        addAttribute(e, EntityAttributes.GENERIC_MAX_HEALTH, SPECIAL_CHEST_MAX_HEALTH, "special_max_health", -0.1, MULTIPLY_TOTAL);
         addAttribute(e, EntityAttributes.GENERIC_MOVEMENT_SPEED, SPECIAL_CHEST_MOVEMENT_SPEED, "special_movement_speed", 0.05, MULTIPLY_TOTAL);
     }
 
