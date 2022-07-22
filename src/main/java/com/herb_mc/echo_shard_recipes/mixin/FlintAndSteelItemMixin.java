@@ -1,8 +1,8 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.ItemStackInterface;
-import com.herb_mc.echo_shard_recipes.helper.Attributes;
-import com.herb_mc.echo_shard_recipes.helper.Projectiles;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ProjectileHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FlintAndSteelItem;
 import net.minecraft.item.ItemStack;
@@ -27,9 +27,9 @@ public class FlintAndSteelItemMixin {
         if (user != null && !user.world.isClient()) {
             ItemStack itemStack = user.getStackInHand(hand);
             if (!((ItemStackInterface) (Object) itemStack).hasCooldown())
-                switch(Attributes.getAttribute(itemStack)) {
-                    case "fireball" -> Projectiles.shootFireball(itemStack, user);
-                    case "flamethrower" -> Projectiles.flamethrower(itemStack, user);
+                switch(AttributeHelper.getAttribute(itemStack)) {
+                    case "fireball" -> ProjectileHelper.shootFireball(itemStack, user);
+                    case "flamethrower" -> ProjectileHelper.flamethrower(itemStack, user);
                 }
         }
     }

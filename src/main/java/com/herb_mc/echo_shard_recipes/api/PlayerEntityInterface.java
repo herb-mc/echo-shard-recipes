@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 
 public interface PlayerEntityInterface {
 
-    boolean canShoot();
+    boolean hasNoCooldown();
     ItemStack getLastStack();
 
 }

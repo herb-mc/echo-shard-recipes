@@ -2,6 +2,7 @@ package com.herb_mc.echo_shard_recipes.recipes;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.api.ServersideRecipe;
+import com.herb_mc.echo_shard_recipes.helper.Spells;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -18,6 +19,7 @@ import net.minecraft.world.World;
 
 import java.util.Map;
 
+import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ENCHANT_GLINT;
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.WANDS;
 import static com.herb_mc.echo_shard_recipes.helper.Misc.getText;
 
@@ -28,8 +30,7 @@ public class EchoWandRecipe extends SpecialCraftingRecipe implements ServersideR
     }
 
     private String containsSpell(ItemStack i) {
-        EchoShardRecipesMod.LOGGER.info("{}", i);
-        for (Map.Entry<String, EchoShardRecipesMod.WandItem> w : WANDS.entrySet())
+        for (Map.Entry<String, Spells.WandItem> w : WANDS.entrySet())
             if (i.isOf(w.getValue().item.asItem())) return w.getKey();
         return null;
     }
@@ -65,19 +66,20 @@ public class EchoWandRecipe extends SpecialCraftingRecipe implements ServersideR
     }
 
     public void addSpell(ItemStack i, String spell) {
-        EchoShardRecipesMod.WandItem w = WANDS.get(spell);
+        Spells.WandItem w = WANDS.get(spell);
         NbtCompound out = i.getOrCreateNbt();
         out.putBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE, true);
-        i.setCustomName(MutableText.of(Text.of(w.spell + " Wand").getContent()).setStyle(Style.EMPTY.withItalic(false).withColor(w.color)));
+        i.setCustomName(MutableText.of(Text.of(w.name + " Wand").getContent()).setStyle(Style.EMPTY.withItalic(false).withColor(w.color)));
         out.putString(EchoShardRecipesMod.ATTRIBUTE, "spell");
         out.putString(EchoShardRecipesMod.SPELL, spell);
         NbtCompound nbtDisplay = out.getCompound(ItemStack.DISPLAY_KEY);
         NbtList nbtLore = (NbtList) nbtDisplay.get(ItemStack.LORE_KEY);
         if (nbtLore == null) nbtLore = new NbtList();
-        nbtLore.add(NbtString.of(Text.Serializer.toJson(getText("Spell", w.spell, w.color))));
+        nbtLore.add(NbtString.of(Text.Serializer.toJson(getText("Spell", w.name, w.color))));
         nbtDisplay.put(ItemStack.LORE_KEY, nbtLore);
         out.put(ItemStack.DISPLAY_KEY, nbtDisplay);
         i.setNbt(out);
+        ENCHANT_GLINT.process(i);
     }
 
     @Override

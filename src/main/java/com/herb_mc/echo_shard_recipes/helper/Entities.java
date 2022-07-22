@@ -7,6 +7,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.util.math.Direction;
 
 public class Entities {
 
@@ -16,14 +17,22 @@ public class Entities {
 
     public static void damageEntity(Entity e, float damage, float dragonDamage, boolean ignoreIframes, DamageSource damageSource) {
         if (e instanceof EnderDragonPart) {
-            ((EnderDragonPart) e).owner.hurtTime = 0;
-            ((EnderDragonPart) e).owner.timeUntilRegen = 1;
+            if (ignoreIframes) {
+                ((EnderDragonPart) e).owner.hurtTime = 0;
+                ((EnderDragonPart) e).owner.timeUntilRegen = 1;
+            }
             ((EnderDragonPart) e).owner.damagePart((EnderDragonPart) e, damageSource, dragonDamage);
         } else {
-            if (e instanceof LivingEntity) ((LivingEntity) e).hurtTime = 0;
-            e.timeUntilRegen = 1;
+            if (ignoreIframes) {
+                if (e instanceof LivingEntity) ((LivingEntity) e).hurtTime = 0;
+                e.timeUntilRegen = 1;
+            }
             e.damage(damageSource, damage);
         }
+    }
+
+    public static Direction getFacing(Entity e) {
+        return e.getPitch() > 45 ? Direction.DOWN : e.getPitch() < -45 ? Direction.UP : e.getHorizontalFacing();
     }
 
 }

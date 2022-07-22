@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.getAttribute;
 
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin {

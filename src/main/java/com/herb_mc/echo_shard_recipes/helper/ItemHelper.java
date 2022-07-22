@@ -11,7 +11,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Items {
+public class ItemHelper {
 
     public static ItemStack hasItem(PlayerInventory inventory, Item item) {
         for (int i = 0; i < inventory.size(); i++) if (inventory.getStack(i).getItem() == item) return inventory.getStack(i);

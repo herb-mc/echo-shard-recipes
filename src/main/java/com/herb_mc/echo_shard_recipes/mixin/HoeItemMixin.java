@@ -1,8 +1,8 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.ItemStackInterface;
-import com.herb_mc.echo_shard_recipes.helper.Attributes;
-import com.herb_mc.echo_shard_recipes.helper.Projectiles;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ProjectileHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
@@ -17,15 +17,19 @@ public class HoeItemMixin {
 
     @Inject(
             method = "useOnBlock",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void attributeEvents(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
         PlayerEntity user = context.getPlayer();
         Hand hand = context.getHand();
         if (user != null && !user.world.isClient()) {
             ItemStack itemStack = user.getStackInHand(hand);
-            if (!((ItemStackInterface) (Object) itemStack).hasCooldown()) switch(Attributes.getAttribute(itemStack)) {
-                case "gun_ho" -> Projectiles.gunShoot(itemStack, user);
+            switch(AttributeHelper.getAttribute(itemStack)) {
+                case "gun_ho" -> {
+                    if (!((ItemStackInterface) (Object) itemStack).hasCooldown() && ProjectileHelper.gunShoot(itemStack, user))
+                        cir.setReturnValue(ActionResult.PASS);
+                    else cir.setReturnValue(ActionResult.FAIL);}
             }
         }
     }

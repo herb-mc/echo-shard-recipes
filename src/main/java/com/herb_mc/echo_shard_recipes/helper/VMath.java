@@ -6,15 +6,23 @@ import net.minecraft.util.math.Vec3d;
 
 public class VMath {
 
+    private static final Vec3d AXIS_X = new Vec3d(1, 0, 0);
+    private static final Vec3d AXIS_Y = new Vec3d(0, 1, 0);
+
     static double getSquareDist(Vec3d in1, Vec3d in2){
         in2 = in2.subtract(in1);
         return in2.x * in2.x + in2.y * in2.y + in2.z * in2.z;
     }
 
     public static Vec3d applyDivergence(Vec3d in, double maxAngle) {
-        return rotateAbout(rotateAbout(in, (in.y == 1 || in.y == -1) ? new Vec3d(1, 0, 0) : new Vec3d(0,
-                1, 0).crossProduct(in.normalize()).normalize(), EchoShardRecipesMod.ECHO_SHARD_RANDOM.nextDouble() * maxAngle), in,
-                EchoShardRecipesMod.ECHO_SHARD_RANDOM.nextDouble() * Math.PI * 2).normalize();
+        in = in.normalize();
+        return rotateAbout(rotateAbout(in, (in.y == 1 || in.y == -1 ? AXIS_X : AXIS_Y).crossProduct(in).normalize(),
+                        EchoShardRecipesMod.ECHO_SHARD_RANDOM.nextDouble() * maxAngle), in,
+                        EchoShardRecipesMod.ECHO_SHARD_RANDOM.nextDouble() * Math.PI * 2).normalize();
+    }
+
+    public static Vec3d applyDivergenceDeg(Vec3d in, double maxAngle) {
+        return applyDivergence(in, maxAngle * 2 * Math.PI / 360);
     }
 
     private static Vec3d rotateAbout(Vec3d base, Vec3d axis, double angle) {

@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.getAttribute;
 
 @Mixin(PlayerInventory.class)
 public class PlayerInventoryMixin {

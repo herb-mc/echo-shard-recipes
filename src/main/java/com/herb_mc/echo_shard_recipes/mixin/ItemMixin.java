@@ -2,8 +2,9 @@ package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.ItemStackInterface;
 import com.herb_mc.echo_shard_recipes.api.LivingEntityInterface;
-import com.herb_mc.echo_shard_recipes.helper.Attributes;
-import com.herb_mc.echo_shard_recipes.helper.Projectiles;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ProjectileHelper;
+import com.herb_mc.echo_shard_recipes.helper.Spells;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,19 +21,31 @@ public class ItemMixin {
 
     @Inject(
             method = "use",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void handleUseEvents(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (!user.world.isClient() && !((LivingEntityInterface) user).getUsing()) {
+        if (!user.world.isClient()) {
             ItemStack itemStack = user.getStackInHand(hand);
-            if (!((ItemStackInterface) (Object) itemStack).hasCooldown())
-                switch(Attributes.getAttribute(itemStack)) {
-                    case "fireball" -> Projectiles.shootFireball(itemStack, user);
-                    case "flamethrower" -> Projectiles.flamethrower(itemStack, user);
-                    case "gun_ho" ->  Projectiles.gunShoot(itemStack, user);
-                    case "spell" -> {}
+            switch(AttributeHelper.getAttribute(itemStack)) {
+                case "fireball" -> {if (validUse(itemStack, user)) ProjectileHelper.shootFireball(itemStack, user);}
+                case "flamethrower" -> {if (validUse(itemStack, user)) ProjectileHelper.flamethrower(itemStack, user);}
+                case "gun_ho" -> {
+                    if (validUse(itemStack, user) && ProjectileHelper.gunShoot(itemStack, user))
+                        cir.setReturnValue(TypedActionResult.consume(itemStack));
+                    else cir.setReturnValue(TypedActionResult.pass(itemStack));
                 }
+                case "spell" -> {
+                    if (validUse(itemStack, user) && Spells.processSpell(itemStack, user))
+                        cir.setReturnValue(TypedActionResult.success(itemStack));
+                    else cir.setReturnValue(TypedActionResult.pass(itemStack));
+                }
+            }
         }
+    }
+
+    private boolean validUse(ItemStack itemStack, PlayerEntity user) {
+        return !((ItemStackInterface) (Object) itemStack).hasCooldown() && !((LivingEntityInterface) user).getUsing();
     }
 
 }

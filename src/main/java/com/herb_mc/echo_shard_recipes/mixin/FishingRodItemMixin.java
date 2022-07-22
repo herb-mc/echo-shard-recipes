@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static com.herb_mc.echo_shard_recipes.helper.Attributes.getAttribute;
+import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.getAttribute;
 
 @Mixin(FishingRodItem.class)
 public class FishingRodItemMixin {

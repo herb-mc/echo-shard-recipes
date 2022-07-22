@@ -1,6 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.helper.Attributes;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -38,6 +38,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     @Unique private int ticksActive = 0;
     @Unique private String attribute = null;
     @Unique private Entity hitResult;
+    @Unique private boolean ignoresIframes = false;
     @Unique private static final Random random = new Random();
 
     @Override
@@ -59,6 +60,9 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     public void setAttribute(String s) {
         attribute = s;
     }
+
+    @Override
+    public void setIgnoresIframes(boolean b) {ignoresIframes = b;}
 
     @Override
     public void addFlatDamage(int i) {
@@ -127,6 +131,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
         nbt.putInt("flatDamageBoost", flatDamageBoost);
         nbt.putInt("ticksActive", ticksActive);
         nbt.putFloat("damageMultiplier", damageMultiplier);
+        nbt.putBoolean("ignoresIframes", ignoresIframes);
     }
 
     @Inject(
@@ -139,6 +144,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
         if (nbt.contains("flatDamageBoost")) flatDamageBoost = nbt.getInt("flatDamageBoost");
         if (nbt.contains("ticksActive")) ticksActive = nbt.getInt("ticksActive");
         if (nbt.contains("damageMultiplier")) damageMultiplier = nbt.getFloat("damageMultiplier");
+        if (nbt.contains("ignoresIframes")) ignoresIframes = nbt.getBoolean("ignoresIframes");
     }
 
     @ModifyArg(
@@ -193,6 +199,10 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             spawnParticles((ServerWorld) ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1);
             ref.discard();
         }
+        else if (ignoresIframes && inGround) {
+            spawnParticles((ServerWorld) ref.world, ParticleTypes.ENCHANTED_HIT, ref.getX(), ref.getY(), ref.getZ(), 4, 0.1, 0.1, 0.1, 0.1);
+            ref.discard();
+        }
     }
 
     @Inject(
@@ -201,6 +211,10 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     )
     protected void getEntityHitResult(EntityHitResult entityHitResult, CallbackInfo info) {
         hitResult = entityHitResult.getEntity();
+        if (hitResult instanceof LivingEntity && ignoresIframes) {
+            ((LivingEntity) hitResult).hurtTime = 0;
+            hitResult.timeUntilRegen = 1;
+        }
     }
 
     @ModifyArg(
@@ -211,7 +225,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             )
     )
     private Vec3d setReflected(Vec3d vec) {
-        if (hitResult instanceof LivingEntity && ((LivingEntity) hitResult).isBlocking() && ((LivingEntity) hitResult).getActiveItem() != null && "reflecting".equals(Attributes.getAttribute(((LivingEntity) hitResult).getActiveItem())))
+        if (hitResult instanceof LivingEntity && ((LivingEntity) hitResult).isBlocking() && ((LivingEntity) hitResult).getActiveItem() != null && "reflecting".equals(AttributeHelper.getAttribute(((LivingEntity) hitResult).getActiveItem())))
             vec = hitResult.getRotationVector().normalize().multiply(vec.length() * 7);
         return vec;
     }
