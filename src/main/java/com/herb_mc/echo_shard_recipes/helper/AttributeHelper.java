@@ -1,19 +1,164 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 
 public class AttributeHelper {
+
+    public static class AttributeItem {
+
+        public Item item;
+        public String string;
+        public Formatting color;
+        public ItemChecker itemChecker;
+        public UUID uuid;
+        public EntityAttribute attribute;
+        public String tag;
+        public EntityAttributeModifier.Operation op;
+        public PostProcess processor;
+        public IngredientProcessor ingredientProcessor;
+        public double base;
+
+        public AttributeItem(Item i, String s, ItemChecker ic, Formatting t) {
+            item = i;
+            string = s;
+            color = t;
+            itemChecker = ic;
+            processor = NONE;
+            ingredientProcessor = NO_REQ;
+            uuid = null;
+            attribute = null;
+            tag = null;
+            op = null;
+            base = 0.0;
+        }
+
+        public AttributeItem(Item i, String s, ItemChecker ic, Formatting t, PostProcess p, IngredientProcessor in) {
+            item = i;
+            string = s;
+            color = t;
+            itemChecker = ic;
+            processor = p;
+            ingredientProcessor = in;
+            uuid = null;
+            attribute = null;
+            tag = null;
+            op = null;
+            base = 0.0;
+        }
+
+        AttributeItem(Item i, String s, ItemChecker ic, Formatting t, PostProcess p, IngredientProcessor in, String st, EntityAttribute e, String str, EntityAttributeModifier.Operation o, double d) {
+            this(i, s, ic, t, p, in);
+            uuid = UUID.fromString(st);
+            attribute = e;
+            tag = MOD_ID + "." + str;
+            op = o;
+            base = d;
+        }
+
+        public AttributeItem(Item i, String s, ItemChecker ic, Formatting t, String st, EntityAttribute e, String str, EntityAttributeModifier.Operation o, double d) {
+            this(i, s, ic, t, NONE, NO_REQ);
+            uuid = UUID.fromString(st);
+            attribute = e;
+            tag = MOD_ID + "." + str;
+            op = o;
+            base = d;
+        }
+
+    }
+
+    public interface ItemChecker {
+        boolean isValidItem(Item i);
+    }
+
+    public interface PostProcess {
+        void process(ItemStack i);
+    }
+
+    public interface IngredientProcessor {
+        void process(ItemStack in, ItemStack i);
+    }
+
+    public static final String HAS_ATTRIBUTE = "HasShardAttribute";
+    public static final String ATTRIBUTE = "ShardAttribute";
+    public static final String STORED_ATTRIBUTE = "StoredShardAttribute";
+    public static final ItemChecker TRUE_MELEE = (i) -> (i instanceof AxeItem || i instanceof SwordItem);
+    public static final ItemChecker MELEE = (i) -> (TRUE_MELEE.isValidItem(i) || i instanceof TridentItem);
+    public static final ItemChecker TRUE_RANGED = (i) -> (i instanceof BowItem || i instanceof CrossbowItem);
+    public static final ItemChecker RANGED = (i) -> (TRUE_RANGED.isValidItem(i) || i instanceof TridentItem);
+    public static final ItemChecker WEAPON = (i) -> (MELEE.isValidItem(i) || RANGED.isValidItem(i));
+    public static final ItemChecker RANGED_AND_ROD = (i) -> (RANGED.isValidItem(i) || i instanceof FishingRodItem);
+    public static final ItemChecker BOW = (i) -> (i instanceof BowItem);
+    public static final ItemChecker ROD = (i) -> (i instanceof FishingRodItem);
+    public static final ItemChecker TRUE_TOOL = (i) -> (i instanceof HoeItem || i instanceof PickaxeItem || i instanceof ShovelItem);
+    public static final ItemChecker TOOL = (i) -> (i instanceof AxeItem || i instanceof HoeItem || i instanceof PickaxeItem || i instanceof ShovelItem);
+    public static final ItemChecker ARMOR = (i) -> (i instanceof ArmorItem || i instanceof ElytraItem);
+    public static final ItemChecker SHIELD = (i) -> (i instanceof ShieldItem);
+    public static final ItemChecker MISC = (i) -> (i instanceof ShearsItem || i instanceof FishingRodItem || i instanceof ShieldItem || i instanceof FlintAndSteelItem || i instanceof OnAStickItem<?>);
+    public static final ItemChecker EQUIPS = (i) -> (WEAPON.isValidItem(i) || TOOL.isValidItem(i) || ARMOR.isValidItem(i) || MISC.isValidItem(i));
+    public static final ItemChecker FLINT_AND_STEEL = (i) -> (i instanceof FlintAndSteelItem);
+    public static final ItemChecker HOE = (i) -> (i instanceof HoeItem);
+    public static final ItemChecker HEAD = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.HEAD);
+    public static final ItemChecker CHEST = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.CHEST);
+    public static final ItemChecker LEGS = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.LEGS);
+    public static final ItemChecker FEET = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.FEET);
+    public static final ItemChecker FISH = (i) -> (i == Items.SALMON || i == Items.COD || i == Items.TROPICAL_FISH);
+    public static final ItemChecker SPELL_FOCUS = (i) -> (i == Items.EMERALD);
+    public static final ItemChecker ANY = (i) -> true;
+    public static final PostProcess NONE = (i) -> {};
+    public static final PostProcess CRUSHING_WAVE = (i) -> {i.addEnchantment(Enchantments.KNOCKBACK, 2); i.addEnchantment(Enchantments.SMITE, 1); i.addHideFlag(ItemStack.TooltipSection.ENCHANTMENTS);};
+    public static final PostProcess ENCHANT_GLINT = (i) -> {i.addEnchantment(Enchantments.PUNCH, 1); i.addHideFlag(ItemStack.TooltipSection.ENCHANTMENTS);};
+    public static final PostProcess UPGRADE_ENCHANTS = (i) -> {
+        Map<Enchantment, Integer> m = EnchantmentHelper.get(i);
+        if (m.entrySet().size() == 0) i.setCount(0);
+        else for (Map.Entry<Enchantment, Integer> entry : m.entrySet()) if (entry.getKey().getMaxLevel() != 1) entry.setValue(entry.getValue() + 1);
+        EnchantmentHelper.set(m, i);
+    };
+    public static final PostProcess UPGRADE_PROT = (i) -> {
+        Map<Enchantment, Integer> m = EnchantmentHelper.get(i);
+        for (Map.Entry<Enchantment, Integer> entry : m.entrySet()) if (entry.getKey() == Enchantments.PROTECTION) entry.setValue(entry.getValue() + 1);
+        EnchantmentHelper.set(m, i);
+    };
+    public static final IngredientProcessor NO_REQ = (in, i) -> {};
+    public static final IngredientProcessor REQUIRES_BINDING = (in, i) -> {
+        boolean remove = true;
+        Identifier id = EnchantmentHelper.getEnchantmentId(Enchantments.BINDING_CURSE);
+        NbtList nbt = EnchantedBookItem.getEnchantmentNbt(in);
+        for(int j = 0; j < nbt.size(); ++j) {
+            NbtCompound nbtCompound = nbt.getCompound(j);
+            Identifier identifier2 = EnchantmentHelper.getIdFromNbt(nbtCompound);
+            if (identifier2 != null && identifier2.equals(id)) remove = false;
+        }
+        if (remove) i.setCount(0);
+    };
+    public static final IngredientProcessor SET_SPELL_FOCUS = (in, i) -> {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putBoolean("spell_focus", true);
+        i.setNbt(nbt);
+        i.setCustomName(MutableText.of(Text.of("Spell Focus").getContent()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_PURPLE)));
+    };
+    public static HashMap<String, AttributeItem> ATTRIBUTE_ITEMS = new HashMap<>();
 
     static {
         ATTRIBUTE_ITEMS.put("alchemist", new AttributeItem(Items.POTION, "Alchemist", MELEE, Formatting.RED, "ac18a4c5-ffff-4777-8827-b62582306fe3", EntityAttributes.GENERIC_ATTACK_DAMAGE, "alchemist", EntityAttributeModifier.Operation.ADDITION, 1.0));
@@ -67,6 +212,7 @@ public class AttributeHelper {
         ATTRIBUTE_ITEMS.put("fireproof", new AttributeItem(Items.BLAZE_ROD, "Fireproof", EQUIPS, Formatting.YELLOW));
         ATTRIBUTE_ITEMS.put("unbreakable", new AttributeItem(Items.OBSIDIAN, "Unbreakable", EQUIPS, Formatting.YELLOW));
         ATTRIBUTE_ITEMS.put("soulbound", new AttributeItem(Items.ENCHANTED_BOOK, "Soulbound", EQUIPS, Formatting.YELLOW, NONE, REQUIRES_BINDING));
+        ATTRIBUTE_ITEMS.put("archmage", new AttributeItem(Items.ENCHANTING_TABLE, "Archmage", CHEST, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
         ATTRIBUTE_ITEMS.put("crushing_wave", new AttributeItem(Items.SPONGE, "Crushing Wave", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));
         ATTRIBUTE_ITEMS.put("gun_ho", new AttributeItem(Items.TNT, "Gun Ho", HOE, Formatting.LIGHT_PURPLE, "7a11103b-8823-4db9-bf48-ce4801a3ec57", EntityAttributes.GENERIC_ATTACK_SPEED, "gun_hoe", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0));
         ATTRIBUTE_ITEMS.put("flowing_water", new AttributeItem(Items.TRIDENT, "Flowing Water", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));

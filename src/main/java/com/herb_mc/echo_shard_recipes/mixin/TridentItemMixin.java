@@ -1,6 +1,8 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -14,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ATTRIBUTE;
+import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.ATTRIBUTE;
 
 @Mixin(TridentItem.class)
 public class TridentItemMixin {
@@ -32,9 +33,9 @@ public class TridentItemMixin {
         if (!world.isClient()) {
             NbtCompound nbt = stack.getNbt();
             if (nbt != null) {
-                if (nbt.getBoolean(HAS_PARTICLE))
-                    ((PersistentProjectileEntityInterface) tridentEntity).setParticle(nbt.getInt(PARTICLE));
-                if (nbt.getBoolean(HAS_ATTRIBUTE))
+                if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE))
+                    ((PersistentProjectileEntityInterface) tridentEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+                if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE))
                     ((PersistentProjectileEntityInterface) tridentEntity).setAttribute(nbt.getString(ATTRIBUTE));
             }
         }

@@ -2,6 +2,7 @@ package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -23,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Random;
 
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static com.herb_mc.echo_shard_recipes.helper.Network.*;
 
 @Mixin(PersistentProjectileEntity.class)
@@ -84,7 +84,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     private void processTick(CallbackInfo ci) {
         PersistentProjectileEntity ref = (PersistentProjectileEntity) (Object) this;
         if (particle >= 0 && (ref.isCritical() || (ref instanceof TridentEntity && !((TridentEntityAccessor) ref).getDealtDamage()))) {
-            ParticleItem i = PARTICLE_ITEMS[particle];
+            ParticleHelper.ParticleItem i = ParticleHelper.PARTICLE_ITEMS[particle];
             for (int c = 0; c < i.particleCount; c++) {
                 float xOffset = i.offsetScale * (0.5f - random.nextFloat()) + i.hardOffsetX;
                 float yOffset = i.offsetScale * (0.5f - random.nextFloat()) + i.hardOffsetY;
@@ -126,8 +126,8 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             at = @At("TAIL")
     )
     private void writeNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (particle != -1) nbt.putInt(PARTICLE, particle);
-        if (attribute != null) nbt.putString(ATTRIBUTE, attribute);
+        if (particle != -1) nbt.putInt(ParticleHelper.PARTICLE, particle);
+        if (attribute != null) nbt.putString(AttributeHelper.ATTRIBUTE, attribute);
         nbt.putInt("flatDamageBoost", flatDamageBoost);
         nbt.putInt("ticksActive", ticksActive);
         nbt.putFloat("damageMultiplier", damageMultiplier);
@@ -139,8 +139,8 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
             at = @At("TAIL")
     )
     private void readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains(PARTICLE)) particle = nbt.getInt(PARTICLE);
-        if (nbt.contains(ATTRIBUTE)) attribute = nbt.getString(ATTRIBUTE);
+        if (nbt.contains(ParticleHelper.PARTICLE)) particle = nbt.getInt(ParticleHelper.PARTICLE);
+        if (nbt.contains(AttributeHelper.ATTRIBUTE)) attribute = nbt.getString(AttributeHelper.ATTRIBUTE);
         if (nbt.contains("flatDamageBoost")) flatDamageBoost = nbt.getInt("flatDamageBoost");
         if (nbt.contains("ticksActive")) ticksActive = nbt.getInt("ticksActive");
         if (nbt.contains("damageMultiplier")) damageMultiplier = nbt.getFloat("damageMultiplier");

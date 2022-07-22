@@ -47,7 +47,6 @@ public class Network {
     private static void sendToPlayerWithinRenderDistance(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet) {
         if (player.getWorld() != world) return;
         else {
-            EchoShardRecipesMod.LOGGER.info("block break");
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), 128.0D))
                 player.networkHandler.sendPacket(packet);

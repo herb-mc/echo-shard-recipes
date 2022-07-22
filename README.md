@@ -87,6 +87,7 @@ Only one attribute can be applied to any given item!
 | Fireproof      | Blaze Rod              | General   | Any equips          | Item cannot burn                                                                                                               |
 | Soulbound      | Curse of Binding Book  | General   | Any equips          | Remains in inventory after death                                                                                               |
 | Unbreakable    | Obsidian               | General   | Any equips          | Does not lose durability                                                                                                       |
+| Archmage       | Enchantment Table      | Special   | Chestplate          | All magic stats are boosted significantly, but max health and armor are decreased                                              |
 | Crushing Wave  | Sponge                 | Special   | Any raw fish        | Becomes a slow but powerful weapon that deals massive damage to and stuns foes at full health                                  |
 | Gun Ho         | TNT                    | Special   | Hoe                 | Hoes become guns - effect varies by material; requires gold nuggets, ingots or gunpowder as ammo depending on the gun          |
 | Flowing Water  | Trident                | Special   | Any raw fish        | Becomes a fast but initially weak weapon that ignores immunity frames and deals extra damage as they are about to end          |
@@ -106,4 +107,4 @@ Wands
 | Healing    | Golden Apple  | Heals for one heart                                                                                  | 2.5       | 1.5s     |
 | Lightning  | Lightning Rod | Lightning does random but potentially massive damage                                                 | 3         | 2s       |
 | Sacrifice  | Arrow         | Gain Strength + Haste III, Resistance I for 10 seconds, take 10 damage                               | 8         | 4s       |
-| Sunbeam    | Sunflower     | After a short delay, an explosive attack descends upon the cursor location - only works above ground | 3         | 4s       |
+| Sunbeam    | Sunflower     | After a short delay, an explosive attack descends upon the cursor location - only works above ground | 5         | 4s       |

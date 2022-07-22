@@ -1,11 +1,10 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.api.LivingEntityInterface;
 import com.herb_mc.echo_shard_recipes.api.ManaPlayer;
 import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
-import com.herb_mc.echo_shard_recipes.helper.ItemHelper;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import com.herb_mc.echo_shard_recipes.helper.ProjectileHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -19,10 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -91,12 +87,12 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             )
     )
     private void elytraParticles(Vec3d movementInput, CallbackInfo ci) {
-        if (!((LivingEntity) (Object) this).world.isClient() && this.riptideTicks <= 0 && ((LivingEntity) (Object) this).isFallFlying()) {
-            LivingEntity entity = (LivingEntity) (Object) this;
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity instanceof PlayerEntity && !entity.world.isClient() && this.riptideTicks <= 0 && entity.isFallFlying()) {
             for (ItemStack i: entity.getArmorItems()) {
                 NbtCompound nbt = i.getNbt();
-                if (nbt != null && nbt.getBoolean(HAS_PARTICLE)){
-                    EchoShardRecipesMod.ParticleItem p = PARTICLE_ITEMS[nbt.getInt(PARTICLE)];
+                if (nbt != null && nbt.getBoolean(ParticleHelper.HAS_PARTICLE)){
+                    ParticleHelper.ParticleItem p = ParticleHelper.PARTICLE_ITEMS[nbt.getInt(ParticleHelper.PARTICLE)];
                     float pitch = entity.getPitch(1.0F) * 0.017453292F;
                     Vec3d rot =  entity.getRotationVector().normalize();
                     Vec3d v = entity.getRotationVector().crossProduct(new Vec3d(0, 1, 0)).normalize();
@@ -116,34 +112,33 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             at = @At("HEAD")
     )
     private void applyAttributes(CallbackInfo ci) {
-        if (!((LivingEntity) (Object) this).world.isClient()) {
-            LivingEntity e = (LivingEntity) (Object) this;
+        LivingEntity e = (LivingEntity) (Object) this;
+        if (!e.world.isClient() && e instanceof PlayerEntity) {
             using = false;
-            if (e instanceof PlayerEntity user) {
-                boolean c = user.isCreative();
-                if (burstTimer > 0) {
-                    burstTimer--;
-                    using = true;
+            PlayerEntity user = (PlayerEntity) e;
+            boolean c = user.isCreative();
+            if (burstTimer > 0) {
+                burstTimer--;
+                using = true;
+            }
+            if (currentStack != ItemStack.EMPTY && burstTimer % 2 == 0 && e.getMainHandStack() == currentStack) {
+                ProjectileHelper.ProjectileItem p = PROJECTILE_ITEMS.get(Items.NETHERITE_HOE);
+                int temp = burstTimer;
+                if (p.predicate.test(user, currentStack) && consumeAmmo(user, p.ammo, currentStack, c)) {
+                    p.use.onUse(user, currentStack, user.isSneaking());
+                    burstTimer = temp;
                 }
-                if (currentStack != ItemStack.EMPTY && burstTimer % 2 == 0 && e.getMainHandStack() == currentStack) {
-                    ProjectileHelper.ProjectileItem p = PROJECTILE_ITEMS.get(Items.NETHERITE_HOE);
-                    int temp = burstTimer;
-                    if (p.predicate.test(user, currentStack) && consumeAmmo(user, p.ammo, currentStack, c)) {
-                        p.use.onUse(user, currentStack, user.isSneaking());
-                        burstTimer = temp;
-                    }
-                    else {
-                        currentStack = ItemStack.EMPTY;
-                        burstTimer = 0;
-                    }
-                } else if (e.getMainHandStack() != currentStack) {
+                else {
                     currentStack = ItemStack.EMPTY;
                     burstTimer = 0;
                 }
-                if (burstTimer <= 0) currentStack = ItemStack.EMPTY;
+            } else if (e.getMainHandStack() != currentStack) {
+                currentStack = ItemStack.EMPTY;
+                burstTimer = 0;
             }
-            Map<String, EchoShardRecipesMod.AttributeItem> items = EchoShardRecipesMod.ATTRIBUTE_ITEMS;
-            for (EchoShardRecipesMod.AttributeItem i : items.values())
+            if (burstTimer <= 0) currentStack = ItemStack.EMPTY;
+            Map<String, AttributeHelper.AttributeItem> items = AttributeHelper.ATTRIBUTE_ITEMS;
+            for (AttributeHelper.AttributeItem i : items.values())
                 if (i.attribute != null) AttributeHelper.removeAttribute(e, i.attribute, i.uuid);
             removeSpecialAttributes(e);
             int numStatus = 0;
@@ -204,6 +199,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                     case "stalwart" -> knockbackRes += items.get("stalwart").base;
                     case "voided" -> applyVoidAttributes(e);
                     case "infernal" -> applyInfernalAttributes(e);
+                    case "archmage" -> applyArchmageAttributes(e);
                     default -> {
                     }
                 }
@@ -235,7 +231,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             }
             for (ItemStack i : e.getArmorItems()) switch (AttributeHelper.getAttribute(i)) {
                 case "power_assist" -> {
-                    if (TOOL.isValidItem(e.getMainHandStack().getItem())) {
+                    if (AttributeHelper.TOOL.isValidItem(e.getMainHandStack().getItem())) {
                         hasteBoost++;
                         strengthBoost++;
                     }

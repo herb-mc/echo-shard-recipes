@@ -11,5 +11,7 @@ public interface ManaPlayer {
     double getManaRegenBoost(double d);
     double getManaRegen();
     double getMaxMana();
+    void addMaxManaBoost(double d);
+    void setMaxManaBoost(double d);
 
 }

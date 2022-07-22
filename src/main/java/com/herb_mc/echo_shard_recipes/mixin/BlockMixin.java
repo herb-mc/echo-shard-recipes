@@ -1,5 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -48,7 +49,7 @@ public abstract class BlockMixin {
     private void afterBreakHandler(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack stack, CallbackInfo ci) {
         modifier = 0;
         NbtCompound nbt = player.getMainHandStack().getNbt();
-        if (nbt != null) switch (nbt.getString(ATTRIBUTE)) {
+        if (nbt != null) switch (nbt.getString(AttributeHelper.ATTRIBUTE)) {
             case "antigravity" -> modifier = 1;
             case "glowing" -> modifier = 2;
             case "attuned" -> {if (ECHO_SHARD_RANDOM.nextFloat() <= 0.05f) player.addExperience(1);}

@@ -2,6 +2,8 @@ package com.herb_mc.echo_shard_recipes.recipes;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.api.ServersideRecipe;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
@@ -30,7 +32,7 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe implements Server
 
     private int containsParticle(ItemStack i) {
         int id = 0;
-        for (EchoShardRecipesMod.ParticleItem t : EchoShardRecipesMod.PARTICLE_ITEMS) {
+        for (ParticleHelper.ParticleItem t : ParticleHelper.PARTICLE_ITEMS) {
             if (i.isOf(t.item.asItem())) return id;
             id++;
         }
@@ -38,24 +40,24 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe implements Server
     }
 
     private String containsAttribute(ItemStack i) {
-        for (Map.Entry<String, EchoShardRecipesMod.AttributeItem> t : EchoShardRecipesMod.ATTRIBUTE_ITEMS.entrySet())
+        for (Map.Entry<String, AttributeHelper.AttributeItem> t : AttributeHelper.ATTRIBUTE_ITEMS.entrySet())
             if (i.isOf(t.getValue().item.asItem())) return t.getKey();
         return null;
     }
 
     private boolean isEmptyShard(ItemStack in) {
-        return !in.getOrCreateNbt().getBoolean(EchoShardRecipesMod.HAS_PARTICLE);
+        return !in.getOrCreateNbt().getBoolean(ParticleHelper.HAS_PARTICLE);
     }
 
     public void addParticles(ItemStack output, int id) {
         NbtCompound nbt = output.getOrCreateNbt();
-        nbt.putBoolean(EchoShardRecipesMod.HAS_PARTICLE, true);
-        nbt.putInt(EchoShardRecipesMod.PARTICLE, id);
+        nbt.putBoolean(ParticleHelper.HAS_PARTICLE, true);
+        nbt.putInt(ParticleHelper.PARTICLE, id);
         NbtCompound nbtDisplay = nbt.getCompound(ItemStack.DISPLAY_KEY);
         NbtList nbtLore = (NbtList) nbtDisplay.get(ItemStack.LORE_KEY);
         if (nbtLore == null) nbtLore = new NbtList();
         nbtLore.add(NbtString.of(Text.Serializer.toJson(
-                getText("Particle", EchoShardRecipesMod.PARTICLE_ITEMS[id].string, EchoShardRecipesMod.PARTICLE_ITEMS[id].color)
+                getText("Particle", ParticleHelper.PARTICLE_ITEMS[id].string, ParticleHelper.PARTICLE_ITEMS[id].color)
         )));
         nbtDisplay.put(ItemStack.LORE_KEY, nbtLore);
         nbt.put(ItemStack.DISPLAY_KEY, nbtDisplay);
@@ -68,18 +70,18 @@ public class EchoShardBaseRecipe extends SpecialCraftingRecipe implements Server
 
     public void addAttributes(ItemStack output, String id) {
         NbtCompound nbt = output.getOrCreateNbt();
-        nbt.putBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE, true);
-        nbt.putString(EchoShardRecipesMod.STORED_ATTRIBUTE, id);
+        nbt.putBoolean(AttributeHelper.HAS_ATTRIBUTE, true);
+        nbt.putString(AttributeHelper.STORED_ATTRIBUTE, id);
         NbtCompound nbtDisplay = nbt.getCompound(ItemStack.DISPLAY_KEY);
         NbtList nbtLore = (NbtList) nbtDisplay.get(ItemStack.LORE_KEY);
         if (nbtLore == null) nbtLore = new NbtList();
         nbtLore.add(NbtString.of(Text.Serializer.toJson(
-                getText("Attribute", EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(id).string, EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(id).color)
+                getText("Attribute", AttributeHelper.ATTRIBUTE_ITEMS.get(id).string, AttributeHelper.ATTRIBUTE_ITEMS.get(id).color)
         )));
         nbtDisplay.put(ItemStack.LORE_KEY, nbtLore);
         nbt.put(ItemStack.DISPLAY_KEY, nbtDisplay);
         output.setNbt(nbt);
-        EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(id).ingredientProcessor.process(ingredient, output);
+        AttributeHelper.ATTRIBUTE_ITEMS.get(id).ingredientProcessor.process(ingredient, output);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
@@ -23,8 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ATTRIBUTE;
+import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.ATTRIBUTE;
 import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.getAttribute;
 import static com.herb_mc.echo_shard_recipes.helper.ProjectileHelper.spawnFrag;
 
@@ -42,8 +43,8 @@ public class CrossbowItemMixin {
     private static void onShoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated, CallbackInfo ci, boolean bl, ProjectileEntity projectileEntity) {
         NbtCompound nbt = crossbow.getNbt();
         if (nbt != null) {
-            if (nbt.getBoolean(HAS_PARTICLE)) ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(PARTICLE));
-            if (nbt.getBoolean(HAS_ATTRIBUTE)) {
+            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+            if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
                 ((PersistentProjectileEntityInterface) projectileEntity).setAttribute(nbt.getString(ATTRIBUTE));
                 switch (nbt.getString(ATTRIBUTE)) {
                     case "metaphysical" -> ((PersistentProjectileEntity) projectileEntity).setNoClip(true);

@@ -47,6 +47,12 @@ public class SpecialAttributes {
         addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, SPECIAL_CHEST_ATTACK_DAMAGE, "special_attack_damage", 3.0, ADDITION);
     }
 
+    public static void applyArchmageAttributes(LivingEntity e) {
+        addAttribute(e, EntityAttributes.GENERIC_ARMOR, SPECIAL_CHEST_ARMOR, "special_armor", -0.2, MULTIPLY_TOTAL);
+        addAttribute(e, EntityAttributes.GENERIC_MAX_HEALTH, SPECIAL_CHEST_MAX_HEALTH, "special_max_health", -0.2, MULTIPLY_TOTAL);
+        addAttribute(e, EntityAttributes.GENERIC_MOVEMENT_SPEED, SPECIAL_CHEST_MOVEMENT_SPEED, "special_movement_speed", 0.05, MULTIPLY_TOTAL);
+    }
+
     public static void applyFishAttributes(LivingEntity e, double baseAttack, double baseSpeed) {
         addAttribute(e, EntityAttributes.GENERIC_ATTACK_DAMAGE, SPECIAL_ATTACK_DAMAGE, "fish", baseAttack, ADDITION);
         addAttribute(e, EntityAttributes.GENERIC_ATTACK_SPEED, SPECIAL_ATTACK_SPEED, "fish", baseSpeed, MULTIPLY_TOTAL);

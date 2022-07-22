@@ -2,6 +2,7 @@ package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import com.herb_mc.echo_shard_recipes.helper.ProjectileHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -20,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
 import static net.minecraft.item.BowItem.getPullProgress;
 
 @Mixin(BowItem.class)
@@ -37,10 +37,10 @@ public abstract class BowItemMixin {
     private void onShoot(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) {
-            if (nbt.getBoolean(HAS_PARTICLE)) ((PersistentProjectileEntityInterface) persistentProjectileEntity).setParticle(nbt.getInt(PARTICLE));
-            if (nbt.getBoolean(HAS_ATTRIBUTE)) {
-                ((PersistentProjectileEntityInterface) persistentProjectileEntity).setAttribute(nbt.getString(ATTRIBUTE));
-                switch (nbt.getString(ATTRIBUTE)) {
+            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) ((PersistentProjectileEntityInterface) persistentProjectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+            if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
+                ((PersistentProjectileEntityInterface) persistentProjectileEntity).setAttribute(nbt.getString(AttributeHelper.ATTRIBUTE));
+                switch (nbt.getString(AttributeHelper.ATTRIBUTE)) {
                     case "buckshot" -> {
                         if (getPullProgress(i) >= 1.0f) {
                             float speed = 1.4f;
@@ -78,7 +78,7 @@ public abstract class BowItemMixin {
     )
     private void arrowRaycasting(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
         NbtCompound nbt = stack.getNbt();
-        if (nbt != null && "hitscan".equals(nbt.getString(ATTRIBUTE)) && getPullProgress(i) >= 1.0f)
+        if (nbt != null && "hitscan".equals(nbt.getString(AttributeHelper.ATTRIBUTE)) && getPullProgress(i) >= 1.0f)
             if (ProjectileHelper.arrowHitscan((ServerWorld) world, 100, persistentProjectileEntity, user)) persistentProjectileEntity.discard();
 
     }

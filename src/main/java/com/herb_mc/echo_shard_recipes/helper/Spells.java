@@ -3,6 +3,7 @@ package com.herb_mc.echo_shard_recipes.helper;
 import com.herb_mc.echo_shard_recipes.api.LivingEntityInterface;
 import com.herb_mc.echo_shard_recipes.api.ManaPlayer;
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.ServerBossBar;
@@ -30,15 +31,18 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.*;
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.WANDS;
 import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.getAttribute;
 import static com.herb_mc.echo_shard_recipes.helper.Misc.raycastToFirstHit;
 import static com.herb_mc.echo_shard_recipes.helper.VMath.*;
 import static com.herb_mc.echo_shard_recipes.helper.Network.*;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class Spells {
+
+    public static final String SPELL = "StoredSpell";
+    public static HashMap<String, WandItem> WANDS = new HashMap<>();
 
     public interface Spell {
         boolean spell(PlayerEntity p, double b);
@@ -49,12 +53,12 @@ public class Spells {
         public Item item;
         public String name;
         public Formatting color;
-        public PostProcess processor;
+        public AttributeHelper.PostProcess processor;
         public int cooldown;
         public double manaCost;
         public Spell spell;
 
-        public WandItem(Item i, String s, Formatting f, int c, double d, Spell sp, PostProcess p) {
+        public WandItem(Item i, String s, Formatting f, int c, double d, Spell sp, AttributeHelper.PostProcess p) {
             item = i;
             name = s;
             color = f;
@@ -66,18 +70,18 @@ public class Spells {
 
 
         public WandItem(Item i, String s, Formatting f, int c, double d, Spell sp) {
-            this(i, s, f, c, d, sp, ENCHANT_GLINT);
+            this(i, s, f, c, d, sp, AttributeHelper.ENCHANT_GLINT);
         }
 
     }
 
     public static final Spell LIGHTNING = (p, b) -> {
         lightningRaycast((ServerWorld) p.world, 10, p.getEyePos(), applyDivergenceDeg(p.getRotationVector(), 0).normalize().multiply(0.2), p, 0, 4, b);
-        playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0f, 1.2f);
-        playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 0.8f, 2.0f);
+        playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, 2.0f, 1.2f);
+        playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1.6f, 2.0f);
+        if (!p.isCreative()) p.getHungerManager().addExhaustion(0.4f);
         return true;
     };
-
     public static final Spell BOOST = (p, b) -> {
         playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, 0.6f, 1.3f);
         p.setVelocity(p.getRotationVector().multiply(1.2 * (1 + b)).add(p.getVelocity()));
@@ -87,7 +91,6 @@ public class Spells {
         if (!p.isCreative()) p.getHungerManager().addExhaustion(0.1f);
         return true;
     };
-
     public static final Spell SACRIFICE = (p, b) -> {
         playSound((ServerWorld) p.world, p, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.5f);
         p.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, (int) (200 * (1 + b)), 2));
@@ -97,37 +100,39 @@ public class Spells {
         if (!p.isCreative()) p.damage(DamageSource.MAGIC, 10.0f);
         return true;
     };
-
     public static final Spell ARROW_RAIN = (p, b) -> {
         playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_ARROW_SHOOT, 1.0f, 0.5f);
         for (int i = 0; i < ECHO_SHARD_RANDOM.nextInt(8, 13); i++) {
             ArrowEntity a = new ArrowEntity(p.world, p);
             a.setDamage(1.0);
             ((PersistentProjectileEntityInterface) a).setIgnoresIframes(true);
-            a.setVelocity(applyDivergenceDeg(p.getRotationVector(), 15.0).multiply(1.25 * b + ECHO_SHARD_RANDOM.nextFloat(1.4f,2.0f)));
+            a.setVelocity(applyDivergenceDeg(p.getRotationVector(), 15.0).multiply(1.25 * b + ECHO_SHARD_RANDOM.nextFloat(1.4f,2.0f)).add(p.getVelocity()));
             a.setCritical(true);
             p.world.spawnEntity(a);
+            if (!p.isCreative()) p.getHungerManager().addExhaustion(0.0125f);
         }
         return true;
     };
-
     public static final Spell HEALING = (p, b) -> {
         playSound((ServerWorld) p.world, p, SoundEvents.ENTITY_PLAYER_BURP, 1.0f, 1.5f);
         p.heal((float) (2.0f * (1 + b)));
         if (!p.isCreative()) p.getHungerManager().addExhaustion(3.0f);
         return true;
     };
-
     public static final Spell SUNBEAM = (p, b) -> {
-        Misc.RaycastHit r = raycastToFirstHit((ServerWorld) p.world, p, p.getEyePos(), p.getRotationVector().multiply(0.2), new Vec3d(0.15, 0.15, 0.15), 500, 3, ParticleTypes.FLAME, 0.1, 0.1, 0.1, 0.05);
+        Misc.RaycastHit r = raycastToFirstHit((ServerWorld) p.world, p, p.getEyePos(), p.getRotationVector().multiply(0.2), new Vec3d(0.15, 0.15, 0.15), 125, 3, ParticleTypes.FLAME, 0.1, 0.1, 0.1, 0.05);
         BlockPos pos = null;
+        Network.playSound((ServerWorld) p.world, p, SoundEvents.BLOCK_FIRE_EXTINGUISH, 2.0f, 0.6f);
         if (r.type == Misc.RaycastType.ENTITY) pos = new BlockPos(r.entityHit.getPos());
         else if (r.type == Misc.RaycastType.BLOCK) pos = r.blockHit;
         if (pos == null) return false;
+        for (int y = pos.getY() + 1; y < p.world.getHeight(); y++) if (p.world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ())).isOpaque()) return false;
         SnowballEntity s = new SnowballEntity(p.world, p);
-        s.setVelocity(Vec3d.ZERO);
-        s.noClip = true;
-        s.discard();
+        s.setItem(new ItemStack(Items.SUNFLOWER));
+        s.setPosition(new Vec3d(pos.getX() + 0.5, pos.getY() + 40, pos.getZ() + 0.5));
+        if (!p.isCreative()) p.getHungerManager().addExhaustion(2.0f);
+        ((ThrownItemEntityInterface) s).setAttribute("sunbeam");
+        p.world.spawnEntity(s);
         return true;
     };
 
@@ -137,21 +142,28 @@ public class Spells {
         WANDS.put("healing", new WandItem(Items.GOLDEN_APPLE, "Healing", Formatting.RED, 30, 2.5, HEALING));
         WANDS.put("lightning", new WandItem(Items.LIGHTNING_ROD, "Lightning", Formatting.YELLOW, 40, 3, LIGHTNING));
         WANDS.put("sacrifice", new WandItem(Items.ROTTEN_FLESH, "Sacrifice", Formatting.DARK_RED, 80, 8, SACRIFICE));
-        WANDS.put("sunbeam", new WandItem(Items.SUNFLOWER, "Sunbeam", Formatting.YELLOW, 40, 4, SUNBEAM));
+        WANDS.put("sunbeam", new WandItem(Items.SUNFLOWER, "Sunbeam", Formatting.YELLOW, 80, 5, SUNBEAM));
     }
 
     public static void tickMana(PlayerEntity p, ServerBossBar bossBar) {
         if (!p.isDead()) {
             ManaPlayer mp = (ManaPlayer) p;
             double mana = mp.getMana();
-            double maxMana = mp.getMaxMana();
             double boost = 0;
+            double manaBoost = 0;
             for (ItemStack i : p.getArmorItems()) if ("energized".equals(getAttribute(i))) boost += 0.005;
             if (boost == 0.02) boost += 0.005;
+            for (ItemStack i : p.getArmorItems()) if ("archmage".equals(getAttribute(i))) {
+                boost += 0.015;
+                manaBoost += 10;
+            }
+            mp.setMaxManaBoost(0);
+            mp.addMaxManaBoost(manaBoost);
             mp.addManaRegenBoost(boost);
             mp.addMana(mp.getManaRegen());
             mp.setManaRegenBoost(0);
-            bossBar.setPercent((float) (mp.getMana() / mp.getMaxMana()));
+            double maxMana = mp.getMaxMana();
+            bossBar.setPercent((float) (mp.getMana() / maxMana));
             bossBar.setName(Text.of("Mana: " + Math.round(mana * 10.0) / 10.0 + "/" + Math.round(maxMana * 10.0) / 10.0));
             if (mana < maxMana || !"".equals(getSpell(p.getMainHandStack())) || !"".equals(getSpell(p.getOffHandStack())))
                 bossBar.addPlayer((ServerPlayerEntity) p);
@@ -174,6 +186,10 @@ public class Spells {
             }
             if (boost == 0.2) boost += 0.05;
             if (cooldownMod == 1.8) cooldownMod += 0.2;
+            for (ItemStack d : p.getArmorItems()) if ("archmage".equals(getAttribute(d))) {
+                boost += 0.1;
+                cooldownMod += 0.4;
+            }
             String spell = getSpell(i);
             WandItem wand = WANDS.get(spell);
             if (((ManaPlayer) p).tryRemoveMana(wand.manaCost)) {

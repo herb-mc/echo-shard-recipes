@@ -33,7 +33,7 @@ public class PlayerEntityMixin implements PlayerEntityInterface, ManaPlayer {
     @Unique private Entity target = null;
     @Unique private boolean hasNoCooldown = false;
     @Unique private ItemStack lastStack = ItemStack.EMPTY;
-    @Unique private ServerBossBar bossBar = new ServerBossBar(Text.of("Mana"), BossBar.Color.BLUE, BossBar.Style.PROGRESS);
+    @Unique private final ServerBossBar bossBar = new ServerBossBar(Text.of("Mana"), BossBar.Color.BLUE, BossBar.Style.PROGRESS);
     @Unique private double mana = 15.0;
     @Unique private final double maxMana = 15.0;
     @Unique private double maxManaBoost = 0.0;
@@ -98,6 +98,16 @@ public class PlayerEntityMixin implements PlayerEntityInterface, ManaPlayer {
     @Override
     public double getMaxMana() {
         return maxMana + maxManaBoost;
+    }
+
+    @Override
+    public void addMaxManaBoost(double d) {
+        maxManaBoost += d;
+    }
+
+    @Override
+    public void setMaxManaBoost(double d) {
+        maxManaBoost = d;
     }
 
     @Inject(

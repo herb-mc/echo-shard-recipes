@@ -2,6 +2,8 @@ package com.herb_mc.echo_shard_recipes.recipes;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.api.ServersideRecipe;
+import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,44 +22,44 @@ public class EchoAugmentRecipe extends SpecialCraftingRecipe implements Serversi
     }
 
     private boolean hasParticleEffect(ItemStack in) {
-        return in.getNbt() != null && (in.getNbt().getBoolean(EchoShardRecipesMod.HAS_PARTICLE));
+        return in.getNbt() != null && (in.getNbt().getBoolean(ParticleHelper.HAS_PARTICLE));
     }
 
     private boolean hasAttribute(ItemStack in) {
-        return in.getNbt() != null && (in.getNbt().getBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE));
+        return in.getNbt() != null && (in.getNbt().getBoolean(AttributeHelper.HAS_ATTRIBUTE));
     }
 
     private String getShardAttribute(ItemStack in) {
         assert in.getNbt() != null;
-        return in.getNbt().getString(EchoShardRecipesMod.STORED_ATTRIBUTE).equals("") ? null : in.getNbt().getString(EchoShardRecipesMod.STORED_ATTRIBUTE);
+        return in.getNbt().getString(AttributeHelper.STORED_ATTRIBUTE).equals("") ? null : in.getNbt().getString(AttributeHelper.STORED_ATTRIBUTE);
     }
 
     private boolean hasValidParticleItem(ItemStack i) {
-        for (Item t : EchoShardRecipesMod.validParticleItems)
+        for (Item t : ParticleHelper.validParticleItems)
             if (i.isOf(t.asItem()) && i.getNbt() != null && !hasParticleEffect(i)) return true;
         return false;
     }
 
     private boolean hasValidAttributedItem(ItemStack i, String augment) {
-        return !augment.equals("") && EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(augment).itemChecker.isValidItem(i.getItem()) && !hasAttribute(i);
+        return !augment.equals("") && AttributeHelper.ATTRIBUTE_ITEMS.get(augment).itemChecker.isValidItem(i.getItem()) && !hasAttribute(i);
     }
 
     public void fuseNbt(ItemStack echo, ItemStack i) {
         NbtCompound nbt = echo.getOrCreateNbt();
         NbtCompound out = i.getOrCreateNbt();
-        if (nbt.getBoolean(EchoShardRecipesMod.HAS_PARTICLE)) {
-            int effect = nbt.getInt(EchoShardRecipesMod.PARTICLE);
+        if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) {
+            int effect = nbt.getInt(ParticleHelper.PARTICLE);
             if (hasValidParticleItem(i)) {
-                out.putBoolean(EchoShardRecipesMod.HAS_PARTICLE, true);
-                out.putInt(EchoShardRecipesMod.PARTICLE, effect);
+                out.putBoolean(ParticleHelper.HAS_PARTICLE, true);
+                out.putInt(ParticleHelper.PARTICLE, effect);
             }
         }
-        if (nbt.getBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE)) {
-            String augment = nbt.getString(EchoShardRecipesMod.STORED_ATTRIBUTE);
+        if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
+            String augment = nbt.getString(AttributeHelper.STORED_ATTRIBUTE);
             if (hasValidAttributedItem(i, augment)) {
-                EchoShardRecipesMod.ATTRIBUTE_ITEMS.get(augment).processor.process(i);
-                out.putBoolean(EchoShardRecipesMod.HAS_ATTRIBUTE, true);
-                out.putString(EchoShardRecipesMod.ATTRIBUTE, augment);
+                AttributeHelper.ATTRIBUTE_ITEMS.get(augment).processor.process(i);
+                out.putBoolean(AttributeHelper.HAS_ATTRIBUTE, true);
+                out.putString(AttributeHelper.ATTRIBUTE, augment);
             }
         }
         NbtCompound outputDisplay = out.getCompound(ItemStack.DISPLAY_KEY);

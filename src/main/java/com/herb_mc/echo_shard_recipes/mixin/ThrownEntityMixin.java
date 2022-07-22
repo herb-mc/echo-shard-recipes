@@ -7,6 +7,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -17,13 +18,15 @@ import static com.herb_mc.echo_shard_recipes.helper.Network.spawnParticles;
 @Mixin(ThrownEntity.class)
 public class ThrownEntityMixin {
 
+    @Unique private int timer = 0;
+
     @Inject(
             method = "tick",
             at = @At("HEAD")
     )
     private void tick(CallbackInfo ci) {
         ThrownEntity e = (ThrownEntity) (Object) this;
-        if (e instanceof ThrownItemEntity && ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()) || "gun_ho".equals(((ThrownItemEntityInterface) e).getAttribute()))) {
+        if (e instanceof ThrownItemEntity && ("".equals(((ThrownItemEntityInterface) e).getAttribute()) || "gun_ho".equals(((ThrownItemEntityInterface) e).getAttribute()))) {
             if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()))
                 if (!e.world.isClient()) spawnParticles((ServerWorld) e.world, ParticleTypes.SMOKE, e.getX(), e.getY(), e.getZ(), 1, 0, 0, 0, 0.05);
             if (((ThrownItemEntityInterface) e).getBonusDamage() >= 10) {
@@ -45,6 +48,7 @@ public class ThrownEntityMixin {
     private double bulletNoDrag(double value) {
         ThrownEntity e = (ThrownEntity) (Object) this;
         if (e instanceof ThrownItemEntity && ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()) || "gun_ho".equals(((ThrownItemEntityInterface) e).getAttribute()))) value = e.isSubmergedInWater() ? 0.92 : 1.0;
+        if (e instanceof ThrownItemEntity && "sunbeam".equals(((ThrownItemEntityInterface) e).getAttribute())) value = 1.0;
         return value;
     }
 }
