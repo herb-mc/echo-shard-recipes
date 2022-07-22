@@ -121,6 +121,7 @@ public class AttributeHelper {
     public static final ItemChecker HOE = (i) -> (i instanceof HoeItem);
     public static final ItemChecker HEAD = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.HEAD);
     public static final ItemChecker CHEST = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.CHEST);
+    public static final ItemChecker CHEST_EXT = (i) -> (i instanceof ElytraItem || CHEST.isValidItem(i));
     public static final ItemChecker LEGS = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.LEGS);
     public static final ItemChecker FEET = (i) -> (i instanceof ArmorItem && ((ArmorItem) i).getSlotType() == EquipmentSlot.FEET);
     public static final ItemChecker FISH = (i) -> (i == Items.SALMON || i == Items.COD || i == Items.TROPICAL_FISH);
@@ -188,10 +189,10 @@ public class AttributeHelper {
         ATTRIBUTE_ITEMS.put("magnetized", new AttributeItem(Items.RAW_IRON, "Magnetized", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("faster_reel", new AttributeItem(Items.PRISMARINE_CRYSTALS, "Faster Reel", ROD, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("high_test", new AttributeItem(Items.STRING, "High Test", ROD, Formatting.AQUA));
-        ATTRIBUTE_ITEMS.put("power_assist", new AttributeItem(Items.REDSTONE, "Power Assist", CHEST, Formatting.AQUA));
+        ATTRIBUTE_ITEMS.put("power_assist", new AttributeItem(Items.REDSTONE, "Power Assist", CHEST_EXT, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("scholarly", new AttributeItem(Items.LECTERN, "Scholarly", ARMOR, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("terraforming", new AttributeItem(Items.GRASS_BLOCK, "Terraforming", TOOL, Formatting.AQUA, "36545877-4a33-4614-a0fa-95d765ca5416", EntityAttributes.GENERIC_ATTACK_SPEED, "terraforming", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.8));
-        ATTRIBUTE_ITEMS.put("anti_corrosive", new AttributeItem(Items.GOLD_INGOT, "Anti-Corrosive", CHEST, Formatting.GRAY));
+        ATTRIBUTE_ITEMS.put("anti_corrosive", new AttributeItem(Items.GOLD_INGOT, "Anti-Corrosive", CHEST_EXT, Formatting.GRAY));
         ATTRIBUTE_ITEMS.put("indomitable", new AttributeItem(Items.SCUTE, "Indomitable", SHIELD, Formatting.GRAY));
         ATTRIBUTE_ITEMS.put("reflecting", new AttributeItem(Items.SHIELD, "Reflecting", SHIELD, Formatting.GRAY));
         ATTRIBUTE_ITEMS.put("reflex", new AttributeItem(Items.FEATHER, "Reflex", LEGS, Formatting.GRAY, "8b2ce124-8c51-4949-bc26-ac1719576fa7", EntityAttributes.GENERIC_MOVEMENT_SPEED, "reflex", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0.3));
@@ -201,7 +202,7 @@ public class AttributeHelper {
         ATTRIBUTE_ITEMS.put("revenge", new AttributeItem(Items.IRON_SWORD, "Revenge", SHIELD, Formatting.GRAY));
         ATTRIBUTE_ITEMS.put("stalwart", new AttributeItem(Items.IRON_BLOCK, "Stalwart", ARMOR, Formatting.GRAY, "ed25083c-c160-4522-b8ab-cec6287370b0", EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, "stalwart", EntityAttributeModifier.Operation.ADDITION, 0.1));
         ATTRIBUTE_ITEMS.put("steady_body", new AttributeItem(Items.COBBLED_DEEPSLATE, "Steady Body", LEGS, Formatting.GRAY, "7dd3b0f6-a0d7-4de1-918c-3df131b1e53c", EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, "steady_body", EntityAttributeModifier.Operation.ADDITION, 1.0));
-        ATTRIBUTE_ITEMS.put("turtle_shell", new AttributeItem(Items.TURTLE_HELMET, "Turtle Shell", CHEST, Formatting.GRAY));
+        ATTRIBUTE_ITEMS.put("turtle_shell", new AttributeItem(Items.TURTLE_HELMET, "Turtle Shell", CHEST_EXT, Formatting.GRAY));
         ATTRIBUTE_ITEMS.put("featherweight", new AttributeItem(Items.PHANTOM_MEMBRANE, "Featherweight", FEET, Formatting.GREEN));
         ATTRIBUTE_ITEMS.put("grappling", new AttributeItem(Items.FISHING_ROD, "Grappling", ROD, Formatting.GREEN));
         ATTRIBUTE_ITEMS.put("heat_conductor", new AttributeItem(Items.EMERALD, "Heat Conductor", LEGS, Formatting.GREEN, "bafb4ce9-c1ee-4247-9570-dcc412335e5b", EntityAttributes.GENERIC_MOVEMENT_SPEED, "heat_conductor", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0.15));
@@ -212,14 +213,14 @@ public class AttributeHelper {
         ATTRIBUTE_ITEMS.put("fireproof", new AttributeItem(Items.BLAZE_ROD, "Fireproof", EQUIPS, Formatting.YELLOW));
         ATTRIBUTE_ITEMS.put("unbreakable", new AttributeItem(Items.OBSIDIAN, "Unbreakable", EQUIPS, Formatting.YELLOW));
         ATTRIBUTE_ITEMS.put("soulbound", new AttributeItem(Items.ENCHANTED_BOOK, "Soulbound", EQUIPS, Formatting.YELLOW, NONE, REQUIRES_BINDING));
-        ATTRIBUTE_ITEMS.put("archmage", new AttributeItem(Items.ENCHANTING_TABLE, "Archmage", CHEST, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
+        ATTRIBUTE_ITEMS.put("archmage", new AttributeItem(Items.ENCHANTING_TABLE, "Archmage", CHEST_EXT, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
         ATTRIBUTE_ITEMS.put("crushing_wave", new AttributeItem(Items.SPONGE, "Crushing Wave", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));
         ATTRIBUTE_ITEMS.put("gun_ho", new AttributeItem(Items.TNT, "Gun Ho", HOE, Formatting.LIGHT_PURPLE, "7a11103b-8823-4db9-bf48-ce4801a3ec57", EntityAttributes.GENERIC_ATTACK_SPEED, "gun_hoe", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, 0));
         ATTRIBUTE_ITEMS.put("flowing_water", new AttributeItem(Items.TRIDENT, "Flowing Water", FISH, Formatting.LIGHT_PURPLE, ENCHANT_GLINT, NO_REQ));
-        ATTRIBUTE_ITEMS.put("infernal", new AttributeItem(Items.BEACON, "Infernal", CHEST, Formatting.LIGHT_PURPLE, NONE, NO_REQ));
+        ATTRIBUTE_ITEMS.put("infernal", new AttributeItem(Items.BEACON, "Infernal", CHEST_EXT, Formatting.LIGHT_PURPLE, NONE, NO_REQ));
         ATTRIBUTE_ITEMS.put("rip_current", new AttributeItem(Items.HEART_OF_THE_SEA, "Rip Current", FISH, Formatting.LIGHT_PURPLE, CRUSHING_WAVE, NO_REQ));
         ATTRIBUTE_ITEMS.put("spell_focus", new AttributeItem(Items.BOOK, "Spell Focus", SPELL_FOCUS, Formatting.LIGHT_PURPLE, NONE, SET_SPELL_FOCUS));
-        ATTRIBUTE_ITEMS.put("voided", new AttributeItem(Items.ELYTRA, "Voided", CHEST, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
+        ATTRIBUTE_ITEMS.put("voided", new AttributeItem(Items.ELYTRA, "Voided", CHEST_EXT, Formatting.LIGHT_PURPLE, UPGRADE_PROT, NO_REQ));
     }
 
     public static String getAttribute(ItemStack i) {

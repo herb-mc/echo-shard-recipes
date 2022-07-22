@@ -63,10 +63,10 @@ Only one attribute can be applied to any given item!
 | Hasty          | Sugar                  | Utility   | Tools               | Haste I - stacks with other status effect gear                                                                                 |
 | High Test      | String                 | Utility   | Fishing Rod         | Cast velocity and range are much higher                                                                                        |
 | Magnetized     | Raw Iron               | Utility   | Tools               | Attracts items to the user while held                                                                                          |
-| Power Assist   | Redstone               | Utility   | Chestplate          | Haste I and Strength I while holding a tool - stacks with other status effect gear                                             |
+| Power Assist   | Redstone               | Utility   | Chestplate, Elytra  | Haste I and Strength I while holding a tool - stacks with other status effect gear                                             |
 | Scholarly      | Lectern                | Utility   | Armor               | Increases the effects of magic - a full set provides an additional boost                                                       |
 | Terraforming   | Grass Block            | Utility   | Tools               | Haste XV - stacks with other status effect gear - mined blocks drop nothing                                                    |
-| Anti-Corrosive | Gold Ingot             | Defensive | Chestplate          | Prevents poison and wither damage, take much less from instant damage                                                          |
+| Anti-Corrosive | Gold Ingot             | Defensive | Chestplate, Elytra  | Prevents poison and wither damage, take much less from instant damage                                                          |
 | Indomitable    | Scute                  | Defensive | Shield              | Resistance I while blocking - stacks with other status effect gear                                                             |
 | Reflecting     | Shield                 | Defensive | Shield              | Arrows are reflected with much greater strength                                                                                |
 | Reflex         | Feather                | Defensive | Legs                | Resistance I and a speed boost for a short time after taking damage                                                            |
@@ -87,14 +87,14 @@ Only one attribute can be applied to any given item!
 | Fireproof      | Blaze Rod              | General   | Any equips          | Item cannot burn                                                                                                               |
 | Soulbound      | Curse of Binding Book  | General   | Any equips          | Remains in inventory after death                                                                                               |
 | Unbreakable    | Obsidian               | General   | Any equips          | Does not lose durability                                                                                                       |
-| Archmage       | Enchantment Table      | Special   | Chestplate          | All magic stats are boosted significantly, but max health and armor are decreased                                              |
+| Archmage       | Enchantment Table      | Special   | Chestplate, Elytra  | All magic stats are boosted significantly, but max health and armor are decreased                                              |
 | Crushing Wave  | Sponge                 | Special   | Any raw fish        | Becomes a slow but powerful weapon that deals massive damage to and stuns foes at full health                                  |
 | Gun Ho         | TNT                    | Special   | Hoe                 | Hoes become guns - effect varies by material; requires gold nuggets, ingots or gunpowder as ammo depending on the gun          |
 | Flowing Water  | Trident                | Special   | Any raw fish        | Becomes a fast but initially weak weapon that ignores immunity frames and deals extra damage as they are about to end          |
-| Infernal       | Beacon                 | Special   | Chestplate          | Health is doubled and dealt damage and movement speed are increased, but incoming damage is increased and has a chance to crit |
+| Infernal       | Beacon                 | Special   | Chestplate, Elytra  | Health is doubled and dealt damage and movement speed are increased, but incoming damage is increased and has a chance to crit |
 | Rip Current    | Heart of the Sea       | Special   | Any raw fish        | Becomes a balanced weapon with greatly increased knockback                                                                     |
 | Spell Focus    | Book                   | Special   | Stick               | Can be combined with a stick and another ingredient to create a magic wand                                                     |
-| Voided         | Elytra                 | Special   | Chestplate          | Health is halved, but movement speed is increased and incoming damage is greatly reduced                                       |
+| Voided         | Elytra                 | Special   | Chestplate, Elytra  | Health is halved, but movement speed is increased and incoming damage is greatly reduced                                       |
 ---
 Wands
 
