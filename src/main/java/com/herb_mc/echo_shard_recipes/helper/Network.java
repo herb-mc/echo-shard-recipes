@@ -1,17 +1,23 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import com.herb_mc.echo_shard_recipes.mixin.ClientWorldAccessor;
+import com.herb_mc.echo_shard_recipes.mixin.WorldRendererAccessor;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -32,22 +38,21 @@ public class Network {
     public static final Identifier CHANNEL = new Identifier("echo_shard_recipes:register");
     public static final int ECHO_C2S = 2;
     public static Set<ServerPlayerEntity> exemptPlayers = new HashSet<>();
-
-    public static void sendToPlayerInRange(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet, double range) {
-        if (player.getWorld() != world || exemptPlayers.contains(player)) return;
-        else {
-            BlockPos blockPos = player.getBlockPos();
-            if (blockPos.isWithinDistance(new Vec3d(x, y, z), range))
-                player.networkHandler.sendPacket(packet);
-        }
-    }
+    public static final TrackedData<Integer> PARTICLE = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     public static void spawnParticles(World world, ParticleEffect particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed, boolean forceSend) {
         ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, true, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
         for (int j = 0; j < world.getPlayers().size(); ++j) {
             if (world instanceof ServerWorld && (!exemptPlayers.contains(((ServerWorld) world).getPlayers().get(j)) || forceSend))
                 sendToPlayerWithinRenderDistance((ServerWorld) world, ((ServerWorld) world).getPlayers().get(j), x, y, z, particleS2CPacket, forceSend);
-            world.addParticle(particle, true, x, y, z, 0, 0, 0);
+        }
+        if (world.isClient() && !forceSend) {
+            for (int j = 0; j < count; j++) {
+                double dx = world.random.nextGaussian() * speed;
+                double dy = world.random.nextGaussian() * speed;
+                double dz = world.random.nextGaussian() * speed;
+                world.addParticle(particle, true, x + world.random.nextGaussian() * deltaX, y + world.random.nextGaussian() * deltaY, z + world.random.nextGaussian() * deltaZ, dx, dy, dz);
+            }
         }
     }
 

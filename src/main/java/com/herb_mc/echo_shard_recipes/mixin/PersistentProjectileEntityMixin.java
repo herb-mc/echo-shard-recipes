@@ -1,5 +1,6 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
+import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
@@ -82,6 +83,7 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     )
     private void processTick(CallbackInfo ci) {
         PersistentProjectileEntity ref = (PersistentProjectileEntity) (Object) this;
+        particle = ref.getDataTracker().get(PARTICLE);
         if (particle >= 0 && (ref.isCritical() || (ref instanceof TridentEntity && !((TridentEntityAccessor) ref).getDealtDamage()))) {
             ParticleHelper.ParticleItem i = ParticleHelper.PARTICLE_ITEMS[particle];
             for (int c = 0; c < i.particleCount; c++) {
@@ -226,6 +228,14 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
         if (hitResult instanceof LivingEntity && ((LivingEntity) hitResult).isBlocking() && ((LivingEntity) hitResult).getActiveItem() != null && "reflecting".equals(AttributeHelper.getAttribute(((LivingEntity) hitResult).getActiveItem())))
             vec = hitResult.getRotationVector().normalize().multiply(vec.length() * 7);
         return vec;
+    }
+
+    @Inject(
+            method = "initDataTracker",
+            at = @At("TAIL")
+    )
+    protected void startTracking(CallbackInfo ci) {
+        ((PersistentProjectileEntity) (Object) this).getDataTracker().startTracking(PARTICLE, -1);
     }
 
 }

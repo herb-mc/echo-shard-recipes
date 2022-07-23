@@ -8,8 +8,10 @@
     "BootstrapMixin",
     "BowItemMixin",
     "ClientPlayNetworkHandlerMixin",
+    "ClientWorldAccessor",
     "CrossbowItemMixin",
     "CustomPayloadC2SPacketMixin",
+    "EntityTrackerMixin",
     "ExplosiveProjectileEntityMixin",
     "FireballEntityMixin",
     "FishingBobberEntityMixin",
@@ -34,7 +36,8 @@
     "ThrownItemEntityMixin",
     "TridentEntityAccessor",
     "TridentEntityMixin",
-    "TridentItemMixin"
+    "TridentItemMixin",
+    "WorldRendererAccessor"
   ],
   "client": [
   ],

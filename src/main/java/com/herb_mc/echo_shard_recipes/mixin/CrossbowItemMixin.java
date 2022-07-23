@@ -2,6 +2,7 @@ package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.Network;
 import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -43,7 +44,10 @@ public class CrossbowItemMixin {
     private static void onShoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated, CallbackInfo ci, boolean bl, ProjectileEntity projectileEntity) {
         NbtCompound nbt = crossbow.getNbt();
         if (nbt != null) {
-            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) {
+                ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+                projectileEntity.getDataTracker().set(Network.PARTICLE, nbt.getInt(ParticleHelper.PARTICLE));
+            }
             if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
                 ((PersistentProjectileEntityInterface) projectileEntity).setAttribute(nbt.getString(ATTRIBUTE));
                 switch (nbt.getString(ATTRIBUTE)) {

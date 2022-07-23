@@ -25,7 +25,7 @@ public class ThrownEntityMixin {
     )
     private void tick(CallbackInfo ci) {
         ThrownEntity e = (ThrownEntity) (Object) this;
-        if (e instanceof ThrownItemEntity && ("".equals(((ThrownItemEntityInterface) e).getAttribute()) || "gun_ho".equals(((ThrownItemEntityInterface) e).getAttribute()))) {
+        if (e instanceof ThrownItemEntity && ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()) || "gun_ho".equals(((ThrownItemEntityInterface) e).getAttribute()))) {
             if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()))
                 spawnParticles(e.world, ParticleTypes.SMOKE, e.getX(), e.getY(), e.getZ(), 1, 0, 0, 0, 0.05, false);
             if (((ThrownItemEntityInterface) e).getBonusDamage() >= 10) {

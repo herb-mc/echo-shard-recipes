@@ -2,6 +2,7 @@ package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.Network;
 import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import com.herb_mc.echo_shard_recipes.helper.ProjectileHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -37,7 +38,10 @@ public abstract class BowItemMixin {
     private void onShoot(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) {
-            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) ((PersistentProjectileEntityInterface) persistentProjectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) {
+                ((PersistentProjectileEntityInterface) persistentProjectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+                persistentProjectileEntity.getDataTracker().set(Network.PARTICLE, nbt.getInt(ParticleHelper.PARTICLE));
+            }
             if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
                 ((PersistentProjectileEntityInterface) persistentProjectileEntity).setAttribute(nbt.getString(AttributeHelper.ATTRIBUTE));
                 switch (nbt.getString(AttributeHelper.ATTRIBUTE)) {

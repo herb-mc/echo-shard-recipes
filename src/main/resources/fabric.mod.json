@@ -16,6 +16,7 @@
   "icon": "assets/echo_shard_recipes/icon.png",
 
   "environment": "*",
+  "accessWidener" : "echo_shard_recipes.accesswidener",
   "entrypoints": {
     "main": []
   },

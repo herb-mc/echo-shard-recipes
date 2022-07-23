@@ -2,6 +2,7 @@ package com.herb_mc.echo_shard_recipes.mixin;
 
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import com.herb_mc.echo_shard_recipes.helper.AttributeHelper;
+import com.herb_mc.echo_shard_recipes.helper.Network;
 import com.herb_mc.echo_shard_recipes.helper.ParticleHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,8 +34,10 @@ public class TridentItemMixin {
         if (!world.isClient()) {
             NbtCompound nbt = stack.getNbt();
             if (nbt != null) {
-                if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE))
+                if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) {
                     ((PersistentProjectileEntityInterface) tridentEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
+                    tridentEntity.getDataTracker().set(Network.PARTICLE, nbt.getInt(ParticleHelper.PARTICLE));
+                }
                 if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE))
                     ((PersistentProjectileEntityInterface) tridentEntity).setAttribute(nbt.getString(ATTRIBUTE));
             }
