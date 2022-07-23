@@ -182,7 +182,7 @@ public class AttributeHelper {
         ATTRIBUTE_ITEMS.put("antigravity", new AttributeItem(Items.WARPED_FUNGUS, "Antigravity", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("adept", new AttributeItem(Items.BOOKSHELF, "Adept", ARMOR, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("attuned", new AttributeItem(Items.EXPERIENCE_BOTTLE, "Attuned", TOOL, Formatting.AQUA));
-        ATTRIBUTE_ITEMS.put("energized", new AttributeItem(Items.ENCHANTED_GOLDEN_APPLE, "Energized", ARMOR, Formatting.AQUA));
+        ATTRIBUTE_ITEMS.put("energized", new AttributeItem(Items.REDSTONE_BLOCK, "Energized", ARMOR, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("excavator", new AttributeItem(Items.STONE, "Excavator", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("glowing", new AttributeItem(Items.GLOW_INK_SAC, "Glowing", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("hasty", new AttributeItem(Items.SUGAR, "Hasty", TOOL, Formatting.AQUA));
