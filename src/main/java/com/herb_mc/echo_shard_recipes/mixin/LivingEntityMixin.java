@@ -114,6 +114,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     private void applyAttributes(CallbackInfo ci) {
         LivingEntity e = (LivingEntity) (Object) this;
         if (!e.world.isClient() && e instanceof PlayerEntity) {
+            reflexBoost--;
             using = false;
             PlayerEntity user = (PlayerEntity) e;
             boolean c = user.isCreative();
@@ -259,9 +260,14 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         LivingEntity e = ((LivingEntity) (Object) this);
         if (!e.world.isClient()) {
             this.source = source;
-            for (ItemStack i : e.getArmorItems()) if ("turtle_shell".equals(AttributeHelper.getAttribute(i)) && (source == DamageSource.CACTUS || source == DamageSource.FREEZE || source == DamageSource.ON_FIRE || source == DamageSource.HOT_FLOOR || source == DamageSource.LAVA || source == DamageSource.SWEET_BERRY_BUSH))
-                    cir.setReturnValue(false);
-            if (source.getAttacker() != null) reflexBoost = 40;
+            for (ItemStack i : e.getArmorItems()) switch (AttributeHelper.getAttribute(i)) {
+                case "turtle_shell" -> {
+                    if (source == DamageSource.CACTUS || source == DamageSource.FREEZE || source == DamageSource.ON_FIRE || source == DamageSource.HOT_FLOOR || source == DamageSource.LAVA || source == DamageSource.SWEET_BERRY_BUSH)
+                        cir.setReturnValue(false);
+                }
+                case "reflex" -> {if (source.getAttacker() != null) reflexBoost = 40;}
+            }
+
         }
     }
 
