@@ -60,7 +60,7 @@ public class Misc {
             b = new BlockPos(pos);
             vs = world.getBlockState(b).getCollisionShape(world, b, ShapeContext.of(user));
             if (!vs.isEmpty() && vs.getBoundingBox().offset(b).contains(pos)) return new RaycastHit(b);
-            if (iter % particleFrequency == 0 && p != null) Network.spawnParticles(world, p, pos.x, pos.y, pos.z, 1, deltaX, deltaY, deltaZ, speed);
+            if (iter % particleFrequency == 0 && p != null) Network.spawnParticles(world, p, pos.x, pos.y, pos.z, 1, deltaX, deltaY, deltaZ, speed, true);
             box = new Box(pos.subtract(collisionSize), pos.add(collisionSize));
             for (Iterator<Entity> it = world.getOtherEntities(user, box, (e) -> (true)).iterator(); it.hasNext();) return new RaycastHit(it.next(), pos);
             pos = pos.add(dir);

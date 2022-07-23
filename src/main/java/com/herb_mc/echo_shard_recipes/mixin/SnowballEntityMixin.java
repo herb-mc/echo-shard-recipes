@@ -10,7 +10,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.explosion.Explosion;
@@ -96,17 +95,15 @@ public class SnowballEntityMixin {
     )
     private void rocket(HitResult hitResult, CallbackInfo ci) {
         SnowballEntity s = (SnowballEntity) (Object) this;
-        if (!s.world.isClient()) {
-            if ("rocket".equals(((ThrownItemEntityInterface) this).getAttribute())) {
-                s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), ((ThrownItemEntityInterface) s).getDamage(), Explosion.DestructionType.NONE);
-                s.discard();
-                ci.cancel();
-            } else if ("sunbeam".equals(((ThrownItemEntityInterface) this).getAttribute())) {
-                s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), 5, true, Explosion.DestructionType.NONE);
-                Network.spawnParticles((ServerWorld) s.world, ParticleTypes.FLAME, s.getX(), s.getY() + 60, s.getZ(), 1200, 0.4, 30, 0.4, 0);
-                s.discard();
-                ci.cancel();
-            }
+        if ("rocket".equals(((ThrownItemEntityInterface) this).getAttribute())) {
+            s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), ((ThrownItemEntityInterface) s).getDamage(), Explosion.DestructionType.NONE);
+            s.discard();
+            ci.cancel();
+        } else if ("sunbeam".equals(((ThrownItemEntityInterface) this).getAttribute())) {
+            s.world.createExplosion(s.getOwner(), s.getX(), s.getY(), s.getZ(), 5, true, Explosion.DestructionType.NONE);
+            Network.spawnParticles(s.world, ParticleTypes.FLAME, s.getX(), s.getY() + 60, s.getZ(), 1200, 0.4, 30, 0.4, 0, true);
+            s.discard();
+            ci.cancel();
         }
     }
 

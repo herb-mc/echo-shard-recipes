@@ -10,7 +10,6 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -89,13 +88,12 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
                 float xOffset = i.offsetScale * (0.5f - random.nextFloat()) + i.hardOffsetX;
                 float yOffset = i.offsetScale * (0.5f - random.nextFloat()) + i.hardOffsetY;
                 float zOffset = i.offsetScale * (0.5f - random.nextFloat()) + i.hardOffsetZ;
-                if (ref.world instanceof ServerWorld)
-                    spawnParticles((ServerWorld) ref.world, i.particle, ref.getX() + xOffset, ref.getY() + yOffset, ref.getZ() + zOffset, 1, 0, 0, 0, 0.03);
+                spawnParticles(ref.world, i.particle, ref.getX() + xOffset, ref.getY() + yOffset, ref.getZ() + zOffset, 1, 0, 0, 0, 0.03, false);
             }
         }
         if (ticksActive > 40 && attribute != null) switch (attribute) {
                 case "superphysical" -> {
-                    spawnParticles((ServerWorld) ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1);
+                    spawnParticles(ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1, false);
                     ref.discard();
                 }
                 case "metaphysical" -> ref.setNoClip(false);
@@ -196,11 +194,11 @@ public class PersistentProjectileEntityMixin implements PersistentProjectileEnti
     private void superphysicalDeletion(CallbackInfo ci) {
         PersistentProjectileEntity ref = (PersistentProjectileEntity) (Object) this;
         if ("superphysical".equals(attribute) && inGround) {
-            spawnParticles((ServerWorld) ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1);
+            spawnParticles(ref.world, ParticleTypes.REVERSE_PORTAL, ref.getX(), ref.getY(), ref.getZ(), 20, 0, 0, 0, 0.1, false);
             ref.discard();
         }
         else if (ignoresIframes && inGround) {
-            spawnParticles((ServerWorld) ref.world, ParticleTypes.ENCHANTED_HIT, ref.getX(), ref.getY(), ref.getZ(), 4, 0.1, 0.1, 0.1, 0.1);
+            spawnParticles(ref.world, ParticleTypes.ENCHANTED_HIT, ref.getX(), ref.getY(), ref.getZ(), 4, 0.1, 0.1, 0.1, 0.1, false);
             ref.discard();
         }
     }

@@ -18,7 +18,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -88,7 +87,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     )
     private void elytraParticles(Vec3d movementInput, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (entity instanceof PlayerEntity && !entity.world.isClient() && this.riptideTicks <= 0 && entity.isFallFlying()) {
+        if (entity instanceof PlayerEntity && this.riptideTicks <= 0 && entity.isFallFlying()) {
             for (ItemStack i: entity.getArmorItems()) {
                 NbtCompound nbt = i.getNbt();
                 if (nbt != null && nbt.getBoolean(ParticleHelper.HAS_PARTICLE)){
@@ -100,8 +99,8 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
                     double x = entity.getX() - 0.5 * rot.x;
                     double y = entity.getY() - 0.5 * rot.y;
                     double z = entity.getZ() - 0.5 * rot.z;
-                    spawnParticles((ServerWorld) entity.world, p.particle, x + mul * v.x, y + mul * v.y, z + mul * v.z, 1, 0, 0, 0, 0);
-                    spawnParticles((ServerWorld) entity.world, p.particle, x - mul * v.x, y - mul * v.y, z - mul * v.z, 1, 0, 0, 0, 0);
+                    spawnParticles(entity.world, p.particle, x + mul * v.x, y + mul * v.y, z + mul * v.z, 1, 0, 0, 0, 0, false);
+                    spawnParticles(entity.world, p.particle, x - mul * v.x, y - mul * v.y, z - mul * v.z, 1, 0, 0, 0, 0, false);
                 }
             }
         }

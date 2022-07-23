@@ -213,7 +213,7 @@ public class Spells {
             b = new BlockPos(pos);
             vs = world.getBlockState(b).getCollisionShape(world, b, ShapeContext.of(user));
             if (!vs.isEmpty() && vs.getBoundingBox().offset(b).contains(pos)) return;
-            if (iter % 3 == 0) Network.spawnParticles(world, p, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0.05);
+            if (iter % 3 == 0) Network.spawnParticles(world, p, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0.05, true);
             box = new Box(pos.subtract(v), pos.add(v));
             for (Iterator<Entity> it = world.getOtherEntities(user, box, (e) -> (true)).iterator(); it.hasNext(); ) {
                 Entity e = it.next();

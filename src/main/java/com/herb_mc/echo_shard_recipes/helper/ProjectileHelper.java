@@ -243,17 +243,17 @@ public class ProjectileHelper {
                     return false;
                 } else if (!blockState.getFluidState().isEmpty() && (blockState.getFluidState().isOf(Fluids.WATER) || blockState.getFluidState().isOf(Fluids.FLOWING_WATER))) {
                     height = blockState.getFluidState().getHeight();
-                    if (particleCheck) Network.spawnParticles(world, ParticleTypes.BUBBLE, pos.x, pos.y, pos.z, 2, 0.1, 0.1, 0.1, 0);
+                    if (particleCheck) Network.spawnParticles(world, ParticleTypes.BUBBLE, pos.x, pos.y, pos.z, 2, 0.1, 0.1, 0.1, 0, true);
                     if (box.intersects(new Box(b).shrink(0, 1 - height, 0))) drag = 0.6f;
                 }
-                if (particleCheck) Network.spawnParticles(world, ParticleTypes.PORTAL, pos.x, pos.y - 0.7, pos.z, 7, 0.1, 0.1, 0.1, 0);
+                if (particleCheck) Network.spawnParticles(world, ParticleTypes.PORTAL, pos.x, pos.y - 0.7, pos.z, 7, 0.1, 0.1, 0.1, 0, true);
                 for (Entity e : world.getOtherEntities(user, box, (e) -> (e instanceof LivingEntity || e instanceof BoatEntity || e instanceof MinecartEntity))) {
                     int damage = net.minecraft.util.math.MathHelper.ceil(net.minecraft.util.math.MathHelper.clamp(velocity.length() * a.getDamage(), 0.0D, 2.147483647E9D));
                     long l = EchoShardRecipesMod.ECHO_SHARD_RANDOM.nextInt(damage / 2 + 2);
                     damage = (int) Math.min(l + (long) damage, 2147483647L);
                     a.setPosition(pos);
                     if (a.isOnFire()) e.setOnFireFor(5);
-                    if (!a.world.isClient && a.getPierceLevel() <= 0 && e instanceof LivingEntity) ((LivingEntity)e).setStuckArrowCount(((LivingEntity)e).getStuckArrowCount() + 1);
+                    if (!a.world.isClient() && a.getPierceLevel() <= 0 && e instanceof LivingEntity) ((LivingEntity)e).setStuckArrowCount(((LivingEntity)e).getStuckArrowCount() + 1);
                     if (e.damage(DamageSource.arrow(a, user), damage)) return true;
                     else {
                         VMath.updatePos(a, pos, velocity);

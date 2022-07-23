@@ -4,6 +4,7 @@ import com.herb_mc.echo_shard_recipes.recipes.EchoAugmentRecipe;
 import com.herb_mc.echo_shard_recipes.recipes.EchoShardBaseRecipe;
 import com.herb_mc.echo_shard_recipes.recipes.EchoWandRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;

@@ -17,16 +17,24 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Network {
 
+    public static final Identifier CHANNEL = new Identifier("echo_shard_recipes:register");
+    public static final int ECHO_C2S = 2;
+    public static Set<ServerPlayerEntity> exemptPlayers = new HashSet<>();
+
     public static void sendToPlayerInRange(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet, double range) {
-        if (player.getWorld() != world) return;
+        if (player.getWorld() != world || exemptPlayers.contains(player)) return;
         else {
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), range))
@@ -34,19 +42,21 @@ public class Network {
         }
     }
 
-    public static void spawnParticles(ServerWorld world, ParticleEffect particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
+    public static void spawnParticles(World world, ParticleEffect particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed, boolean forceSend) {
         ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, true, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
-        for(int j = 0; j < world.getPlayers().size(); ++j)
-            sendToPlayerWithinRenderDistance(world, world.getPlayers().get(j), x, y, z, particleS2CPacket);
+        for (int j = 0; j < world.getPlayers().size(); ++j) {
+            if (world instanceof ServerWorld && (!exemptPlayers.contains(((ServerWorld) world).getPlayers().get(j)) || forceSend))
+                sendToPlayerWithinRenderDistance((ServerWorld) world, ((ServerWorld) world).getPlayers().get(j), x, y, z, particleS2CPacket, forceSend);
+            world.addParticle(particle, true, x, y, z, 0, 0, 0);
+        }
     }
 
     public static void playSound(ServerWorld world, LivingEntity entity, SoundEvent s, float volume, float pitch) {
         world.playSoundFromEntity( null, entity, s, SoundCategory.MASTER, volume, pitch, 102);
     }
 
-    private static void sendToPlayerWithinRenderDistance(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet) {
-        if (player.getWorld() != world) return;
-        else {
+    private static void sendToPlayerWithinRenderDistance(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet, boolean forceSend) {
+        if (!(player.getWorld() != world || (exemptPlayers.contains(player) && !forceSend))) {
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), 128.0D))
                 player.networkHandler.sendPacket(packet);

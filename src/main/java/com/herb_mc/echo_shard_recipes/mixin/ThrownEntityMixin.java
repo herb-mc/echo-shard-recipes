@@ -4,7 +4,6 @@ import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
 import net.minecraft.entity.projectile.thrown.ThrownEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,7 +27,7 @@ public class ThrownEntityMixin {
         ThrownEntity e = (ThrownEntity) (Object) this;
         if (e instanceof ThrownItemEntity && ("".equals(((ThrownItemEntityInterface) e).getAttribute()) || "gun_ho".equals(((ThrownItemEntityInterface) e).getAttribute()))) {
             if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute()))
-                if (!e.world.isClient()) spawnParticles((ServerWorld) e.world, ParticleTypes.SMOKE, e.getX(), e.getY(), e.getZ(), 1, 0, 0, 0, 0.05);
+                spawnParticles(e.world, ParticleTypes.SMOKE, e.getX(), e.getY(), e.getZ(), 1, 0, 0, 0, 0.05, false);
             if (((ThrownItemEntityInterface) e).getBonusDamage() >= 10) {
                 if ("rocket".equals(((ThrownItemEntityInterface) e).getAttribute())) e.world.createExplosion(e.getOwner(), e.getX(), e.getY(), e.getZ(), ((ThrownItemEntityInterface) e).getDamage(), Explosion.DestructionType.NONE);
                 e.discard();

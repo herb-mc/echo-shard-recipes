@@ -185,7 +185,7 @@ public class PlayerEntityMixin implements PlayerEntityInterface, ManaPlayer {
     )
     private void handleTickEvents(CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if (!player.world.isClient) {
+        if (!player.world.isClient()) {
             tickMana(player, bossBar);
             hasNoCooldown = player.getAttackCooldownProgress(0.5f) >= 1;
             if (lastStack != player.getMainHandStack()) hasNoCooldown = false;
