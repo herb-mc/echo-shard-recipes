@@ -1,4 +1,4 @@
-package com.herb_mc.echo_shard_recipes.mixin;
+package com.herb_mc.echo_shard_recipes.mixin.init;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import net.minecraft.Bootstrap;

@@ -1,7 +1,6 @@
-package com.herb_mc.echo_shard_recipes.mixin;
+package com.herb_mc.echo_shard_recipes.mixin.server;
 
 import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
-import com.herb_mc.echo_shard_recipes.api.PacketInterface;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -13,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.herb_mc.echo_shard_recipes.helper.Network.ECHO_C2S;
+import static com.herb_mc.echo_shard_recipes.helper.Network.ECHO_C2S_ON_JOIN;
 import static com.herb_mc.echo_shard_recipes.helper.Network.CHANNEL;
-import static com.herb_mc.echo_shard_recipes.helper.Network.exemptPlayers;
+import static com.herb_mc.echo_shard_recipes.helper.Network.EXEMPT_PLAYERS;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {
@@ -28,11 +27,11 @@ public class ServerPlayNetworkHandlerMixin {
             cancellable = true
     )
     private void syncPlayer(CustomPayloadC2SPacket packet, CallbackInfo ci) {
-        if (CHANNEL.equals(((PacketInterface) packet).getChannel())) {
-            PacketByteBuf data = ((PacketInterface) packet).getData();
-            if (data != null && data.readVarInt() == ECHO_C2S) {
-                exemptPlayers.add(player);
-                EchoShardRecipesMod.LOGGER.info("Player with Echo Shard Recipes mod joined, most S2C packets will not be sent");
+        if (CHANNEL.equals(packet.getChannel())) {
+            PacketByteBuf data = packet.getData();
+            if (data != null && data.readVarInt() == ECHO_C2S_ON_JOIN) {
+                EXEMPT_PLAYERS.add(player);
+                EchoShardRecipesMod.LOGGER.info("Player {} joined with Echo Shard Mod", player.getName().getString());
             }
             ci.cancel();
         }
@@ -40,7 +39,7 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onDisconnected", at = @At("HEAD"))
     private void removeExemptPlayer(Text reason, CallbackInfo ci) {
-        exemptPlayers.remove(player);
+        EXEMPT_PLAYERS.remove(player);
     }
 
 }

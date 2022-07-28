@@ -68,15 +68,6 @@ public class AttributeHelper {
             base = 0.0;
         }
 
-        AttributeItem(Item i, String s, ItemChecker ic, Formatting t, PostProcess p, IngredientProcessor in, String st, EntityAttribute e, String str, EntityAttributeModifier.Operation o, double d) {
-            this(i, s, ic, t, p, in);
-            uuid = UUID.fromString(st);
-            attribute = e;
-            tag = MOD_ID + "." + str;
-            op = o;
-            base = d;
-        }
-
         public AttributeItem(Item i, String s, ItemChecker ic, Formatting t, String st, EntityAttribute e, String str, EntityAttributeModifier.Operation o, double d) {
             this(i, s, ic, t, NONE, NO_REQ);
             uuid = UUID.fromString(st);
@@ -179,12 +170,10 @@ public class AttributeHelper {
         ATTRIBUTE_ITEMS.put("super_luck", new AttributeItem(Items.EMERALD, "Super Luck", BOW, Formatting.RED));
         ATTRIBUTE_ITEMS.put("superphysical", new AttributeItem(Items.END_ROD, "Superphysical", BOW, Formatting.RED));
         ATTRIBUTE_ITEMS.put("stonebreaker", new AttributeItem(Items.STONECUTTER, "Stonebreaker", TRUE_TOOL, Formatting.RED, "36545877-4a33-4614-a0fa-95d768ba5416", EntityAttributes.GENERIC_ATTACK_SPEED, "stonebreaker", EntityAttributeModifier.Operation.MULTIPLY_TOTAL, -0.3));
-        ATTRIBUTE_ITEMS.put("antigravity", new AttributeItem(Items.WARPED_FUNGUS, "Antigravity", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("adept", new AttributeItem(Items.BOOKSHELF, "Adept", ARMOR, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("attuned", new AttributeItem(Items.EXPERIENCE_BOTTLE, "Attuned", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("energized", new AttributeItem(Items.REDSTONE_BLOCK, "Energized", ARMOR, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("excavator", new AttributeItem(Items.STONE, "Excavator", TOOL, Formatting.AQUA));
-        ATTRIBUTE_ITEMS.put("glowing", new AttributeItem(Items.GLOW_INK_SAC, "Glowing", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("hasty", new AttributeItem(Items.SUGAR, "Hasty", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("magnetized", new AttributeItem(Items.RAW_IRON, "Magnetized", TOOL, Formatting.AQUA));
         ATTRIBUTE_ITEMS.put("faster_reel", new AttributeItem(Items.PRISMARINE_CRYSTALS, "Faster Reel", ROD, Formatting.AQUA));

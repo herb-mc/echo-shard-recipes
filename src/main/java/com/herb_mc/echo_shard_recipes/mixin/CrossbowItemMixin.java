@@ -12,6 +12,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -28,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.ATTRIBUTE;
 import static com.herb_mc.echo_shard_recipes.helper.AttributeHelper.getAttribute;
-import static com.herb_mc.echo_shard_recipes.helper.ProjectileHelper.spawnFrag;
+import static com.herb_mc.echo_shard_recipes.helper.ProjectileHelper.createProjectile;
 
 @Mixin(CrossbowItem.class)
 public class CrossbowItemMixin {
@@ -44,22 +45,17 @@ public class CrossbowItemMixin {
     private static void onShoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated, CallbackInfo ci, boolean bl, ProjectileEntity projectileEntity) {
         NbtCompound nbt = crossbow.getNbt();
         if (nbt != null) {
-            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) {
-                ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
-                projectileEntity.getDataTracker().set(Network.PARTICLE, nbt.getInt(ParticleHelper.PARTICLE));
-            }
+            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) ((PersistentProjectileEntityInterface) projectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
             if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
                 ((PersistentProjectileEntityInterface) projectileEntity).setAttribute(nbt.getString(ATTRIBUTE));
                 switch (nbt.getString(ATTRIBUTE)) {
                     case "metaphysical" -> ((PersistentProjectileEntity) projectileEntity).setNoClip(true);
-                    default -> {}
                 }
             }
         }
         for (ItemStack item : shooter.getArmorItems()) switch(getAttribute(item)) {
             case "snipe_shot" -> ((PersistentProjectileEntityInterface) projectileEntity).addDamageMultiplier(0.1f);
             case "infernal" -> ((PersistentProjectileEntityInterface) projectileEntity).addFlatDamage(2);
-            default -> {}
         }
     }
 
@@ -86,15 +82,10 @@ public class CrossbowItemMixin {
     private void fragShot(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         NbtCompound nbt = user.getStackInHand(hand).getNbt();
         if (nbt != null && "buckshot".equals(nbt.getString(ATTRIBUTE))) {
-            float speed = 1.0f;
-            float divergence = 10.0f;
-            for (ItemStack item : user.getArmorItems()) if (getAttribute(item).equals("sharpshooter")) divergence /= 1.25f;
-            if (user.isSneaking()) {
-                divergence /= 1.6f;
-                speed *= 1.6f;
-            }
+            float div = 1.0f;
+            for (ItemStack item : user.getArmorItems()) if (getAttribute(item).equals("sharpshooter")) div = 1.25f;
             float bonus = EnchantmentHelper.getLevel(Enchantments.PIERCING, user.getStackInHand(hand)) / 8.0f;
-            for (int i = 0; i < 8; i++) spawnFrag(world, user, bonus, speed, divergence);
+            for (int i = 0; i < 8; i++) createProjectile(world, user, false, "buckshot", user.isSneaking() ? 1.6f : 1.0f, user.isSneaking() ? 10.0f / div : 6.25f / div, 0, bonus, Items.IRON_NUGGET, 0, true);
         }
     }
 

@@ -4,6 +4,7 @@ import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.util.math.Vec3d;
 
+@SuppressWarnings("SuspiciousNameCombination")
 public class VMath {
 
     private static final Vec3d AXIS_X = new Vec3d(1, 0, 0);

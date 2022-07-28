@@ -2,9 +2,7 @@ package com.herb_mc.echo_shard_recipes.helper;
 
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -14,13 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
-
-import static com.herb_mc.echo_shard_recipes.EchoShardRecipesMod.ECHO_SHARD_RANDOM;
-import static com.herb_mc.echo_shard_recipes.helper.VMath.applyDivergenceDeg;
 
 public class Misc {
 
@@ -62,7 +55,7 @@ public class Misc {
             if (!vs.isEmpty() && vs.getBoundingBox().offset(b).contains(pos)) return new RaycastHit(b);
             if (iter % particleFrequency == 0 && p != null) Network.spawnParticles(world, p, pos.x, pos.y, pos.z, 1, deltaX, deltaY, deltaZ, speed, true);
             box = new Box(pos.subtract(collisionSize), pos.add(collisionSize));
-            for (Iterator<Entity> it = world.getOtherEntities(user, box, (e) -> (true)).iterator(); it.hasNext();) return new RaycastHit(it.next(), pos);
+            for (Entity entity : world.getOtherEntities(user, box, (e) -> (true))) return new RaycastHit(entity, pos);
             pos = pos.add(dir);
         }
         return new RaycastHit();

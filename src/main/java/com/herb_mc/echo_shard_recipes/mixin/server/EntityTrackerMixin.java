@@ -1,7 +1,7 @@
-package com.herb_mc.echo_shard_recipes.mixin;
+package com.herb_mc.echo_shard_recipes.mixin.server;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
 import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
+import com.herb_mc.echo_shard_recipes.mixin.TridentEntityAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;

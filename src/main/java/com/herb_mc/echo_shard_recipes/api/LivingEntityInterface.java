@@ -9,5 +9,6 @@ public interface LivingEntityInterface {
     int getMomentum();
     void setUsing(boolean b);
     boolean getUsing();
+    void setParticle(int i);
 
 }

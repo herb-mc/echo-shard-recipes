@@ -1,5 +1,7 @@
 package com.herb_mc.echo_shard_recipes.mixin;
 
+import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
+import com.herb_mc.echo_shard_recipes.api.DamageSourceInterface;
 import com.herb_mc.echo_shard_recipes.api.LivingEntityInterface;
 import com.herb_mc.echo_shard_recipes.api.ManaPlayer;
 import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
@@ -50,6 +52,7 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     @Unique private int burstTimer = 0;
     @Unique private ItemStack currentStack = ItemStack.EMPTY;
     @Unique private DamageSource source;
+    @Unique private int particle = -1;
 
     @Override
     public void addMomentum() {
@@ -78,6 +81,11 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
         return using;
     }
 
+    @Override
+    public void setParticle(int i) {
+        particle = i;
+    }
+
     @Inject(
             method = "travel",
             at = @At(
@@ -87,22 +95,17 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     )
     private void elytraParticles(Vec3d movementInput, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (entity instanceof PlayerEntity && this.riptideTicks <= 0 && entity.isFallFlying()) {
-            for (ItemStack i: entity.getArmorItems()) {
-                NbtCompound nbt = i.getNbt();
-                if (nbt != null && nbt.getBoolean(ParticleHelper.HAS_PARTICLE)){
-                    ParticleHelper.ParticleItem p = ParticleHelper.PARTICLE_ITEMS[nbt.getInt(ParticleHelper.PARTICLE)];
-                    float pitch = entity.getPitch(1.0F) * 0.017453292F;
-                    Vec3d rot =  entity.getRotationVector().normalize();
-                    Vec3d v = entity.getRotationVector().crossProduct(new Vec3d(0, 1, 0)).normalize();
-                    double mul = 0.3 * (1 - Math.pow(Math.PI / - (Math.acos(rot.dotProduct(new Vec3d(0, pitch, 0).normalize())) - 1.5 * Math.PI) - 1, 3)) ;
-                    double x = entity.getX() - 0.5 * rot.x;
-                    double y = entity.getY() - 0.5 * rot.y;
-                    double z = entity.getZ() - 0.5 * rot.z;
-                    spawnParticles(entity.world, p.particle, x + mul * v.x, y + mul * v.y, z + mul * v.z, 1, 0, 0, 0, 0, false);
-                    spawnParticles(entity.world, p.particle, x - mul * v.x, y - mul * v.y, z - mul * v.z, 1, 0, 0, 0, 0, false);
-                }
-            }
+        if (entity instanceof PlayerEntity && this.riptideTicks <= 0 && entity.isFallFlying() && particle >= 0) {
+            ParticleHelper.ParticleItem p = ParticleHelper.PARTICLE_ITEMS[particle];
+            float pitch = entity.getPitch(1.0F) * 0.017453292F;
+            Vec3d rot =  entity.getRotationVector().normalize();
+            Vec3d v = entity.getRotationVector().crossProduct(new Vec3d(0, 1, 0)).normalize();
+            double mul = 0.3 * (1 - Math.pow(Math.PI / - (Math.acos(rot.dotProduct(new Vec3d(0, pitch, 0).normalize())) - 1.5 * Math.PI) - 1, 3)) ;
+            double x = entity.getX() - 0.5 * rot.x;
+            double y = entity.getY() - 0.5 * rot.y;
+            double z = entity.getZ() - 0.5 * rot.z;
+            spawnParticles(entity.world, p.particle, x + mul * v.x, y + mul * v.y, z + mul * v.z, 1, 0, 0, 0, 0, false);
+            spawnParticles(entity.world, p.particle, x - mul * v.x, y - mul * v.y, z - mul * v.z, 1, 0, 0, 0, 0, false);
         }
     }
 
@@ -112,10 +115,9 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
     )
     private void applyAttributes(CallbackInfo ci) {
         LivingEntity e = (LivingEntity) (Object) this;
-        if (!e.world.isClient() && e instanceof PlayerEntity) {
+        if (!e.world.isClient() && e instanceof PlayerEntity user) {
             reflexBoost--;
             using = false;
-            PlayerEntity user = (PlayerEntity) e;
             boolean c = user.isCreative();
             if (burstTimer > 0) {
                 burstTimer--;
@@ -293,6 +295,19 @@ public abstract class LivingEntityMixin implements LivingEntityInterface {
             default -> {}
         }
         return value;
+    }
+
+    @ModifyArg(
+            method = "applyArmorToDamage",
+            at = @At(
+                    target = "Lnet/minecraft/entity/DamageUtil;getDamageLeft(FFF)F",
+                    value = "INVOKE"
+            ),
+            index = 1
+    )
+    private float applyArmorPierce(float armor) {
+        double ap = 1 - ((DamageSourceInterface) source).getArmorPierce();
+        return (float) (armor * ap);
     }
 
     @ModifyArg(

@@ -1,6 +1,7 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -9,6 +10,7 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.math.Direction;
 
+@SuppressWarnings("UnnecessaryReturnStatement")
 public class Entities {
 
     public static boolean isInorganic(LivingEntity e) {
@@ -16,7 +18,8 @@ public class Entities {
     }
 
     public static void damageEntity(Entity e, float damage, float dragonDamage, boolean ignoreIframes, DamageSource damageSource) {
-        if (e instanceof EnderDragonPart) {
+        if (e instanceof ItemEntity) return;
+        else if (e instanceof EnderDragonPart) {
             if (ignoreIframes) {
                 ((EnderDragonPart) e).owner.hurtTime = 0;
                 ((EnderDragonPart) e).owner.timeUntilRegen = 1;

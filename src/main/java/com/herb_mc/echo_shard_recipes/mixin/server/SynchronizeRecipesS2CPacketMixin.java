@@ -1,4 +1,4 @@
-package com.herb_mc.echo_shard_recipes.mixin;
+package com.herb_mc.echo_shard_recipes.mixin.server;
 
 import com.herb_mc.echo_shard_recipes.api.ServersideRecipe;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;

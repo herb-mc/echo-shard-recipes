@@ -6,8 +6,14 @@ import com.herb_mc.echo_shard_recipes.api.PersistentProjectileEntityInterface;
 import com.herb_mc.echo_shard_recipes.api.ThrownItemEntityInterface;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.EntityDamageSource;
+import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,6 +45,7 @@ import static com.herb_mc.echo_shard_recipes.helper.Network.*;
 import java.util.HashMap;
 import java.util.Iterator;
 
+@SuppressWarnings({"UnusedReturnValue", "ConstantConditions"})
 public class Spells {
 
     public static final String SPELL = "StoredSpell";
@@ -135,11 +142,20 @@ public class Spells {
         p.world.spawnEntity(s);
         return true;
     };
+    public static final Spell GUARDIAN = (p, b) -> {
+        playSound((ServerWorld) p.world, p, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.5f);
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, (int) (200 * (1 + b)), 0));
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, (int) (200 * (1 + b)), 0));
+        p.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, (int) (200 * (1 + b)), 1));
+        p.getHungerManager().addExhaustion(2.0f);
+        return true;
+    };
 
     static {
         WANDS.put("arrow_rain", new WandItem(Items.ARROW, "Arrow Rain", Formatting.AQUA, 15, 3, ARROW_RAIN));
         WANDS.put("boost", new WandItem(Items.FEATHER, "Boost", Formatting.GREEN, 5, 0.75, BOOST));
         WANDS.put("healing", new WandItem(Items.GOLDEN_APPLE, "Healing", Formatting.RED, 30, 2.5, HEALING));
+        WANDS.put("guardian", new WandItem(Items.SHIELD, "Guardian", Formatting.GRAY, 80, 8, GUARDIAN));
         WANDS.put("lightning", new WandItem(Items.LIGHTNING_ROD, "Lightning", Formatting.YELLOW, 40, 3, LIGHTNING));
         WANDS.put("sacrifice", new WandItem(Items.ROTTEN_FLESH, "Sacrifice", Formatting.DARK_RED, 80, 8, SACRIFICE));
         WANDS.put("sunbeam", new WandItem(Items.SUNFLOWER, "Sunbeam", Formatting.YELLOW, 80, 5, SUNBEAM));
@@ -190,8 +206,7 @@ public class Spells {
                 boost += 0.1;
                 cooldownMod += 0.4;
             }
-            String spell = getSpell(i);
-            WandItem wand = WANDS.get(spell);
+            WandItem wand = WANDS.get(getSpell(i));
             if (((ManaPlayer) p).tryRemoveMana(wand.manaCost)) {
                 wand.spell.spell(p, boost);
                 if (p.getHungerManager().getFoodLevel() == 0) p.damage(DamageSource.STARVE, 2);
@@ -215,9 +230,9 @@ public class Spells {
             if (!vs.isEmpty() && vs.getBoundingBox().offset(b).contains(pos)) return;
             if (iter % 3 == 0) Network.spawnParticles(world, p, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0.05, true);
             box = new Box(pos.subtract(v), pos.add(v));
-            for (Iterator<Entity> it = world.getOtherEntities(user, box, (e) -> (true)).iterator(); it.hasNext(); ) {
-                Entity e = it.next();
-                Entities.damageEntity(e, (float) (0.9f + d), (float) (0.8f + d), true, DamageSource.LIGHTNING_BOLT);
+            for (Entity e : world.getOtherEntities(user, box, (e) -> (true))) {
+                if ((e instanceof LivingEntity l && l.getHealth() > 0))
+                    Entities.damageEntity(e, (float) (1.0f + d), (float) (0.1f + d), true, new ProjectileDamageSource("indirectMagic", new LightningEntity(EntityType.LIGHTNING_BOLT, world), user));
             }
             pos = pos.add(dir);
         }

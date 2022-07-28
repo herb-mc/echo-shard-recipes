@@ -13,6 +13,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import static com.herb_mc.echo_shard_recipes.helper.ProjectileHelper.createProjectile;
 import static net.minecraft.item.BowItem.getPullProgress;
 
 @Mixin(BowItem.class)
@@ -38,24 +40,16 @@ public abstract class BowItemMixin {
     private void onShoot(ItemStack stack, World world, LivingEntity user, int remainingUseTicks, CallbackInfo ci, PlayerEntity playerEntity, boolean bl, ItemStack itemStack, int i, float f, boolean bl2, ArrowItem arrowItem, PersistentProjectileEntity persistentProjectileEntity) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) {
-            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) {
-                ((PersistentProjectileEntityInterface) persistentProjectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
-                persistentProjectileEntity.getDataTracker().set(Network.PARTICLE, nbt.getInt(ParticleHelper.PARTICLE));
-            }
+            if (nbt.getBoolean(ParticleHelper.HAS_PARTICLE)) ((PersistentProjectileEntityInterface) persistentProjectileEntity).setParticle(nbt.getInt(ParticleHelper.PARTICLE));
             if (nbt.getBoolean(AttributeHelper.HAS_ATTRIBUTE)) {
                 ((PersistentProjectileEntityInterface) persistentProjectileEntity).setAttribute(nbt.getString(AttributeHelper.ATTRIBUTE));
                 switch (nbt.getString(AttributeHelper.ATTRIBUTE)) {
                     case "buckshot" -> {
                         if (getPullProgress(i) >= 1.0f) {
-                            float speed = 1.4f;
-                            float divergence = 8.0f;
-                            for (ItemStack item : user.getArmorItems()) if (AttributeHelper.getAttribute(item).equals("sharpshooter")) divergence /= 1.5f;
-                            if (user.isSneaking()) {
-                                divergence /= 1.6f;
-                                speed *= 1.5f;
-                            }
+                            float div = 1.0f;
+                            for (ItemStack item : user.getArmorItems()) if (AttributeHelper.getAttribute(item).equals("sharpshooter")) div = 1.5f;
                             float bonus = EnchantmentHelper.getLevel(Enchantments.POWER, stack) / 10.0f;
-                            for (int j = 0; j < 12; j++) ProjectileHelper.spawnFrag(world, user, bonus, speed, divergence);
+                            for (int j = 0; j < 12; j++) createProjectile(world, user, false, "buckshot", user.isSneaking() ? 2.1f : 1.4f, user.isSneaking() ? 5f / div : 8f / div, 0, bonus, Items.IRON_NUGGET, 0, true);
                         }
                     }
                     case "metaphysical" -> {if (getPullProgress(i) >= 1.0f) persistentProjectileEntity.setNoClip(true);}

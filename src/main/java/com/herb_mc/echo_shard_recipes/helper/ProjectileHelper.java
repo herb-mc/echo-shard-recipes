@@ -37,6 +37,7 @@ import java.util.function.BiPredicate;
 import static com.herb_mc.echo_shard_recipes.helper.Misc.*;
 import static com.herb_mc.echo_shard_recipes.helper.Network.playSound;
 
+@SuppressWarnings({"ConstantConditions", "SuspiciousNameCombination"})
 public class ProjectileHelper {
 
     public interface OnUse {
@@ -71,7 +72,7 @@ public class ProjectileHelper {
     public static OnUse BURST = (user, itemStack, isSneaking) -> {
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
-        createProjectile(user.world, user, true, "gun_ho", 4.0f, 0.0174533, 5.0f, Items.GOLD_NUGGET, 0.6f);
+        createProjectile(user.world, user, true, "gun_ho", 4.0f, 0.0174533, 5.0f, 0.0f, Items.GOLD_NUGGET, 0.6f);
         postShoot(user, itemStack, 0.1, 8);
         ((LivingEntityInterface) user).setBurst(4, itemStack);
         return true;
@@ -79,7 +80,7 @@ public class ProjectileHelper {
     public static OnUse AUTO = (user, itemStack, isSneaking) -> {
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
-        createProjectile(user.world, user, true, "gun_ho", 4.0f, 0.0174533 * (isSneaking ? 1 : 2.5), 6.0f, Items.GOLD_NUGGET, 0.5f);
+        createProjectile(user.world, user, true, "gun_ho", 4.0f, 0.0174533 * (isSneaking ? 1 : 2.5), 6.0f, 0.0f, Items.GOLD_NUGGET, 0.5f);
         postShoot(user, itemStack, isSneaking ? 0.05 : 0.1, 3);
         return true;
     };
@@ -87,7 +88,7 @@ public class ProjectileHelper {
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.6f, 2);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ITEM_CROSSBOW_SHOOT, 0.8f, 0.4f);
-        createProjectile(user.world, user, true, "gun_ho", 4.0f, 0.0174533 * (isSneaking ? 1.5 : 4.0), 6.0f, Items.GOLD_NUGGET, 1.0f);
+        createProjectile(user.world, user, true, "gun_ho", 4.0f, 0.0174533 * (isSneaking ? 1.5 : 4.0), 6.0f, 0.0f, Items.GOLD_NUGGET, 1.0f);
         postShoot(user, itemStack, isSneaking ? 0.075 : 0.125, 0);
         ((ItemStackInterface) (Object) itemStack).setCooldown(8);
         return true;
@@ -97,7 +98,7 @@ public class ProjectileHelper {
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0f, 1.5f);
         for (int i = 0; i < user.getRandom().nextBetween(12, 16); i++)
-            createProjectile(user.world, user, true, "gun_ho", 3.0f, 0.0174533 * 6, 2.2f, Items.GOLD_NUGGET, 0.9f);
+            createProjectile(user.world, user, true, "gun_ho", 3.0f, 0.0174533 * 6, 2.2f, 0.0f, Items.GOLD_NUGGET, 0.9f);
         postShoot(user, itemStack, isSneaking ? 0.4 : 1, 35);
         return true;
     };
@@ -116,7 +117,9 @@ public class ProjectileHelper {
         RaycastHit r = raycastToFirstHit((ServerWorld) user.world, user, user.getEyePos(), dir, new Vec3d(0.15, 0.15, 0.15), 500, 3, new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.GOLD_BLOCK.getDefaultState()), 0, 0, 0, 0.05);
         if (r.type == RaycastType.ENTITY) {
             boolean headshot = isSneaking && user.isOnGround() && r.endPos.squaredDistanceTo(r.entityHit.getEyePos()) < Math.pow((r.entityHit.getBoundingBox().maxX - r.entityHit.getBoundingBox().minX) / 1.2, 2);
-            Entities.damageEntity(r.entityHit, headshot ? 42 : 21, headshot ? 50 : 25, true, DamageSource.thrownProjectile(user, user));
+            DamageSource d = DamageSource.thrownProjectile(user, user);
+            ((DamageSourceInterface) d).setArmorPierce(headshot ? 0.3 : 0.15);
+            Entities.damageEntity(r.entityHit, headshot ? 50 : 25, headshot ? 50 : 25, true, d);
         } else if (r.type == RaycastType.BLOCK) Network.emitBlockBreakParticles(user.world, r.blockHit);
         postShoot(user, itemStack, isSneaking ? 0.07 : 0.3, 45);
         return true;
@@ -125,7 +128,7 @@ public class ProjectileHelper {
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_TNT_PRIMED, 0.6f, 2);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 2.0f, 1.4f);
         Network.playSound((ServerWorld) user.world, user, SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0f, 1.5f);
-        createProjectile(user.world, user, true, "rocket", 1.0f, 0.0174533 * 1.5, 4, Items.TNT, 0.25f);
+        createProjectile(user.world, user, true, "rocket", 1.0f, 0.0174533 * 1.5, 4, 0.0f, Items.TNT, 0.25f);
         postShoot(user, itemStack, 1.4, 80);
         return true;
     };
@@ -165,23 +168,18 @@ public class ProjectileHelper {
         return p.predicate.test(user, itemStack) && consumeAmmo(user, p.ammo, itemStack, user.isCreative()) && p.use.onUse(user, itemStack, user.isSneaking());
     }
 
-    public static void spawnFrag(World world, LivingEntity user, float bonus, float speed, float divergence) {
-        SnowballEntity frag = new SnowballEntity(world, user);
-        ((ThrownItemEntityInterface) frag).setAttribute("buckshot");
-        ((ThrownItemEntityInterface) frag).setBonusDamage(bonus);
-        frag.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, speed, divergence);
-        frag.setVelocity(user.getVelocity().multiply(0.1).add(frag.getVelocity()));
-        frag.setItem(new ItemStack(Items.IRON_NUGGET));
-        world.spawnEntity(frag);
+    public static SnowballEntity createProjectile(World world, LivingEntity user, boolean noGravity, String attribute, float speed, double divergence, float damage, float bonusDamage, Item item, float increment) {
+        return createProjectile(world, user, noGravity, attribute, speed, divergence, damage, bonusDamage, item, increment, false);
     }
 
-    public static SnowballEntity createProjectile(World world, LivingEntity user, boolean noGravity, String attribute, float speed, double divergence, float damage, Item item, float increment) {
+    public static SnowballEntity createProjectile(World world, LivingEntity user, boolean noGravity, String attribute, float speed, double divergence, float damage, float bonusDamage, Item item, float increment, boolean useDegrees) {
         SnowballEntity bullet = new SnowballEntity(world, user);
         bullet.setNoGravity(noGravity);
         ((ThrownItemEntityInterface) bullet).setAttribute(attribute);
         ((ThrownItemEntityInterface) bullet).setDamage(damage);
+        ((ThrownItemEntityInterface) bullet).setBonusDamage(bonusDamage);
         ((ThrownItemEntityInterface) bullet).setIncrement(increment);
-        bullet.setVelocity(VMath.applyDivergence(user.getRotationVector(), divergence).normalize().multiply(speed));
+        bullet.setVelocity((useDegrees ? VMath.applyDivergenceDeg(user.getRotationVector(), divergence) : VMath.applyDivergence(user.getRotationVector(), divergence)).normalize().multiply(speed));
         bullet.setItem(new ItemStack(item));
         world.spawnEntity(bullet);
         return bullet;

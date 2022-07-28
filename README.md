@@ -53,13 +53,11 @@ Only one attribute can be applied to any given item!
 | Super Luck     | Emerald               | Offensive | Bow                 | Arrows roll critical hits twice                                                                                                |
 | Superphysical  | End Rod               | Offensive | Bow                 | Arrows experience no gravity/drag but disappear after a short while                                                            |
 | Stonebreaker   | Stonecutter           | Offensive | True Tools          | Deal massive damage against inorganic targets                                                                                  |
-| Antigravity    | Warped Fungus         | Utility   | Tools               | Mined items have no gravity                                                                                                    |
 | Adept          | Bookshelf             | Utility   | Armor               | Decreases magic cooldowns - a full set provides an additional boost                                                            |
 | Attuned        | Bottle o' Enchanting  | Utility   | Tools               | Small chance to gain experience while mining                                                                                   |
 | Excavator      | Stone                 | Utility   | Tools               | Mines in a 5 block cross, or a 3x3 area while crouching, but mining speed is lower                                             |
 | Energized      | Redstone Block        | Utility   | Armor               | Increases mana regen rate - a full set provides an additional boost                                                            |
 | Faster Reel    | Prismarine Crystals   | Utility   | Fishing Rod         | Pull strength when reeling in is much stronger                                                                                 |
-| Glowing        | Glow Ink Sac          | Utility   | Tools               | Mined items glow                                                                                                               |
 | Hasty          | Sugar                 | Utility   | Tools               | Haste I - stacks with other status effect gear                                                                                 |
 | High Test      | String                | Utility   | Fishing Rod         | Cast velocity and range are much higher                                                                                        |
 | Magnetized     | Raw Iron              | Utility   | Tools               | Attracts items to the user while held                                                                                          |
@@ -104,6 +102,7 @@ Wands
 |------------|---------------|------------------------------------------------------------------------------------------------------|-----------|----------|
 | Arrow Rain | Arrow         | Shoots many arrows in a wide spread                                                                  | 3         | 0.75s    |
 | Boost      | Feather       | Launches the user forward                                                                            | 0.8       | 0.25s    |
+| Guardian   | Shield        | Gain Weakness + Regen I, Resistance II for 10 seconds                                                | 8         | 4s       |
 | Healing    | Golden Apple  | Heals for one heart                                                                                  | 2.5       | 1.5s     |
 | Lightning  | Lightning Rod | Lightning does random but potentially massive damage                                                 | 3         | 2s       |
 | Sacrifice  | Rotten Flesh  | Gain Strength + Haste III, Resistance I for 10 seconds, take 10 damage                               | 8         | 4s       |

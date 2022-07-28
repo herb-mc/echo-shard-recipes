@@ -1,19 +1,11 @@
 package com.herb_mc.echo_shard_recipes.helper;
 
-import com.herb_mc.echo_shard_recipes.EchoShardRecipesMod;
-import com.herb_mc.echo_shard_recipes.mixin.ClientWorldAccessor;
-import com.herb_mc.echo_shard_recipes.mixin.WorldRendererAccessor;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -36,14 +28,13 @@ import java.util.Set;
 public class Network {
 
     public static final Identifier CHANNEL = new Identifier("echo_shard_recipes:register");
-    public static final int ECHO_C2S = 2;
-    public static Set<ServerPlayerEntity> exemptPlayers = new HashSet<>();
-    public static final TrackedData<Integer> PARTICLE = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int ECHO_C2S_ON_JOIN = 2;
+    public static final Set<ServerPlayerEntity> EXEMPT_PLAYERS = new HashSet<>();
 
     public static void spawnParticles(World world, ParticleEffect particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed, boolean forceSend) {
         ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, true, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
         for (int j = 0; j < world.getPlayers().size(); ++j) {
-            if (world instanceof ServerWorld && (!exemptPlayers.contains(((ServerWorld) world).getPlayers().get(j)) || forceSend))
+            if (world instanceof ServerWorld && (!EXEMPT_PLAYERS.contains(((ServerWorld) world).getPlayers().get(j)) || forceSend))
                 sendToPlayerWithinRenderDistance((ServerWorld) world, ((ServerWorld) world).getPlayers().get(j), x, y, z, particleS2CPacket, forceSend);
         }
         if (world.isClient() && !forceSend) {
@@ -61,7 +52,7 @@ public class Network {
     }
 
     private static void sendToPlayerWithinRenderDistance(ServerWorld world, ServerPlayerEntity player, double x, double y, double z, Packet<?> packet, boolean forceSend) {
-        if (!(player.getWorld() != world || (exemptPlayers.contains(player) && !forceSend))) {
+        if (!(player.getWorld() != world || (EXEMPT_PLAYERS.contains(player) && !forceSend))) {
             BlockPos blockPos = player.getBlockPos();
             if (blockPos.isWithinDistance(new Vec3d(x, y, z), 128.0D))
                 player.networkHandler.sendPacket(packet);
